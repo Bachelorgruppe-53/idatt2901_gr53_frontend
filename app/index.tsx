@@ -1,10 +1,29 @@
 import { Text, View, StyleSheet, Image, Pressable, Button } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "../constants/Colors";
+import { useState } from "react";
+import { useCameraPermissions } from "expo-camera";
+import { QRScanner } from "../components/QRScanner";
+
 
 export default function Index() {
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
-  
+  const [isScanning, setIsScanning] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
+
+  const handleScan = (data: string) => {
+    setIsScanning(false);
+    alert(`Skannet data: ${data}`);
+  };
+
+  if (isScanning) {
+    if (!permission?.granted) {
+      requestPermission();
+      return null;
+    }
+    return <QRScanner onScan={handleScan} onClose={() => setIsScanning(false)} />;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>St. Olavs hospital</Text>
@@ -26,7 +45,7 @@ export default function Index() {
         <Text style={styles.buttonText}>Klasseoversikt</Text>
       </Pressable>
       <Pressable style={[styles.buttonRound, !isReady && styles.buttonDisabled]} 
-        onPress={() => isReady ? alert ('midlertidig alert - scanne knapp!') : null} 
+        onPress={() => setIsScanning(true)} 
         disabled={!isReady}>
 
         <MaterialIcons name="qr-code-scanner" size={35} color={Colors.dark.text || Colors.light.text} />
@@ -39,7 +58,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 30,
+    paddingTop: 20,
     alignItems: "center",
     backgroundColor: Colors.light.background || Colors.dark.background,
   },
@@ -52,17 +71,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     letterSpacing: 2.5,
-    marginBottom: 20,
+    marginBottom: 15,
     color: Colors.light.accent || Colors.dark.accent,
   },
   favourite: {
     fontSize: 18,
     marginLeft: 10,
     fontWeight: "bold",
+    marginBottom: 10,
     color: Colors.light.text || Colors.dark.text,
   },
   imageWrapper: {
-    marginTop: 15,
+    marginTop: 20,
     borderRadius: 100,
   },
   image: {
