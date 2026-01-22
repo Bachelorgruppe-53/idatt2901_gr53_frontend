@@ -40,6 +40,15 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      ["react-native-bottom-tabs"],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
       ]
     ],
     "experiments": {
