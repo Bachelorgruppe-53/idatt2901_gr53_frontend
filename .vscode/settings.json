@@ -4,5 +4,8 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
-  "conventionalCommits.scopes": ["nav-bar"]
+  "conventionalCommits.scopes": [
+    "nav-bar",
+    "homescreen"
+  ]
 }
