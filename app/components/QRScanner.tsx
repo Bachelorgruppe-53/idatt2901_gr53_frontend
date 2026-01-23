@@ -1,7 +1,7 @@
-import React from 'react';
-import { StyleSheet, Text, Pressable, View } from 'react-native';
-import { CameraView } from 'expo-camera';
 import { MaterialIcons } from '@expo/vector-icons';
+import { CameraView } from 'expo-camera';
+import React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { Colors } from "../constants/Colors";
 
 interface QRScannerProps {
