@@ -7,6 +7,7 @@
   "conventionalCommits.scopes": [
     "nav-bar",
     "homescreen",
-    "colorSheet"
+    "colorSheet",
+    "settings"
   ]
 }
