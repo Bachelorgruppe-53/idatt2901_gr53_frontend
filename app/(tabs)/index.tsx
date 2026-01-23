@@ -2,8 +2,18 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useCameraPermissions } from "expo-camera";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { QRScanner } from "../components/QRScanner";
-import { Colors } from "../constants/Colors";
+import { QRScanner } from "../../components/QRScanner";
+import { Colors } from "../../constants/Colors";
+
+/**
+ * This page is the main landing page when the user opens the app.
+ * It displays a welcome message, user profile image, and buttons for
+ * taking a career test, viewing class overview, and scanning QR codes.
+ * 
+ * @returns JSX.Element
+ */
+
+// TODO: add all functionality to buttons and QR scanner
 
 export default function Index() {
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
@@ -30,11 +40,11 @@ export default function Index() {
       <Text style={styles.title}>St. Olavs hospital</Text>
       <View style={styles.row}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={styles.favourite}>Favoritt yrke</Text>
+        <Text style={styles.favourite}>Favorittyrke</Text>
       </View>
       <View style={styles.imageWrapper}>
         <Image
-          source={require("../assets/images/profile/1.png")}
+          source={require("../../assets/images/profile/1.png")}
           style={styles.image}
         />
       </View>
@@ -75,7 +85,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: 80,
     alignItems: "center",
     backgroundColor: Colors.light.background || Colors.dark.background,
   },
