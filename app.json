@@ -41,7 +41,6 @@
           }
         }
       ],
-      ["react-native-bottom-tabs"],
       [
         "expo-build-properties",
         {
