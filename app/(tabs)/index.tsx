@@ -5,6 +5,16 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../components/QRScanner";
 import { Colors } from "../../constants/Colors";
 
+/**
+ * This page is the main landing page when the user opens the app.
+ * It displays a welcome message, user profile image, and buttons for
+ * taking a career test, viewing class overview, and scanning QR codes.
+ * 
+ * @returns JSX.Element
+ */
+
+// TODO: add all functionality to buttons and QR scanner
+
 export default function Index() {
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
   const [isScanning, setIsScanning] = useState(false);
