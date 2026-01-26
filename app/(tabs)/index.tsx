@@ -2,8 +2,10 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useCameraPermissions } from "expo-camera";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { QRScanner } from "../../components/QRScanner";
-import { Colors } from "../../constants/Colors";
+import { QRScanner } from "../../src/components/QRScanner";
+import { Colors } from "../../src/constants/Colors";
+import { useThemeColor } from "../../src/hooks/useThemeColor";
+
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -16,6 +18,7 @@ import { Colors } from "../../constants/Colors";
 // TODO: add all functionality to buttons and QR scanner
 
 export default function Index() {
+  const theme = useThemeColor();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
   const [isScanning, setIsScanning] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
@@ -36,11 +39,11 @@ export default function Index() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>St. Olavs hospital</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Text style={[styles.title, { color: theme.text }]}>St. Olavs hospital</Text>
       <View style={styles.row}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={styles.favourite}>Favorittyrke</Text>
+        <Text style={[styles.favourite, { color: theme.text }]}>Favorittyrke</Text>
       </View>
       <View style={styles.imageWrapper}>
         <Image
@@ -48,34 +51,34 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={styles.name}> Hei, Ola Normann!</Text>
+      <Text style={[styles.name, { color: theme.text }]}> Hei, Ola Normann!</Text>
       <Pressable
-        style={[styles.button, !isReady && styles.buttonDisabled]}
+        style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
         onPress={() =>
           isReady ? alert("midlertidig alert - karrieretesten!") : null
         }
         disabled={!isReady}
       >
-        <Text style={styles.buttonText}>Ta karrieretesten</Text>
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Ta karrieretesten</Text>
       </Pressable>
       <Pressable
-        style={[styles.button, !isReady && styles.buttonDisabled]}
+        style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
         onPress={() =>
           isReady ? alert("midlertidig alert - klasse knapp!") : null
         }
         disabled={!isReady}
       >
-        <Text style={styles.buttonText}>Klasseoversikt</Text>
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Klasseoversikt</Text>
       </Pressable>
       <Pressable
-        style={[styles.buttonRound, !isReady && styles.buttonDisabled]}
+        style={[styles.buttonRound, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
         onPress={() => setIsScanning(true)}
         disabled={!isReady}
       >
         <MaterialIcons
           name="qr-code-scanner"
           size={35}
-          color={Colors.dark.text || Colors.light.text}
+          color={theme.buttontext}
         />
       </Pressable>
     </View>
@@ -87,7 +90,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 80,
     alignItems: "center",
-    backgroundColor: Colors.light.background || Colors.dark.background,
   },
   row: {
     flexDirection: "row",
@@ -99,14 +101,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 2.5,
     marginBottom: 15,
-    color: Colors.light.accent || Colors.dark.accent,
   },
   favourite: {
     fontSize: 18,
     marginLeft: 10,
     fontWeight: "bold",
     marginBottom: 10,
-    color: Colors.light.text || Colors.dark.text,
   },
   imageWrapper: {
     marginTop: 20,
@@ -119,11 +119,9 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 25,
     marginTop: 20,
-    color: Colors.light.text || Colors.dark.text,
   },
   button: {
     marginTop: 30,
-    backgroundColor: Colors.light.button || Colors.dark.button,
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 8,
@@ -140,7 +138,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.brand.gray,
   },
   buttonText: {
-    color: Colors.light.background || Colors.dark.background,
     fontSize: 18,
     fontWeight: "bold",
   },

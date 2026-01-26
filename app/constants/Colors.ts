@@ -24,11 +24,13 @@ export const Colors = {
     background: '#EFEEE6',
     accent: palette.darkBlue,
     button: palette.darkBlue,
+    buttontext: palette.white,
   },
   dark: {
     text: palette.white,
     background: '#141414',
     accent: palette.lightBlue,
     button: palette.lightBlue,
+    buttontext: palette.black,
   },
 };
