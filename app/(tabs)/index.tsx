@@ -2,9 +2,9 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useCameraPermissions } from "expo-camera";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { Colors } from "../constants/Colors";
-import { QRScanner } from "../components/QRScanner";
-import { useThemeColor } from "../hooks/useThemeColor";
+import { QRScanner } from "../../src/components/QRScanner";
+import { Colors } from "../../src/constants/Colors";
+import { useThemeColor } from "../../src/hooks/useThemeColor";
 
 
 /**

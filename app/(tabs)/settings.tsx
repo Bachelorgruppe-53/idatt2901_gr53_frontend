@@ -1,8 +1,16 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { Image, Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
-import { Colors } from "../constants/Colors";
-import { useThemeColor } from "../hooks/useThemeColor";
-import { useTheme } from "../context/ThemeContext";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Colors } from "../../src/constants/Colors";
+import { useTheme } from "../../src/context/ThemeContext";
+import { useThemeColor } from "../../src/hooks/useThemeColor";
+
+/**
+ * this page allows the user to change settings such as theme mode and language.
+ * 
+ * @returns JSX.Element
+ */
+
+//TODO: implement functionality
 
 export default function SettingsScreen() {
   const theme = useThemeColor();
@@ -15,6 +23,7 @@ export default function SettingsScreen() {
         { backgroundColor: theme.background },
       ]}
     >
+      {/* Settings options in a grid layout */}
       <View style={styles.grid}>
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
