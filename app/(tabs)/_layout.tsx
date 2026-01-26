@@ -1,46 +1,42 @@
-import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
 
-export default function TabsLayout() {
+export default function TabLayout() {
   return (
     <NativeTabs>
-      <NativeTabs.Trigger name="achievements">
-        <Label>Bragd</Label>
-        <Icon
-          sf={{ default: "trophy", selected: "trophy.fill" }}
-          drawable="ic_settings"
-        />
-      </NativeTabs.Trigger>
-
       <NativeTabs.Trigger name="map">
-        <Label>Kart</Label>
-        <Icon
+        <NativeTabs.Trigger.Label>Map</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
           sf={{ default: "map", selected: "map.fill" }}
-          drawable="ic_settings"
+          md="map"
         />
       </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="index">
-        <Label>Hjem</Label>
-        <Icon
-          sf={{ default: "house", selected: "house.fill" }}
-          drawable="ic_home"
-        />
-      </NativeTabs.Trigger>
-
       <NativeTabs.Trigger name="stats">
-        <Label>Statistikk</Label>
-        <Icon
+        <NativeTabs.Trigger.Label>Stats</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
           sf={{ default: "chart.bar", selected: "chart.bar.fill" }}
-          drawable="ic_settings"
+          md="poll"
         />
       </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="settings">
-        <Label>Innstillinger</Label>
-        <Icon
-          sf={{ default: "gear", selected: "gear" }}
-          drawable="ic_settings"
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "house", selected: "house.fill" }}
+          md="home"
         />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="achievements">
+        <NativeTabs.Trigger.Label>Achievements</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "trophy", selected: "trophy.fill" }}
+          md="trophy"
+        />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "gearshape", selected: "gearshape.fill" }}
+          md="settings"
+        />
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
