@@ -8,6 +8,12 @@ import Achievements from "../../src/components/unlockedAchievements";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
 import { Colors } from "../../src/constants/Colors";
 
+/**
+ * This screen allows users to toggle between viewing unlocked careers and achievements.
+ * 
+ * @returns JSX.Element
+ */
+
 export default function AchievementScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const theme = useThemeColor();

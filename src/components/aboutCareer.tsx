@@ -3,6 +3,16 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useThemeColor } from '../hooks/useThemeColor';
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * This component displays information about a selected career.
+ * 
+ * @param careerName - The name of the career to display information about.
+ * @param onClose - Function to call when closing the about career view.
+ * 
+ * @returns JSX.Element
+ */
+
+//TODO: populate with real career data
 
 interface Props {
   careerName: string | null;

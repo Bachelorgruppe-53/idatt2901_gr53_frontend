@@ -5,6 +5,13 @@ import { useTheme } from "../context/ThemeContext";
 import { useThemeColor } from "../hooks/useThemeColor";
 import AboutCareer from "./aboutCareer";
 
+/**
+ * This component displays a grid of career options that users can select to view more information.
+ * 
+ * @returns JSX.Element
+ */
+
+//TODO: implement functionality to fetch career data dynamically
 export default function Careers() {
   const theme = useThemeColor();
 
