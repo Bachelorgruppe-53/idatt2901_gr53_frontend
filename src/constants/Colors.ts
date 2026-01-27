@@ -1,3 +1,5 @@
+import { Background } from "@react-navigation/elements";
+
 const palette = {
   darkBlue: '#003087',
   lightBlue: '#6CACE4',
@@ -22,6 +24,7 @@ export const Colors = {
   light: {
     text: palette.black,
     background: '#EFEEE6',
+    backgroundSecondary: '#D6D6D6',
     accent: palette.darkBlue,
     button: palette.darkBlue,
     buttontext: palette.white,
@@ -29,7 +32,7 @@ export const Colors = {
   dark: {
     text: palette.white,
     background: '#141414',
-    accent: palette.lightBlue,
+    backgroundSecondary: '#2C2C2C',
     button: palette.lightBlue,
     buttontext: palette.black,
   },

@@ -36,6 +36,8 @@ export default function AchievementScreen() {
           onChange={(event) => {
             setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
           }}
+          backgroundColor={theme.backgroundSecondary}
+          tintColor={theme.button}
           style={styles.segmentedControl}
           activeFontStyle={{ color: theme.buttontext }}
           fontStyle={{ color: theme.text }}
@@ -55,9 +57,7 @@ const styles = StyleSheet.create({
   },
   segmentedControl: {
     height: 45,
-    borderRadius: 20,
     overflow: "hidden",
-    tintColor: Colors.light.button || Colors.dark.button,
     marginBottom: 50,
   },
   segmentText: {

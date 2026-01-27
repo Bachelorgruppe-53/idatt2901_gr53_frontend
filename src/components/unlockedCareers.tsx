@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around",
+    justifyContent: "flex-start",
     gap: 20,
     width: "100%",
     padding: 40,
@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
   },
   careerItem: {
     alignItems: "center",
+    width: "28%",
   },
   careerText: {
     marginTop: 10,
