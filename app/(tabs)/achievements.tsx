@@ -1,17 +1,68 @@
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
+
+import Careers from "../../src/components/unlockedCareers"; 
+import Achievements from "../../src/components/unlockedAchievements";
+import { useThemeColor } from "../../src/hooks/useThemeColor";
+import { Colors } from "../../src/constants/Colors";
 
 export default function AchievementScreen() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const theme = useThemeColor();
+
   return (
-    <View style={styles.container}>
-      <Text>Achievement Screen</Text>
-    </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+    
+      <View style={styles.content}>
+        {selectedIndex === 0 ? (
+          <Careers /> 
+        ) : (
+          <Achievements />
+        )}
+      </View>
+
+      <View style={styles.header}>
+        <SegmentedControl
+          values={['Karrierer', 'Merker']}
+          selectedIndex={selectedIndex}
+          onChange={(event) => {
+            setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
+          }}
+          style={styles.segmentedControl}
+          activeFontStyle={{ color: theme.buttontext }}
+          fontStyle={{ color: theme.text }}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  },
+  header: {
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+  },
+  segmentedControl: {
+    height: 45,
+    borderRadius: 20,
+    overflow: "hidden",
+    tintColor: Colors.light.button || Colors.dark.button,
+    marginBottom: 50,
+  },
+  segmentText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  content: {
+    flex: 1,
   },
 });
