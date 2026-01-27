@@ -21,7 +21,12 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.brahimage.appBacheloroppgave"
+      "package": "com.brahimage.appBacheloroppgave",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBlSlDg5z7HwcBcO9MtO1iVWKQKuBKAMjg"
+        }
+      }
     },
     "web": {
       "output": "static",
