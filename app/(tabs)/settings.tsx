@@ -1,5 +1,7 @@
+import Admin from "@/app/admin/adminLogin";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../src/constants/Colors";
 import { useTheme } from "../../src/context/ThemeContext";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
@@ -14,7 +16,13 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
 
 export default function SettingsScreen() {
   const theme = useThemeColor();
+  const [modalVisible, setModalVisible] = React.useState(false);
+
   const { isDarkMode, toggleTheme } = useTheme();
+  const openAdmin = () => {
+    // Logic to navigate to Admin screen
+    setModalVisible(true);
+  }
 
   return (
     <View 
@@ -23,6 +31,15 @@ export default function SettingsScreen() {
         { backgroundColor: theme.background },
       ]}
     >
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => {setModalVisible(!modalVisible);
+        }}>
+        <Admin 
+            onClose={() => setModalVisible(false)} />
+      </Modal>
       {/* Settings options in a grid layout */}
       <View style={styles.grid}>
         <Pressable
@@ -43,7 +60,7 @@ export default function SettingsScreen() {
         </Pressable>
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
-          onPress={() => alert("admin login")}
+          onPress={() => openAdmin()}
         >
           <MaterialIcons name="admin-panel-settings" size={24} color={theme.buttontext} />
           <Text style={[styles.buttonText, { color: theme.buttontext }]}> Admin login</Text>
