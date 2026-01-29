@@ -51,13 +51,17 @@
         {
           "ios": {
             "useFrameworks": "static"
+          },
+          "android": {
+            "compileSdkVersion": 35
           }
         }
       ],
       "expo-localization",
       "expo-font",
       "expo-image",
-      "expo-web-browser"
+      "expo-web-browser",
+      "react-native-maps"
     ],
     "experiments": {
       "typedRoutes": true,
