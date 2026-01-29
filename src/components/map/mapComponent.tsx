@@ -1,10 +1,12 @@
-import { useCameraPermissions } from "expo-camera";
 import React, { useRef, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Callout, Marker, PROVIDER_GOOGLE, Camera } from 'react-native-maps';
 import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
+import { useCameraPermissions } from "expo-camera";
 import { QRScanner } from '../QRScanner';
+import { locations } from './mapData';
+import { MapMarker } from './MapMarker';
 
 /**
  * This component displays a map with markers and allows users to scan QR codes to unlock careers.
@@ -76,32 +78,14 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
           longitudeDelta: 0.015,
         }}
       >
-        <Marker 
-          coordinate={{ 
-            latitude: initialLocation?.latitude ?? 63.4305, 
-            longitude: initialLocation?.longitude ?? 10.3951 
-          }} 
-        />
-        
-        <Marker 
-          coordinate={{ 
-            latitude: initialLocation?.latitude ?? 63.420128, 
-            longitude: initialLocation?.longitude ?? 10.387826
-          }}
-          pinColor={Colors.brand.green}
-        >
-          {/* OnPress på Callout er mer stabilt enn Pressable inni på iOS */}
-          <Callout onPress={() => setIsScanning(true)}>
-            <View style={styles.calloutContainer}>
-              <Text style={styles.calloutTitle}>Sykepleier</Text>
-              <Text style={styles.calloutDescription}>Scann stolpen i 2. etasje for å låse opp yrket</Text>
-              <View style={styles.scanButton}>
-                <Text style={styles.scanButtonText}>Åpne QR-skanner →</Text>
-              </View>
-            </View>
-          </Callout>
-        </Marker>
-      </MapView>
+        {locations.map((loc, index) => (
+          <MapMarker 
+            key={loc.id} 
+            location={loc} 
+            onScan={() => setIsScanning(true)} 
+          />
+        ))}   
+      </MapView>     
 
       {/* Custom Zoom-kontroller for iOS */}
       {Platform.OS === 'ios' && (
