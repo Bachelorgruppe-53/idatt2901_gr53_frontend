@@ -1,7 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, Pressable, Modal } from "react-native";
-import { Colors } from "../constants/Colors";
-import { useTheme } from "../context/ThemeContext";
+import { StyleSheet, Text, View, Image, Pressable, Modal, ScrollView } from "react-native";
 import { useThemeColor } from "../hooks/useThemeColor";
 import AboutCareer from "./aboutCareer";
 
@@ -40,7 +38,7 @@ export default function Careers() {
 
         </Modal>
 
-        <View style={styles.grid}>
+        <ScrollView contentContainerStyle={styles.grid}>
             <Pressable style={styles.careerItem}
                 onPress={() => handlePress("Sykepleier")}>
                 <Image
@@ -83,7 +81,7 @@ export default function Careers() {
                     style={styles.image}/> 
                 <Text style={[styles.careerText, { color: theme.text }]}>Lege</Text>
             </Pressable>
-        </View>   
+        </ScrollView>   
     </View>
 );
 }
