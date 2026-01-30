@@ -5,6 +5,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
+import JoinClassModal from "@/src/components/joinClass";
 
 
 /**
@@ -21,6 +22,7 @@ export default function Index() {
   const theme = useThemeColor();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
   const [isScanning, setIsScanning] = useState(false);
+  const [showJoinClass, setShowJoinClass] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
 
   const handleScan = (data: string) => {
@@ -35,6 +37,12 @@ export default function Index() {
     }
     return (
       <QRScanner onScan={handleScan} onClose={() => setIsScanning(false)} />
+    );
+  }
+
+  if (showJoinClass) {
+    return (
+      <JoinClassModal onClose={() => setShowJoinClass(false)} />
     );
   }
 
@@ -58,17 +66,15 @@ export default function Index() {
           isReady ? alert("midlertidig alert - karrieretesten!") : null
         }
         disabled={!isReady}
-      >
+        >
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>Ta karrieretesten</Text>
       </Pressable>
       <Pressable
         style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
-        onPress={() =>
-          isReady ? alert("midlertidig alert - klasse knapp!") : null
-        }
+        onPress={() => setShowJoinClass(true)}
         disabled={!isReady}
-      >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Klasseoversikt</Text>
+        >
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Bli med i en klasse</Text>
       </Pressable>
       <Pressable
         style={[styles.buttonRound, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
