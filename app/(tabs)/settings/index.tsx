@@ -1,12 +1,13 @@
+import { Colors } from "@/src/constants/Colors";
+import { useTheme } from "@/src/context/ThemeContext";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { Colors } from "../../src/constants/Colors";
-import { useTheme } from "../../src/context/ThemeContext";
-import { useThemeColor } from "../../src/hooks/useThemeColor";
 
 /**
  * this page allows the user to change settings such as theme mode and language.
- * 
+ *
  * @returns JSX.Element
  */
 
@@ -15,60 +16,74 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
 export default function SettingsScreen() {
   const theme = useThemeColor();
   const { isDarkMode, toggleTheme } = useTheme();
+  const router = useRouter();
 
   return (
-    <View 
-      style={[
-        styles.container,
-        { backgroundColor: theme.background },
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Settings options in a grid layout */}
       <View style={styles.grid}>
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
           onPress={toggleTheme}
-          >
-          <MaterialIcons name={isDarkMode ? "dark-mode" : "light-mode"} 
+        >
+          <MaterialIcons
+            name={isDarkMode ? "dark-mode" : "light-mode"}
             size={24}
-            color={theme.buttontext} />
-          <Text style={[styles.buttonText, { color: theme.buttontext }]}> {isDarkMode ? "Lys modus" : "Mørk modus"}</Text>
-          </Pressable>
+            color={theme.buttontext}
+          />
+          <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+            {" "}
+            {isDarkMode ? "Lys modus" : "Mørk modus"}
+          </Text>
+        </Pressable>
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
           onPress={() => alert("språk")}
         >
           <MaterialIcons name="language" size={24} color={theme.buttontext} />
-          <Text style={[styles.buttonText, { color: theme.buttontext }]}> Endre språk</Text>
+          <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+            {" "}
+            Endre språk
+          </Text>
         </Pressable>
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
-          onPress={() => alert("admin login")}
+          onPress={() => router.push("/settings/admin/login")}
         >
-          <MaterialIcons name="admin-panel-settings" size={24} color={theme.buttontext} />
-          <Text style={[styles.buttonText, { color: theme.buttontext }]}> Admin login</Text>
+          <MaterialIcons
+            name="admin-panel-settings"
+            size={24}
+            color={theme.buttontext}
+          />
+          <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+            {" "}
+            Admin login
+          </Text>
         </Pressable>
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
           onPress={() => alert("edit profil")}
         >
           <MaterialIcons name="person" size={24} color={theme.buttontext} />
-          <Text style={[styles.buttonText, { color: theme.buttontext }]}> Rediger profil</Text>
+          <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+            {" "}
+            Rediger profil
+          </Text>
         </Pressable>
       </View>
 
       <View style={styles.imageWrapper}>
-          <Image
-            source={require("../../assets/images/about.png")}
-            style={styles.image}
-          />
+        <Image
+          source={require("@/assets/images/about.png")}
+          style={styles.image}
+        />
       </View>
 
       <Text style={[styles.header, { color: theme.text }]}>Om oss</Text>
       <Text style={[styles.paragraph, { color: theme.text }]}>
-        Dette er en prototype av en app utviklet av studenter fra NTNU for 
-        St. Olavs hospital i Trondheim. Appen har som mål å hjelpe elever
-        med å oppdage og utforske ulike yrker innen helsesektoren gjennom interaktive
+        Dette er en prototype av en app utviklet av studenter fra NTNU for St.
+        Olavs hospital i Trondheim. Appen har som mål å hjelpe elever med å
+        oppdage og utforske ulike yrker innen helsesektoren gjennom interaktive
         funksjoner som karrieretester og QR-kodeskanning.
       </Text>
 
@@ -77,9 +92,11 @@ export default function SettingsScreen() {
         onPress={() => alert("tilbakemelding")}
       >
         <MaterialIcons name="feedback" size={24} color={theme.buttontext} />
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}> Gi oss tilbakemelding</Text>
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+          {" "}
+          Gi oss tilbakemelding
+        </Text>
       </Pressable>
-
     </View>
   );
 }
