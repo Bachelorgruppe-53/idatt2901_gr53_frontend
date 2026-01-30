@@ -13,6 +13,15 @@ export default function SettingsLayout() {
           headerTitle: "",
         }}
       />
+      <Stack.Screen
+        name="admin/dashboard"
+        options={{
+          headerBackTitle: "Settings",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: "",
+        }}
+      />
     </Stack>
   );
 }

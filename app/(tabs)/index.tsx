@@ -11,7 +11,7 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
  * This page is the main landing page when the user opens the app.
  * It displays a welcome message, user profile image, and buttons for
  * taking a career test, viewing class overview, and scanning QR codes.
- * 
+ *
  * @returns JSX.Element
  */
 
@@ -28,9 +28,9 @@ export default function Index() {
     try {
       const response = await axios.get(`http://10.0.2.2:8080/api/test`);
       setName(response.data?.name ?? String(response.data ?? ""));
-      console.log('Data fetched successfully');
+      console.log("Data fetched successfully");
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -55,10 +55,14 @@ export default function Index() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>St. Olavs hospital</Text>
+      <Text style={[styles.title, { color: theme.text }]}>
+        St. Olavs hospital
+      </Text>
       <View style={styles.row}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={[styles.favourite, { color: theme.text }]}>Favorittyrke</Text>
+        <Text style={[styles.favourite, { color: theme.text }]}>
+          Favorittyrke
+        </Text>
       </View>
       <View style={styles.imageWrapper}>
         <Image
@@ -68,25 +72,41 @@ export default function Index() {
       </View>
       <Text style={[styles.name, { color: theme.text }]}> Hei, {name}!</Text>
       <Pressable
-        style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
+        style={[
+          styles.button,
+          !isReady && styles.buttonDisabled,
+          { backgroundColor: theme.button },
+        ]}
         onPress={() =>
           isReady ? alert("midlertidig alert - karrieretesten!") : null
         }
         disabled={!isReady}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Ta karrieretesten</Text>
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+          Ta karrieretesten
+        </Text>
       </Pressable>
       <Pressable
-        style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
+        style={[
+          styles.button,
+          !isReady && styles.buttonDisabled,
+          { backgroundColor: theme.button },
+        ]}
         onPress={() =>
           isReady ? alert("midlertidig alert - klasse knapp!") : null
         }
         disabled={!isReady}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Klasseoversikt</Text>
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+          Klasseoversikt
+        </Text>
       </Pressable>
       <Pressable
-        style={[styles.buttonRound, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
+        style={[
+          styles.buttonRound,
+          !isReady && styles.buttonDisabled,
+          { backgroundColor: theme.button },
+        ]}
         onPress={() => setIsScanning(true)}
         disabled={!isReady}
       >

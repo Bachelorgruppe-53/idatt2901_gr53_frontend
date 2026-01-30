@@ -22,7 +22,8 @@ export default function SettingsScreen() {
   const { isDarkMode, toggleTheme } = useTheme();
   const openAdmin = () => {
     // Logic to navigate to Admin screen
-    setModalVisible(true);
+    // setModalVisible(true);
+    router.push("/settings/admin/login");
   };
   const router = useRouter();
 
