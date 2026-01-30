@@ -1,12 +1,12 @@
-import { Pressable, StyleSheet, Text, View,  } from "react-native";
-import { router } from "expo-router";
-import { useThemeColor } from "../../src/hooks/useThemeColor";
 import { Colors } from "@/src/constants/Colors";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
- 
+import { router } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+
 /**
  * Admin dashboard screen component.
- * 
+ *
  * @returns JSX.Element
  */
 
@@ -15,20 +15,32 @@ export default function AdminDashboard() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Pressable style={[styles.logoutButton, { backgroundColor: Colors.brand.red }]} 
-        onPress={() => router.back("/settings")}>
+      <Pressable
+        style={[styles.logoutButton, { backgroundColor: Colors.brand.red }]}
+        onPress={() => router.back("/settings")}
+      >
         <Text style={{ color: Colors.brand.white }}>Logg ut</Text>
       </Pressable>
       <View style={styles.header}>
-        <MaterialCommunityIcons name="shield-account" size={50} color={theme.text} />
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Admin Dashboard</Text>
+        <MaterialCommunityIcons
+          name="shield-account"
+          size={50}
+          color={theme.text}
+        />
+        <Text style={[styles.headerTitle, { color: theme.text }]}>
+          Admin Dashboard
+        </Text>
       </View>
-      <Pressable style={[ styles.button, { backgroundColor: theme.button }]}
-        onPress={() => router.push("/admin/generateClassCode")}>
+      <Pressable
+        style={[styles.button, { backgroundColor: theme.button }]}
+        onPress={() => router.push("/admin/generateClassCode")}
+      >
         <Text style={{ color: theme.buttontext }}>Generer Klassekode</Text>
       </Pressable>
-      <Pressable style={[ styles.button, { backgroundColor: theme.button }]}
-        onPress={() => alert("Legg til nye yrker")}>
+      <Pressable
+        style={[styles.button, { backgroundColor: theme.button }]}
+        onPress={() => alert("Legg til nye yrker")}
+      >
         <Text style={{ color: theme.buttontext }}>Legg til nye yrker</Text>
       </Pressable>
     </View>

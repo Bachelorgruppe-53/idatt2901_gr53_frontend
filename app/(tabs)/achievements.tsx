@@ -1,16 +1,15 @@
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import React, { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
-import Careers from "../../src/components/unlockedCareers"; 
-import Achievements from "../../src/components/unlockedAchievements";
-import { useThemeColor } from "../../src/hooks/useThemeColor";
-import { Colors } from "../../src/constants/Colors";
+import Achievements from "@/src/components/unlockedAchievements";
+import Careers from "@/src/components/unlockedCareers";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 
 /**
  * This screen allows users to toggle between viewing unlocked careers and achievements.
- * 
+ *
  * @returns JSX.Element
  */
 
@@ -19,19 +18,16 @@ export default function AchievementScreen() {
   const theme = useThemeColor();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-    
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
       <View style={styles.content}>
-        {selectedIndex === 0 ? (
-          <Careers /> 
-        ) : (
-          <Achievements />
-        )}
+        {selectedIndex === 0 ? <Careers /> : <Achievements />}
       </View>
 
       <View style={styles.header}>
         <SegmentedControl
-          values={['Karrierer', 'Merker']}
+          values={["Karrierer", "Merker"]}
           selectedIndex={selectedIndex}
           onChange={(event) => {
             setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
@@ -58,8 +54,8 @@ const styles = StyleSheet.create({
   segmentedControl: {
     height: 45,
     overflow: "hidden",
-    marginBottom: Platform.OS === 'ios' ? 80 : 10,
-    borderRadius: Platform.OS === 'ios' ? 20 : 8,
+    marginBottom: Platform.OS === "ios" ? 80 : 10,
+    borderRadius: Platform.OS === "ios" ? 20 : 8,
   },
   segmentText: {
     fontSize: 16,
