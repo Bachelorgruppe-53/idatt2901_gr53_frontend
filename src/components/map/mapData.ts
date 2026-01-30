@@ -1,3 +1,7 @@
+/**
+ * Map data module
+ */
+
 export interface MapLocation {
     id: string
     latitude: number;
@@ -19,8 +23,8 @@ export const locations: MapLocation[] = [
         id: '2',
         latitude: 63.421,
         longitude: 10.387826,
-        title: 'Sykepleier',
-        description: 'Scann stolpen i 2. etasje for å låse opp yrket',
+        title: 'Lege',
+        description: 'Scann stolpen ved heisen i 4. etasje for å låse opp yrket',
         color: 'purple',
     },
 ];

@@ -4,6 +4,14 @@ import { Marker, Callout } from 'react-native-maps';
 import { Colors } from '../../constants/Colors';
 import { MapLocation } from '../map/mapData';
 
+/**
+ * This component represents a map marker with a callout that allows users to open the QR scanner.
+ * 
+ * @param location - The location data for the marker.
+ * @param onScan - Function to call when the scan button is pressed.
+ * @returns JSX.Element
+ */
+
 interface Props {
   location: MapLocation;
   onScan: () => void;

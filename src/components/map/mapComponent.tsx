@@ -28,7 +28,6 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
   const [isScanning, setIsScanning] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   
-  // Ref for å få tilgang til kart-metoder (som zoom)
   const mapRef = useRef<MapView>(null);
 
   const handleScan = (data: string) => {
@@ -36,16 +35,13 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
     alert(`Skannet data: ${data}`);
   };
 
-  // Funksjon for manuell zooming (løser manglende knapper på iOS)
   const handleZoom = async (zoomIn: boolean) => {
     if (!mapRef.current) return;
 
     const camera = await mapRef.current.getCamera();
     if (Platform.OS === 'ios' && camera.altitude !== undefined) {
-      // Apple Maps bruker altitude (høyde over bakken)
       camera.altitude /= zoomIn ? 2 : 0.5;
     } else if (camera.zoom !== undefined) {
-      // Google Maps bruker zoom-nivå (0-20)
       camera.zoom += zoomIn ? 1 : -1;
     }
 
@@ -67,7 +63,7 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
       <MapView
         ref={mapRef}
         provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
-        zoomControlEnabled={Platform.OS === 'android'} // Beholder standard på Android
+        zoomControlEnabled={Platform.OS === 'android'}
         showsCompass={true}
         style={styles.map}
         userInterfaceStyle={isDarkMode ? 'dark' : 'light'}
