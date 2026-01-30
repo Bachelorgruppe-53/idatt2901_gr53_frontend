@@ -9,6 +9,8 @@
     "homescreen",
     "colorSheet",
     "settings",
-    "achievements"
+    "achievements",
+    "admin"
+    "maps"
   ]
 }

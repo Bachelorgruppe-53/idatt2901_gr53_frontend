@@ -1,9 +1,11 @@
+import Admin from "@/app/admin/adminLogin";
 import { Colors } from "@/src/constants/Colors";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
 /**
  * this page allows the user to change settings such as theme mode and language.
@@ -15,11 +17,27 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function SettingsScreen() {
   const theme = useThemeColor();
+  const [modalVisible, setModalVisible] = React.useState(false);
+
   const { isDarkMode, toggleTheme } = useTheme();
+  const openAdmin = () => {
+    // Logic to navigate to Admin screen
+    setModalVisible(true);
+  };
   const router = useRouter();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <Admin onClose={() => setModalVisible(false)} />
+      </Modal>
       {/* Settings options in a grid layout */}
       <View style={styles.grid}>
         <Pressable
@@ -48,7 +66,7 @@ export default function SettingsScreen() {
         </Pressable>
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
-          onPress={() => router.push("/settings/admin/login")}
+          onPress={() => openAdmin()}
         >
           <MaterialIcons
             name="admin-panel-settings"
