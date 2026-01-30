@@ -26,7 +26,7 @@ export default function Index() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://10.0.2.2:8080/api/test`);
+      const response = await axios.get(`http://localhost:8080/api/test`);
       setName(response.data?.name ?? String(response.data ?? ""));
       console.log("Data fetched successfully");
     } catch (error) {
