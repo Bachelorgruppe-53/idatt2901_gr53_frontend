@@ -3,8 +3,12 @@ import { router } from "expo-router";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
 import { Colors } from "@/src/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { HeaderTitle } from "@react-navigation/elements";
  
+/**
+ * Admin dashboard screen component.
+ * 
+ * @returns JSX.Element
+ */
 
 export default function AdminDashboard() {
   const theme = useThemeColor();

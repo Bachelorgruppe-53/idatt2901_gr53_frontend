@@ -3,6 +3,13 @@ import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
 
+/**
+ * Admin login screen component.
+ * 
+ * @param onClose - Function to close the admin login modal.
+ * @returns JSX.Element
+ */
+
 interface AdminProps {
     onClose: () => void;
 }

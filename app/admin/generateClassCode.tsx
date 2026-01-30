@@ -4,6 +4,12 @@ import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 
+/**
+ * Generate Class Code screen component.
+ * 
+ * @returns JSX.Element
+ */
+
 export default function GenerateClassCode() {
     const theme = useThemeColor();
   return (
