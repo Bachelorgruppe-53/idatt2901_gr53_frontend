@@ -1,11 +1,46 @@
+import axios from 'axios';
 import React, { useState } from 'react';
-import { Modal, View, Text, Button, StyleSheet, Pressable, TextInput } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Colors } from '../constants/Colors';
+import { useThemeColor } from '../hooks/useThemeColor';
 
 interface JoinClassModalProps {
   onClose: () => void;
 }
 
 const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
+  const [classCode, setClassCode] = useState('');
+  const [error, setError] = useState('');
+  const theme = useThemeColor();
+
+  const validateAndSubmit = () => {
+    // Clear previous error
+    setError('');
+
+    // Validation: Check if empty
+    if (!classCode.trim()) {
+      setError('Klassekode kan ikke være tom');
+      return;
+    }
+
+    // Validation: Check length (example: must be 6 characters)
+    if (classCode.length != 6) {
+      setError('Klassekode må være 6 tegn');
+      return;
+    }
+
+    // Validation: Check if alphanumeric only (example)
+    if (!/^[a-zA-Z0-9]+$/.test(classCode)) {
+      setError('Klassekode kan bare inneholde bokstaver og tall');
+      return;
+    }
+
+    // If all validations pass
+    axios.post('https://localhost:8080/class/join', { code: classCode })
+    // TODO: Send to A    PI or handle joining class
+    onClose();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.centeredView}>
@@ -15,8 +50,15 @@ const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
           <TextInput
             style={styles.input}
             placeholder="Klassekode"
+            value={classCode}
+            onChangeText={(text) => {
+              setClassCode(text);
+              setError(''); // Clear error when user types
+            }}
           />
-          <Button title="Lukk" onPress={onClose} />
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          <Pressable style={[styles.button, { backgroundColor: theme.button }]} onPress={validateAndSubmit}><Text style={styles.buttonText}>Bli med</Text></Pressable> 
+          <Pressable style={[styles.button, { backgroundColor: Colors.brand.red }]} onPress={onClose}><Text style={styles.buttonText}>Lukk</Text></Pressable>
         </View>
       </View>
     </View>
@@ -72,6 +114,23 @@ const styles = StyleSheet.create({
     width: 200,
     borderRadius: 8
   },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  button: {
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 10, 
+    width: 150,   
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  }
 });
 
 export default JoinClassModal;
