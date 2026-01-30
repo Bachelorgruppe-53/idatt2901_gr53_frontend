@@ -13,7 +13,7 @@ export default function Admin({ onClose }: AdminProps) {
     const theme = useThemeColor();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Text>Admin Logg in side kommer her</Text>
       <Pressable style={[ styles.button, { backgroundColor: theme.button }]}
         onPress={() => {router.push("/admin/dashboard"); onClose();}}>
