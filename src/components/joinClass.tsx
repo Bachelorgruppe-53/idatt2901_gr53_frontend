@@ -4,6 +4,13 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Colors } from '../constants/Colors';
 import { useThemeColor } from '../hooks/useThemeColor';
 
+/**
+ * This component renders a modal that allows users to join a class by entering a class code.
+ * It includes input validation and error handling.
+ * 
+ * @returns JSX.Element
+ */
+
 interface JoinClassModalProps {
   onClose: () => void;
 }
@@ -29,7 +36,7 @@ const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
       return;
     }
 
-    // Validation: Check if alphanumeric only (example)
+    // Validation: Check if alphanumeric only
     if (!/^[a-zA-Z0-9]+$/.test(classCode)) {
       setError('Klassekode kan bare inneholde bokstaver og tall');
       return;
@@ -37,7 +44,16 @@ const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
 
     // If all validations pass
     axios.post('https://localhost:8080/class/join', { code: classCode })
-    // TODO: Send to A    PI or handle joining class
+    // TODO: send info om bruker også
+      .then(response => {
+        // Handle success (e.g., show success message, update UI)
+        alert('Du har blitt med i klassen!');
+        onClose();
+      })
+      .catch(error => {
+        // Handle error (e.g., show error message)
+        setError('Feil ved tilkobling til serveren. Vennligst prøv igjen.');
+      });
     onClose();
   };
 
@@ -75,7 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adds a backdrop overlay
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
     width: '100%',
     height: '100%',
   },
