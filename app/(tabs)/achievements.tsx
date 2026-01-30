@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 
@@ -58,7 +58,8 @@ const styles = StyleSheet.create({
   segmentedControl: {
     height: 45,
     overflow: "hidden",
-    marginBottom: 50,
+    marginBottom: Platform.OS === 'ios' ? 80 : 10,
+    borderRadius: Platform.OS === 'ios' ? 20 : 8,
   },
   segmentText: {
     fontSize: 16,
