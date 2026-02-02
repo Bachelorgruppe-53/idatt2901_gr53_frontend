@@ -16,6 +16,7 @@ import {
     TextInput,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import PasswordInput from "./passwordInput";
 
 /**
  * Component for admin login screen.
@@ -74,16 +75,12 @@ const AdminLogin = () => {
             />
 
             <Text style={[styles.label, { color: theme.text }]}>Password</Text>
-            <TextInput
-              style={[
-                styles.input,
-                { color: theme.text, borderColor: theme.text },
-              ]}
-              onChangeText={setPassword}
+
+            <PasswordInput
               value={password}
+              onChangeText={setPassword}
               placeholder="Enter password"
-              secureTextEntry
-              autoCapitalize="none"
+              testID="password-input"
             />
 
             <Pressable
