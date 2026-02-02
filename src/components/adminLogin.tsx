@@ -1,5 +1,4 @@
 import { loginAdmin } from "@/services/authService";
-import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -16,6 +15,8 @@ import {
     TextInput,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
+import { useThemeColor } from "../hooks/useThemeColor";
 import PasswordInput from "./passwordInput";
 
 /**
@@ -28,22 +29,20 @@ const AdminLogin = () => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
 
+  const { setAuthenticated } = useAuth();
+
   const router = useRouter();
-
-  let errorMessage = "";
-
   const theme = useThemeColor();
+  let errorMessage: string | null = null;
 
   const handleLogin = async (username: string, password: string) => {
     try {
       const response = await loginAdmin(username, password);
-      // Handle successful login, e.g., navigate to admin dashboard
       console.log("Login successful:", response);
-      router.push("/settings/admin/dashboard");
+      setAuthenticated(true);
+      router.replace("/settings/admin/dashboard");
     } catch (error) {
-      // Handle login error, e.g., show error message
       console.error("Login failed:", error);
-      // Set error message state here
       setErrorMessage("Login failed. Please check your credentials.");
     }
   };
