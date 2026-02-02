@@ -1,4 +1,6 @@
+import { logoutAdmin } from "@/services/authService";
 import { Colors } from "@/src/constants/Colors";
+import { useAuth } from "@/src/context/AuthContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -12,12 +14,17 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function AdminDashboard() {
   const theme = useThemeColor();
+  const { setAuthenticated } = useAuth();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Pressable
         style={[styles.logoutButton, { backgroundColor: Colors.brand.red }]}
-        onPress={() => router.back("/settings")}
+        onPress={async () => {
+          await logoutAdmin();
+          setAuthenticated(false);
+          router.back();
+        }}
       >
         <Text style={{ color: Colors.brand.white }}>Logg ut</Text>
       </Pressable>

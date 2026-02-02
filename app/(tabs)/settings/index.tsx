@@ -1,9 +1,9 @@
 import Admin from "@/app/admin/adminLogin";
+import AdminButton from "@/src/components/adminButton";
 import { Colors } from "@/src/constants/Colors";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import React from "react";
 import {
   Image,
@@ -28,12 +28,6 @@ export default function SettingsScreen() {
   const [modalVisible, setModalVisible] = React.useState(false);
 
   const { isDarkMode, toggleTheme } = useTheme();
-  const openAdmin = () => {
-    // Logic to navigate to Admin screen
-    // setModalVisible(true);
-    router.push("/settings/admin/login");
-  };
-  const router = useRouter();
 
   const openURL = async (url: string) => {
     // Check if the device supports the URL
@@ -86,20 +80,7 @@ export default function SettingsScreen() {
             Endre språk
           </Text>
         </Pressable>
-        <Pressable
-          style={[styles.gridItem, { backgroundColor: theme.button }]}
-          onPress={() => openAdmin()}
-        >
-          <MaterialIcons
-            name="admin-panel-settings"
-            size={24}
-            color={theme.buttontext}
-          />
-          <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-            {" "}
-            Admin login
-          </Text>
-        </Pressable>
+        <AdminButton />
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
           onPress={() => alert("edit profil")}
