@@ -17,7 +17,7 @@ export default function AdminDashboard() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Pressable
         style={[styles.logoutButton, { backgroundColor: Colors.brand.red }]}
-        onPress={() => router.back("/settings")}
+        onPress={() => router.back()}
       >
         <Text style={{ color: Colors.brand.white }}>Logg ut</Text>
       </Pressable>

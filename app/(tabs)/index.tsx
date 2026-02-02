@@ -6,6 +6,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
+import JoinClassModal from "@/src/components/joinClass";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -21,6 +22,7 @@ export default function Index() {
   const theme = useThemeColor();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
   const [isScanning, setIsScanning] = useState(false);
+  const [showJoinClass, setShowJoinClass] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [name, setName] = useState<string>("");
 
@@ -53,6 +55,12 @@ export default function Index() {
     );
   }
 
+  if (showJoinClass) {
+    return (
+      <JoinClassModal onClose={() => setShowJoinClass(false)} />
+    );
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Text style={[styles.title, { color: theme.text }]}>
@@ -81,25 +89,15 @@ export default function Index() {
           isReady ? alert("midlertidig alert - karrieretesten!") : null
         }
         disabled={!isReady}
-      >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          Ta karrieretesten
-        </Text>
+        >
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Ta karrieretesten</Text>
       </Pressable>
       <Pressable
-        style={[
-          styles.button,
-          !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
-        ]}
-        onPress={() =>
-          isReady ? alert("midlertidig alert - klasse knapp!") : null
-        }
+        style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
+        onPress={() => setShowJoinClass(true)}
         disabled={!isReady}
-      >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          Klasseoversikt
-        </Text>
+        >
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Bli med i en klasse</Text>
       </Pressable>
       <Pressable
         style={[
