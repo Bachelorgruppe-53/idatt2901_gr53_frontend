@@ -5,30 +5,37 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
 
 /**
  * Admin login screen component.
- * 
+ *
  * @param onClose - Function to close the admin login modal.
  * @returns JSX.Element
  */
 
 interface AdminProps {
-    onClose: () => void;
+  onClose: () => void;
 }
 // TODO: implement real admin login functionality
 // TODO: legge inn admin-breadcrumbs?
 
 export default function Admin({ onClose }: AdminProps) {
-    const theme = useThemeColor();
+  const theme = useThemeColor();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Text>Admin Logg in side kommer her</Text>
-      <Pressable style={[ styles.button, { backgroundColor: theme.button }]}
-        onPress={() => {router.push("/admin/dashboard"); onClose();}}>
-        <Text style={[ {color: theme.buttontext }]}>Logg inn</Text>
+      <Pressable
+        style={[styles.button, { backgroundColor: theme.button }]}
+        onPress={() => {
+          router.push("/admin/dashboard");
+          onClose();
+        }}
+      >
+        <Text style={[{ color: theme.buttontext }]}>Logg inn</Text>
       </Pressable>
-      <Pressable style={[ styles.button, { backgroundColor: Colors.brand.red }]}
-        onPress={onClose}>
-          <Text style={[ {color: theme.buttontext }]}>Lukk</Text>
+      <Pressable
+        style={[styles.button, { backgroundColor: Colors.brand.red }]}
+        onPress={onClose}
+      >
+        <Text style={[{ color: theme.buttontext }]}>Lukk</Text>
       </Pressable>
     </View>
   );
@@ -49,5 +56,4 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: "80%",
   },
-
 });

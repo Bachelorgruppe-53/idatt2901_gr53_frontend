@@ -5,7 +5,15 @@ import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  Linking,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 /**
  * this page allows the user to change settings such as theme mode and language.
@@ -26,6 +34,19 @@ export default function SettingsScreen() {
     router.push("/settings/admin/login");
   };
   const router = useRouter();
+
+  const openURL = async (url: string) => {
+    // Check if the device supports the URL
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      // Open the URL in the device's default browser
+      await Linking.openURL(url);
+    } else {
+      // Handle cases where the URL cannot be opened
+      alert(`Don't know how to open this URL: ${url}`);
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -108,7 +129,7 @@ export default function SettingsScreen() {
 
       <Pressable
         style={[styles.button, { backgroundColor: theme.button }]}
-        onPress={() => alert("tilbakemelding")}
+        onPress={() => openURL("https://forms.gle/fRM6GnwfrvnoytVe6")}
       >
         <MaterialIcons name="feedback" size={24} color={theme.buttontext} />
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>
