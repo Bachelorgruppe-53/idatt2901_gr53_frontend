@@ -1,4 +1,4 @@
-import { loginAdmin } from "@/services/loginService";
+import { loginAdmin } from "@/services/authService";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
