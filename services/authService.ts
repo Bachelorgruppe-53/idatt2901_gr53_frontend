@@ -101,7 +101,6 @@ export const loginAdmin = async (username: string, password: string) => {
  */
 export const logoutAdmin = async (): Promise<void> => {
   try {
-    await authApi.post("/logout");
     await clearTokens();
     console.log("Logout successful");
   } catch (error) {
