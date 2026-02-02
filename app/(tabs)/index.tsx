@@ -1,18 +1,18 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import axios from "axios";
 import { useCameraPermissions } from "expo-camera";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
 import JoinClassModal from "@/src/components/joinClass";
 
-
 /**
  * This page is the main landing page when the user opens the app.
  * It displays a welcome message, user profile image, and buttons for
  * taking a career test, viewing class overview, and scanning QR codes.
- * 
+ *
  * @returns JSX.Element
  */
 
@@ -24,6 +24,21 @@ export default function Index() {
   const [isScanning, setIsScanning] = useState(false);
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
+  const [name, setName] = useState<string>("");
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/test`);
+      setName(response.data?.name ?? String(response.data ?? ""));
+      console.log("Data fetched successfully");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleScan = (data: string) => {
     setIsScanning(false);
@@ -48,10 +63,14 @@ export default function Index() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>St. Olavs hospital</Text>
+      <Text style={[styles.title, { color: theme.text }]}>
+        St. Olavs hospital
+      </Text>
       <View style={styles.row}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={[styles.favourite, { color: theme.text }]}>Favorittyrke</Text>
+        <Text style={[styles.favourite, { color: theme.text }]}>
+          Favorittyrke
+        </Text>
       </View>
       <View style={styles.imageWrapper}>
         <Image
@@ -59,9 +78,13 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[styles.name, { color: theme.text }]}> Hei, Ola Normann!</Text>
+      <Text style={[styles.name, { color: theme.text }]}> Hei, {name}!</Text>
       <Pressable
-        style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
+        style={[
+          styles.button,
+          !isReady && styles.buttonDisabled,
+          { backgroundColor: theme.button },
+        ]}
         onPress={() =>
           isReady ? alert("midlertidig alert - karrieretesten!") : null
         }
@@ -77,7 +100,11 @@ export default function Index() {
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>Bli med i en klasse</Text>
       </Pressable>
       <Pressable
-        style={[styles.buttonRound, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
+        style={[
+          styles.buttonRound,
+          !isReady && styles.buttonDisabled,
+          { backgroundColor: theme.button },
+        ]}
         onPress={() => setIsScanning(true)}
         disabled={!isReady}
       >
