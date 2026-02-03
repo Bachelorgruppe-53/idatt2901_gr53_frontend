@@ -15,7 +15,7 @@ export default function GenerateClassCode() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
         <Pressable style={styles.backButton}
-            onPress={() => router.back()}>
+            onPress={() => router.back("/admin/dashboard")}>
             <MaterialCommunityIcons name="arrow-left" size={30} color={theme.text} />
         </Pressable>
         <View style={styles.header}>
