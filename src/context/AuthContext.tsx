@@ -1,4 +1,4 @@
-import { getToken } from "@/utils/secureStorage";
+import { getToken } from "@/services/utils/secureStorage";
 import React, {
   createContext,
   useCallback,
