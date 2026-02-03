@@ -27,7 +27,7 @@ export default function Index() {
   const [permission, requestPermission] = useCameraPermissions();
   const [name, setName] = useState<string>("");
 
-  const { t } = useTranslation(["common", "home"]);
+  const { t } = useTranslation("home");
 
   const fetchData = async () => {
     try {
@@ -69,7 +69,7 @@ export default function Index() {
       <View style={styles.row}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
         <Text style={[styles.favourite, { color: theme.text }]}>
-          {t("favouriteCareer")}
+          {t("favoriteCareer")}
         </Text>
       </View>
       <View style={styles.imageWrapper}>
@@ -91,7 +91,7 @@ export default function Index() {
         disabled={!isReady}
       >
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          Ta karrieretesten
+          {t("takeTest")}
         </Text>
       </Pressable>
       <Pressable
@@ -104,7 +104,7 @@ export default function Index() {
         disabled={!isReady}
       >
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          Bli med i en klasse
+          {t("joinClass")}
         </Text>
       </Pressable>
       <Pressable

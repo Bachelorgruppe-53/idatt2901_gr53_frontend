@@ -1,10 +1,12 @@
 {
   "darkMode": "Dark Mode",
+  "lightMode": "Light Mode",
   "changeLanguage": "Change Language",
   "editProfile": "Edit Profile",
   "admin": "Admin Panel",
   "aboutUs": "About us",
   "aboutUsContent": "This is a prototype of an application developed by students at NTNU for St. Olavs hospital in Trondheim. The app's main purpose is to help pupils discover and explore different carreer oppurtunities within the health sector through interactive functions such as career tests and QR-code scanning.",
   "feedback": "Give us some feedback",
-  "dashboard": "Dashboard"
+  "dashboard": "Dashboard",
+  "language": "Language"
 }

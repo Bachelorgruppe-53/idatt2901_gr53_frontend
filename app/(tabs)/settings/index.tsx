@@ -1,5 +1,5 @@
-import Admin from "@/app/admin/adminLogin";
 import AdminButton from "@/src/components/adminButton";
+import ChangeLanguageButton from "@/src/components/changeLanguageButton";
 import { Colors } from "@/src/constants/Colors";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 import {
   Image,
   Linking,
-  Modal,
   Pressable,
   StyleSheet,
   Text,
@@ -26,7 +25,6 @@ import {
 
 export default function SettingsScreen() {
   const theme = useThemeColor();
-  const [modalVisible, setModalVisible] = React.useState(false);
 
   const { t } = useTranslation("settings");
 
@@ -47,16 +45,6 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <Admin onClose={() => setModalVisible(false)} />
-      </Modal>
       {/* Settings options in a grid layout */}
       <View style={styles.grid}>
         <Pressable
@@ -73,16 +61,7 @@ export default function SettingsScreen() {
             {isDarkMode ? t("lightMode") : t("darkMode")}
           </Text>
         </Pressable>
-        <Pressable
-          style={[styles.gridItem, { backgroundColor: theme.button }]}
-          onPress={() => alert("språk")}
-        >
-          <MaterialIcons name="language" size={24} color={theme.buttontext} />
-          <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-            {" "}
-            {t("changeLanguage")}
-          </Text>
-        </Pressable>
+        <ChangeLanguageButton />
         <AdminButton />
         <Pressable
           style={[styles.gridItem, { backgroundColor: theme.button }]}
