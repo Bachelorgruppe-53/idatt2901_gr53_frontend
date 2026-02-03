@@ -1,6 +1,13 @@
 import { useCameraPermissions } from "expo-camera";
 import { useState, useCallback } from "react";
 
+/**
+ * Custom hook to manage QR code scanning functionality.
+ * It handles camera permissions and scanning state.
+ * 
+ * @returns An object containing scanning state and control functions.
+ */
+
 interface QRScannerResult {
     isScanning: boolean;
     startScanning: () => Promise<boolean>;

@@ -4,6 +4,11 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Colors } from "../constants/Colors";
 
+/**
+ * QRScanner component that uses the device camera to scan QR codes.
+ * @returns JSX.Element
+ */
+
 interface QRScannerProps {
   onScan: (data: string) => void;
   onClose: () => void;
