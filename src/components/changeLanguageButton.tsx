@@ -1,45 +1,32 @@
-import { useAuth } from "@/src/context/AuthContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text } from "react-native";
 
 /**
- * Admin button component for accessing admin login/dashboard.
- * Routes to admin dashboard if authenticated, otherwise to login screen.
+ * Change language button component for accessing language settings.
  * Matches the grid button styling in settings screen.
  *
  * @returns JSX.Element
  */
-export default function AdminButton() {
+export default function ChangeLanguageButton() {
   const theme = useThemeColor();
-  const router = useRouter();
   const { t } = useTranslation("settings");
 
-  const { isAuthenticated } = useAuth();
-
-  const handleAdminPress = () => {
-    if (isAuthenticated) {
-      router.push("/settings/admin/dashboard");
-    } else {
-      router.push("/settings/admin/login");
-    }
+  const handleChangeLanguagePress = () => {
+    router.push("/settings/lang/languageSelection");
   };
 
   return (
     <Pressable
-      onPress={handleAdminPress}
+      onPress={handleChangeLanguagePress}
       style={[styles.gridItem, { backgroundColor: theme.button }]}
-      testID="admin-button"
+      testID="change-language-button"
     >
-      <MaterialIcons
-        name="admin-panel-settings"
-        size={24}
-        color={theme.buttontext}
-      />
+      <MaterialIcons name="language" size={24} color={theme.buttontext} />
       <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-        {isAuthenticated ? t("dashboard") : t("admin")}
+        {t("language")}
       </Text>
     </Pressable>
   );

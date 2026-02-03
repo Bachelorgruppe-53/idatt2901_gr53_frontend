@@ -1,6 +1,7 @@
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Pressable, TextInput } from "react-native-gesture-handler";
 
@@ -11,15 +12,10 @@ interface PasswordInputProps {
   testID?: string;
 }
 
-const PasswordInput = ({
-  value,
-  onChangeText,
-  placeholder = "Enter password",
-  testID,
-}: PasswordInputProps) => {
+const PasswordInput = ({ value, onChangeText, testID }: PasswordInputProps) => {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const theme = useThemeColor();
-
+  const { t } = useTranslation("auth");
   const togglePasswordVisibility = () => {
     setSecureTextEntry(!secureTextEntry);
   };
@@ -35,7 +31,7 @@ const PasswordInput = ({
         style={[styles.input, { color: theme.text }]}
         onChangeText={onChangeText}
         value={value}
-        placeholder={placeholder}
+        placeholder={t("enterPassword")}
         placeholderTextColor={theme.placeholder}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
@@ -53,7 +49,7 @@ const PasswordInput = ({
           size={24}
           color={theme.text}
           accessibilityLabel={
-            secureTextEntry ? "Show password" : "Hide password"
+            secureTextEntry ? t("showPassword") : t("hidePassword")
           }
         />
       </Pressable>
