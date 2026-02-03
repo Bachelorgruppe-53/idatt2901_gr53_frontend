@@ -10,7 +10,7 @@ import { getToken } from "@/services/utils/secureStorage";
 /**
  * Generate Class Code screen component.
  * 
- * @returns JSX.Element
+ * @returns JSX.Element 
  */
 
 export default function GenerateClassCode() {
@@ -35,7 +35,7 @@ export default function GenerateClassCode() {
 
             if (!token) {
                 Alert.alert("Feil", "Ugyldig eller manglende autentisering. Vennligst logg inn på nytt.");
-                setIsLoading(false); //sende rett tilbake til login-skjerm?
+                router.replace("./adminLogin");
                 return;
             }
 
