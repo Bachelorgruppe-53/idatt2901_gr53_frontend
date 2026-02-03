@@ -1,9 +1,33 @@
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import CountryFlag from "react-native-country-flag";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+// Custom flag component that supports both ISO codes and custom SVG
+const FlagDisplay = ({
+  isoCode,
+  customFlag,
+}: {
+  isoCode?: string;
+  customFlag?: any;
+}) => {
+  if (customFlag) {
+    return (
+      <Image
+        source={customFlag}
+        style={styles.customFlag}
+        contentFit="contain"
+      />
+    );
+  }
+  if (isoCode) {
+    return <CountryFlag isoCode={isoCode} size={24} />;
+  }
+  return null;
+};
 
 export default function LanguageSelectionScreen() {
   const theme = useThemeColor();
@@ -14,6 +38,11 @@ export default function LanguageSelectionScreen() {
     { code: "no-NB", name: "Bokmål", isoCode: "NO" },
     { code: "no-NN", name: "Nynorsk", isoCode: "NO" },
     { code: "en-US", name: "English", isoCode: "GB" },
+    {
+      code: "sma",
+      name: "Åarjelsaemien (WIP)",
+      customFlag: require("@/assets/images/flags/Sami_flag.svg"), // Adjust path to your SVG location
+    },
   ];
 
   const handleLanguageChange = async (languageCode: string) => {
@@ -37,6 +66,7 @@ export default function LanguageSelectionScreen() {
         }}
         contentInsetAdjustmentBehavior="automatic"
       >
+        <Text style={styles.header}>{t("changeLanguage")}</Text>
         <View style={styles.languageList}>
           {languages.map((lang) => {
             const isSelected = i18n.language === lang.code;
@@ -56,14 +86,19 @@ export default function LanguageSelectionScreen() {
                 testID={`language-${lang.code}`}
               >
                 <View style={styles.flagContainer}>
-                  <CountryFlag isoCode={lang.isoCode} size={16} />
+                  <FlagDisplay
+                    isoCode={"isoCode" in lang ? lang.isoCode : undefined}
+                    customFlag={
+                      "customFlag" in lang ? lang.customFlag : undefined
+                    }
+                  />
                 </View>
                 <Text
                   style={[
                     styles.languageName,
                     {
                       color: theme.text,
-                      fontWeight: isSelected ? "800" : "600",
+                      fontWeight: isSelected ? "700" : "600",
                     },
                   ]}
                 >
@@ -98,9 +133,20 @@ const styles = StyleSheet.create({
   },
   flagContainer: {
     width: 40,
+    height: 24,
     alignItems: "center",
+    justifyContent: "center",
+  },
+  customFlag: {
+    width: 32,
+    height: 24,
   },
   languageName: {
     fontSize: 18,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
 });
