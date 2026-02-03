@@ -1,13 +1,11 @@
+import JoinClassModal from "@/src/components/joinClass";
+import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import axios from "axios";
-import { useCameraPermissions } from "expo-camera";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
-import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
-import JoinClassModal from "@/src/components/joinClass";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -26,19 +24,19 @@ export default function Index() {
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [name, setName] = useState<string>("");
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8080/api/test`);
-      setName(response.data?.name ?? String(response.data ?? ""));
-      console.log("Data fetched successfully");
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:8080/api/test`);
+  //     setName(response.data?.name ?? String(response.data ?? ""));
+  //     console.log("Data fetched successfully");
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   const handleScan = (data: string) => {
     stopScanning();
@@ -79,7 +77,7 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[styles.name, { color: theme.text }]}> Hei, {name}!</Text>
+      <Text style={[styles.name, { color: theme.text }]}> Hei, du!</Text>
 
       <Pressable
         style={[
