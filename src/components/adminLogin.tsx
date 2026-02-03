@@ -70,6 +70,7 @@ const AdminLogin = () => {
               onChangeText={setUsername}
               value={username}
               placeholder="Enter username"
+              placeholderTextColor={theme.placeholder}
               autoCapitalize="none"
             />
 
