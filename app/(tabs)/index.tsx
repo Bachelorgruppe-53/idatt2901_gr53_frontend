@@ -3,6 +3,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import axios from "axios";
 import { useCameraPermissions } from "expo-camera";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
@@ -25,6 +26,8 @@ export default function Index() {
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [name, setName] = useState<string>("");
+
+  const { t } = useTranslation(["common", "home"]);
 
   const fetchData = async () => {
     try {
@@ -66,7 +69,7 @@ export default function Index() {
       <View style={styles.row}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
         <Text style={[styles.favourite, { color: theme.text }]}>
-          Favorittyrke
+          {t("favouriteCareer")}
         </Text>
       </View>
       <View style={styles.imageWrapper}>

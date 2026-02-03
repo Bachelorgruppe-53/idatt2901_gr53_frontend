@@ -2,6 +2,7 @@ import { useAuth } from "@/src/context/AuthContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text } from "react-native";
 
 /**
@@ -14,6 +15,7 @@ import { Pressable, StyleSheet, Text } from "react-native";
 export default function AdminButton() {
   const theme = useThemeColor();
   const router = useRouter();
+  const { t } = useTranslation("settings");
 
   const { isAuthenticated } = useAuth();
 
@@ -37,7 +39,7 @@ export default function AdminButton() {
         color={theme.buttontext}
       />
       <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-        {isAuthenticated ? "Dashboard" : "Admin"}
+        {isAuthenticated ? t("dashboard") : t("admin")}
       </Text>
     </Pressable>
   );

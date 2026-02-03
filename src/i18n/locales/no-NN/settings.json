@@ -1,0 +1,10 @@
+{
+  "darkMode": "Mørkmodus",
+  "changeLanguage": "Endre språk",
+  "editProfile": "Rediger profil",
+  "admin": "Adminpanel",
+  "aboutUs": "Om oss",
+  "aboutUsContent": "Dette er ein prototype av ein app utvikla av studenter ved NTNU for St. Olavs hospital i Trondheim. Appen har som formål å hjelpe elevar med å oppdage og utforske ulike yrkjer innan helsesektoren gjennom interaktive funksjonar som karrieretestar og QR-kodeskanning.",
+  "feedback": "Gi oss tilbakemelding",
+  "dashboard": "Dashbord"
+}

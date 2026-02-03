@@ -5,6 +5,7 @@ import { useTheme } from "@/src/context/ThemeContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Image,
   Linking,
@@ -26,6 +27,8 @@ import {
 export default function SettingsScreen() {
   const theme = useThemeColor();
   const [modalVisible, setModalVisible] = React.useState(false);
+
+  const { t } = useTranslation("settings");
 
   const { isDarkMode, toggleTheme } = useTheme();
 
@@ -67,7 +70,7 @@ export default function SettingsScreen() {
           />
           <Text style={[styles.buttonText, { color: theme.buttontext }]}>
             {" "}
-            {isDarkMode ? "Lys modus" : "Mørk modus"}
+            {isDarkMode ? t("lightMode") : t("darkMode")}
           </Text>
         </Pressable>
         <Pressable
@@ -77,7 +80,7 @@ export default function SettingsScreen() {
           <MaterialIcons name="language" size={24} color={theme.buttontext} />
           <Text style={[styles.buttonText, { color: theme.buttontext }]}>
             {" "}
-            Endre språk
+            {t("changeLanguage")}
           </Text>
         </Pressable>
         <AdminButton />
@@ -88,7 +91,7 @@ export default function SettingsScreen() {
           <MaterialIcons name="person" size={24} color={theme.buttontext} />
           <Text style={[styles.buttonText, { color: theme.buttontext }]}>
             {" "}
-            Rediger profil
+            {t("editProfile")}
           </Text>
         </Pressable>
       </View>
@@ -100,12 +103,9 @@ export default function SettingsScreen() {
         />
       </View>
 
-      <Text style={[styles.header, { color: theme.text }]}>Om oss</Text>
+      <Text style={[styles.header, { color: theme.text }]}>{t("aboutUs")}</Text>
       <Text style={[styles.paragraph, { color: theme.text }]}>
-        Dette er en prototype av en app utviklet av studenter fra NTNU for St.
-        Olavs hospital i Trondheim. Appen har som mål å hjelpe elever med å
-        oppdage og utforske ulike yrker innen helsesektoren gjennom interaktive
-        funksjoner som karrieretester og QR-kodeskanning.
+        {t("aboutUsContent")}
       </Text>
 
       <Pressable
@@ -115,7 +115,7 @@ export default function SettingsScreen() {
         <MaterialIcons name="feedback" size={24} color={theme.buttontext} />
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>
           {" "}
-          Gi oss tilbakemelding
+          {t("feedback")}
         </Text>
       </Pressable>
     </View>
