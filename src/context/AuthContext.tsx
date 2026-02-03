@@ -1,10 +1,10 @@
-import { getToken } from "@/app/utils/secureStorage";
+import { getToken } from "@/services/utils/secureStorage";
 import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 
 type AuthContextValue = {
