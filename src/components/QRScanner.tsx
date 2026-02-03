@@ -10,11 +10,15 @@ interface QRScannerProps {
 }
 
 export function QRScanner({ onScan, onClose }: QRScannerProps) {
+  const handleBarcodeScanned = ({ data }: { data: string }) => {
+    onScan(data);
+  }
+
   return (
-    <View style={StyleSheet.absoluteFillObject}>
+    <View style={StyleSheet.absoluteFill}>
       <CameraView
-        style={StyleSheet.absoluteFillObject}
-        onBarcodeScanned={({ data }) => onScan(data)}
+        style={StyleSheet.absoluteFill}
+        onBarcodeScanned={handleBarcodeScanned}
       >
         {/* Et enkelt sikte i midten */}
         <View style={styles.overlay}>
@@ -30,16 +34,32 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         <Pressable style={styles.closeButton} onPress={onClose}>
           <MaterialIcons name="close" size={30} color="white" />
         </Pressable>
+    
       </CameraView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: Colors.brand.black + '20', justifyContent: 'center' },
-  middleContainer: { flexDirection: 'row', height: 200 },
-  focusedContainer: { width: 200, borderWidth: 2, borderColor: 'white', backgroundColor: 'transparent' },
-  unfocusedContainer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
+  overlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: Colors.brand.black + '20', 
+    justifyContent: 'center' 
+  },
+  middleContainer: {
+    flexDirection: 'row', 
+    height: 200 
+  },
+  focusedContainer: { 
+    width: 200, 
+    borderWidth: 2, 
+    borderColor: 'white', 
+    backgroundColor: 'transparent' 
+  },
+  unfocusedContainer: { 
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)' 
+  },
   closeButton: {
     position: 'absolute',
     top: 50,
