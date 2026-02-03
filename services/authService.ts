@@ -68,7 +68,6 @@ authApi.interceptors.request.use(
  * @returns The response data from the login request.
  */
 export const loginAdmin = async (username: string, password: string) => {
-  console.log("Attempting login with:", { username, password });
   try {
     const response = await authApi.post("/login", {
       username,
@@ -77,12 +76,6 @@ export const loginAdmin = async (username: string, password: string) => {
 
     if (response.data.token) {
       await saveToken(response.data.token);
-    }
-
-    if (response.status === 200) {
-      console.log("Login successful:", response.data);
-    } else {
-      console.error("Login failed with status:", response.status);
     }
     return response.data;
   } catch (error) {
@@ -106,9 +99,7 @@ export const loginAdmin = async (username: string, password: string) => {
 export const logoutAdmin = async (): Promise<void> => {
   try {
     await clearTokens();
-    console.log("Logout successful");
   } catch (error) {
-    console.error("Logout failed:", error);
     await clearTokens();
     throw error;
   }

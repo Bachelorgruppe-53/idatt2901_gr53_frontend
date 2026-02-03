@@ -4,27 +4,31 @@ import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 interface AdminProps {
-    onClose: () => void;
+  onClose: () => void;
 }
 // TODO: implement real admin login functionality
 // TODO: legge inn admin-breadcrumbs?
 
 export default function Admin({ onClose }: AdminProps) {
-    const theme = useThemeColor();
+  const theme = useThemeColor();
 
   return (
     <View style={styles.container}>
       <Text>Admin Logg in side kommer her</Text>
-      <Pressable style={[ styles.button, { backgroundColor: theme.button }]}
+      <Pressable
+        style={[styles.button, { backgroundColor: theme.button }]}
         onPress={() => {
-          console.log("button pressed");
           router.push("./dashboard");
-          onClose();}}>
-        <Text style={[ {color: theme.buttontext }]}>Logg inn</Text>
+          onClose();
+        }}
+      >
+        <Text style={[{ color: theme.buttontext }]}>Logg inn</Text>
       </Pressable>
-      <Pressable style={[ styles.button, { backgroundColor: Colors.brand.red }]}
-        onPress={onClose}>
-          <Text style={[ {color: theme.buttontext }]}>Lukk</Text>
+      <Pressable
+        style={[styles.button, { backgroundColor: Colors.brand.red }]}
+        onPress={onClose}
+      >
+        <Text style={[{ color: theme.buttontext }]}>Lukk</Text>
       </Pressable>
     </View>
   );
@@ -45,5 +49,4 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: "80%",
   },
-
 });

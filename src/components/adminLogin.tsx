@@ -37,8 +37,7 @@ const AdminLogin = () => {
 
   const handleLogin = async (username: string, password: string) => {
     try {
-      const response = await loginAdmin(username, password);
-      console.log("Login successful:", response);
+      await loginAdmin(username, password);
       setAuthenticated(true);
       router.replace("/settings/admin/dashboard");
     } catch (error) {
