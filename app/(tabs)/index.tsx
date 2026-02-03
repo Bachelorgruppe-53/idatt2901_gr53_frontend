@@ -4,6 +4,7 @@ import { useCameraPermissions } from "expo-camera";
 import { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
+import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
 import JoinClassModal from "@/src/components/joinClass";
@@ -21,9 +22,8 @@ import JoinClassModal from "@/src/components/joinClass";
 export default function Index() {
   const theme = useThemeColor();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
-  const [isScanning, setIsScanning] = useState(false);
+  const { isScanning, startScanning, stopScanning, permissionError } = useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
-  const [permission, requestPermission] = useCameraPermissions();
   const [name, setName] = useState<string>("");
 
   const fetchData = async () => {
@@ -41,18 +41,19 @@ export default function Index() {
   }, []);
 
   const handleScan = (data: string) => {
-    setIsScanning(false);
+    stopScanning();
     alert(`Skannet data: ${data}`);
   };
 
-  if (isScanning) {
-    if (!permission?.granted) {
-      requestPermission();
-      return null;
+  const handleQRPress = async () => {
+    const started = await startScanning();
+    if (!started) {
+      alert("Kamera-tilgang nektet. Vennligst gi tillatelse i innstillingene.");
     }
-    return (
-      <QRScanner onScan={handleScan} onClose={() => setIsScanning(false)} />
-    );
+  };
+
+  if (isScanning) {
+    return <QRScanner onScan={handleScan} onClose={stopScanning} />;
   }
 
   if (showJoinClass) {
@@ -79,6 +80,7 @@ export default function Index() {
         />
       </View>
       <Text style={[styles.name, { color: theme.text }]}> Hei, {name}!</Text>
+
       <Pressable
         style={[
           styles.button,
@@ -92,6 +94,7 @@ export default function Index() {
         >
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>Ta karrieretesten</Text>
       </Pressable>
+
       <Pressable
         style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
         onPress={() => setShowJoinClass(true)}
@@ -99,13 +102,14 @@ export default function Index() {
         >
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>Bli med i en klasse</Text>
       </Pressable>
+
       <Pressable
         style={[
           styles.buttonRound,
           !isReady && styles.buttonDisabled,
           { backgroundColor: theme.button },
         ]}
-        onPress={() => setIsScanning(true)}
+        onPress={handleQRPress}
         disabled={!isReady}
       >
         <MaterialIcons

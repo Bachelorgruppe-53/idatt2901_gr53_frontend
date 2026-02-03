@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE, Camera } from 'react-native-maps';
 import { Colors } from '../../constants/Colors';
 import { useTheme } from '../../context/ThemeContext';
-import { useCameraPermissions } from "expo-camera";
 import { QRScanner } from '../QRScanner';
+import { useQRScanner } from '@/src/hooks/useQRScanner';
 import { locations } from './mapData';
 import { MapMarker } from './MapMarker';
 
@@ -25,15 +25,14 @@ interface MapProps {
 
 export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) => {
   const { isDarkMode } = useTheme();
-  const [isScanning, setIsScanning] = useState(false);
-  const [permission, requestPermission] = useCameraPermissions();
+  const { isScanning, startScanning, stopScanning } = useQRScanner();
   
   const mapRef = useRef<MapView>(null);
 
-  const handleScan = (data: string) => {
-    setIsScanning(false);
+  const handleScan = useCallback((data: string) => {
+    stopScanning();
     alert(`Skannet data: ${data}`);
-  };
+  }, [stopScanning]);
 
   const handleZoom = async (zoomIn: boolean) => {
     if (!mapRef.current) return;
@@ -49,12 +48,8 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
   };
 
   if (isScanning) {
-    if (!permission?.granted) {
-      requestPermission();
-      return null;
-    }
     return (
-      <QRScanner onScan={handleScan} onClose={() => setIsScanning(false)} />
+      <QRScanner onScan={handleScan} onClose={stopScanning} />
     );
   }
 
@@ -78,7 +73,7 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
           <MapMarker 
             key={loc.id} 
             location={loc} 
-            onScan={() => setIsScanning(true)} 
+            onScan={() => startScanning()} 
           />
         ))}   
       </MapView>     
