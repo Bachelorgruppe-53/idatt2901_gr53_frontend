@@ -8,8 +8,6 @@ import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } 
 import { getToken } from "@/services/utils/secureStorage";
 import * as Clipboard from "expo-clipboard";
 
-
-
 /**
  * Generate Class Code screen component.
  * 
@@ -34,6 +32,7 @@ export default function GenerateClassCode() {
         return "http://localhost:8080/";
       }
       return ""; // TODO: Set production URL here
+      // Todo: Isolate this function in a separate utility file for reuse?
     };
 
     const handleCopy = async () => {
@@ -129,6 +128,8 @@ export default function GenerateClassCode() {
           setIsLoading(false);
       }
   };
+
+  // Modal for displaying generated class code, copying to clipboard, etc.
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
