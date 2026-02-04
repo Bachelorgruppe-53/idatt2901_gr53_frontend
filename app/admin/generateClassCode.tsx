@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { getToken } from "@/services/utils/secureStorage";
 
 /**
@@ -18,6 +18,16 @@ export default function GenerateClassCode() {
     const [className, setClassName] = useState("");
     const [schoolName, setSchoolName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+
+    const getBaseURL = () => {
+      if (__DEV__) {
+        if (Platform.OS === "android") {
+          return "http://10.0.2.2:8080/";
+        }
+        return "http://localhost:8080/";
+      }
+      return ""; // TODO: Set production URL here
+    };
 
     const handleGenerateClassCode = async () => {
         if (!className.trim() || !schoolName.trim()) {
@@ -39,10 +49,10 @@ export default function GenerateClassCode() {
                 return;
             }
 
-            console.log("Sending request to:", "http://localhost:8080/admin/code"); // Debug log
+            console.log("Sending request to:", `${getBaseURL()}admin/code`); // Debug log
             console.log("Request body:", { className: className.trim(), schoolName: schoolName.trim() }); // Debug log
 
-            const response = await axios.post("http://localhost:8080/admin/code", 
+            const response = await axios.post(`${getBaseURL()}admin/code`, 
               {
                   className: className.trim(),
                   schoolName: schoolName.trim(),
