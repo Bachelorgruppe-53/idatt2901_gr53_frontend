@@ -2,10 +2,13 @@ import { Colors } from "@/src/constants/Colors";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
-import { router } from "expo-router";
+import { Color, router } from "expo-router";
 import { useState } from "react";
-import { Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { getToken } from "@/services/utils/secureStorage";
+import * as Clipboard from "expo-clipboard";
+
+
 
 /**
  * Generate Class Code screen component.
@@ -18,6 +21,10 @@ export default function GenerateClassCode() {
     const [className, setClassName] = useState("");
     const [schoolName, setSchoolName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [showCodeModal, setShowCodeModal] = useState(false);
+    const [generatedCode, setGeneratedCode] = useState("");
+
+
 
     const getBaseURL = () => {
       if (__DEV__) {
@@ -29,6 +36,11 @@ export default function GenerateClassCode() {
       return ""; // TODO: Set production URL here
     };
 
+    const handleCopy = async () => {
+        await Clipboard.setStringAsync(generatedCode);
+        Alert.alert("Kopiert", "Klassekoden er kopiert til utklippstavlen");
+      };
+    
     const handleGenerateClassCode = async () => {
         if (!className.trim() || !schoolName.trim()) {
             Alert.alert("Feil", "Vennligst fyll ut både klassenavn og skole.");
@@ -54,34 +66,26 @@ export default function GenerateClassCode() {
 
             const response = await axios.post(`${getBaseURL()}admin/code`, 
               {
-                  className: className.trim(),
-                  schoolName: schoolName.trim(),
+                className: className.trim(),
+                schoolName: schoolName.trim(),
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
                 },
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-
-                  },
-                }
+              }
             );
             const classCode = response.data;
             console.log("Success! Class code:", classCode); // Debug log
 
 
-            Alert.alert(
-              "Suksess",
-              `Klassekode generert: ${classCode}`,
-              [
-                { 
-                text: "OK",
-                onPress: () => router.back() 
-                }
-              ]
-            );
+            setGeneratedCode(`${classCode}`);
+            setShowCodeModal(true);
 
             setClassName("");
             setSchoolName("");
+
 
       } catch (error) {
           console.error("Full error:", error); // Debug log
@@ -159,8 +163,26 @@ export default function GenerateClassCode() {
             onPress={handleGenerateClassCode}
             disabled={isLoading}
         >
-            <Text style={{ color: theme.text }}>{isLoading ? "Genererer..." : "Generer Klassekode"}</Text>
-        </Pressable>  
+            <Text style={{ color: Colors.brand.white }}>{isLoading ? "Genererer..." : "Generer Klassekode"}</Text>
+        </Pressable>
+
+        <Modal transparent visible={showCodeModal} animationType="fade">
+          <View style={styles.modalBackdrop}>
+            <View style={[styles.modalCard, { backgroundColor: theme.background }]}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>Klassekode</Text>
+              <Text style={[styles.modalCode, { color: theme.text }]}>{generatedCode}</Text>
+              <View style={styles.modalActions}>
+                <Pressable style={[styles.modalButton, { backgroundColor: theme.button }]} onPress={handleCopy}>
+                  <Text style={{ color: theme.buttontext }}>Kopier</Text>
+                </Pressable>
+                <Pressable style={[styles.modalButton, { backgroundColor: Colors.brand.red }]} onPress={() => setShowCodeModal(false)}>
+                  <Text style={{ color: Colors.brand.white }}>Lukk</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
     </View>
   );
 }
@@ -215,5 +237,36 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: "80%",
     marginBottom: 20,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalCard: {
+    width: "80%",
+    padding: 20,
+    borderRadius: 12,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  modalCode: {
+    fontSize: 22,
+    fontWeight: "700",
+    letterSpacing: 1,
+    marginBottom: 16,
+  },
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
   },
 });
