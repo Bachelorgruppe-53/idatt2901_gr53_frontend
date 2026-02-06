@@ -1,7 +1,9 @@
 import JoinClassModal from "@/src/components/joinClass";
-import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useState } from "react";
+import axios from "axios";
+import { useCameraPermissions } from "expo-camera";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
@@ -23,6 +25,8 @@ export default function Index() {
   const { isScanning, startScanning, stopScanning, permissionError } = useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [name, setName] = useState<string>("");
+
+  const { t } = useTranslation("home");
 
   // const fetchData = async () => {
   //   try {
@@ -55,9 +59,7 @@ export default function Index() {
   }
 
   if (showJoinClass) {
-    return (
-      <JoinClassModal onClose={() => setShowJoinClass(false)} />
-    );
+    return <JoinClassModal onClose={() => setShowJoinClass(false)} />;
   }
 
   return (
@@ -68,7 +70,7 @@ export default function Index() {
       <View style={styles.row}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
         <Text style={[styles.favourite, { color: theme.text }]}>
-          Favorittyrke
+          {t("favoriteCareer")}
         </Text>
       </View>
       <View style={styles.imageWrapper}>
@@ -89,16 +91,24 @@ export default function Index() {
           isReady ? alert("midlertidig alert - karrieretesten!") : null
         }
         disabled={!isReady}
-        >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Ta karrieretesten</Text>
+      >
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+          {t("takeTest")}
+        </Text>
       </Pressable>
 
       <Pressable
-        style={[styles.button, !isReady && styles.buttonDisabled, { backgroundColor: theme.button }]}
+        style={[
+          styles.button,
+          !isReady && styles.buttonDisabled,
+          { backgroundColor: theme.button },
+        ]}
         onPress={() => setShowJoinClass(true)}
         disabled={!isReady}
-        >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>Bli med i en klasse</Text>
+      >
+        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+          {t("joinClass")}
+        </Text>
       </Pressable>
 
       <Pressable

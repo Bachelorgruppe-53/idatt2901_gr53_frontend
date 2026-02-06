@@ -1,6 +1,8 @@
 import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsLayout() {
+  const { t } = useTranslation("settings");
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -20,6 +22,15 @@ export default function SettingsLayout() {
           headerTransparent: true,
           headerBackButtonDisplayMode: "minimal",
           headerTitle: "",
+        }}
+      />
+      <Stack.Screen
+        name="lang/languageSelection"
+        options={{
+          headerBackTitle: "",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: t("language"),
         }}
       />
     </Stack>
