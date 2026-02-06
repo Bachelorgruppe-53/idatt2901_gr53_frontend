@@ -1,12 +1,11 @@
 import JoinClassModal from "@/src/components/joinClass";
+import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import axios from "axios";
-import { useCameraPermissions } from "expo-camera";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
-import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
 
@@ -23,7 +22,8 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
 export default function Index() {
   const theme = useThemeColor();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
-  const { isScanning, startScanning, stopScanning, permissionError } = useQRScanner();
+  const { isScanning, startScanning, stopScanning, permissionError } =
+    useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [name, setName] = useState<string>("");
 

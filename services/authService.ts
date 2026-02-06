@@ -75,7 +75,7 @@ export const loginAdmin = async (username: string, password: string) => {
     });
 
     if (response.data.token) {
-      await saveToken(response.data.token);
+      await saveToken(response.headers.token);
     }
     return response.data;
   } catch (error) {
