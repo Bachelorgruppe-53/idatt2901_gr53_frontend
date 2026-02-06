@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
-import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
 
@@ -29,18 +28,19 @@ export default function Index() {
 
   const { t } = useTranslation("home");
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8080/api/test`);
-      setName(response.data?.name ?? String(response.data ?? ""));
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:8080/api/test`);
+  //     setName(response.data?.name ?? String(response.data ?? ""));
+  //     console.log("Data fetched successfully");
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   const handleScan = (data: string) => {
     stopScanning();
@@ -79,7 +79,7 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[styles.name, { color: theme.text }]}> Hei, {name}!</Text>
+      <Text style={[styles.name, { color: theme.text }]}> Hei, du!</Text>
 
       <Pressable
         style={[
