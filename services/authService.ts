@@ -18,9 +18,9 @@ import { Platform } from "react-native";
 const getBaseURL = () => {
   if (__DEV__) {
     if (Platform.OS === "android") {
-      return "http://10.0.2.2:8080/admin";
+      return "http://10.0.2.2:8080/";
     }
-    return "http://localhost:8080/admin";
+    return "http://localhost:8080/";
   }
   return ""; // TODO: Set production URL here
 };
@@ -69,27 +69,49 @@ authApi.interceptors.request.use(
  */
 export const loginAdmin = async (username: string, password: string) => {
   try {
-    const response = await authApi.post("/login", {
+    const response = await authApi.post("/auth/login", {
       username,
       password,
     });
 
-    if (response.data.token) {
-      await saveToken(response.headers.token);
+    console.log("Login response status:", response.status);
+    console.log("Login response headers:", response.headers);
+
+    const authorizationHeader = response.headers.authorization;
+
+
+    if (authorizationHeader && authorizationHeader.startsWith("Bearer ")) {
+      const cleanToken = authorizationHeader.substring(7);
+
+      console.log("Token extracted successfully");
+      console.log(cleanToken)
+      await saveToken(cleanToken);
+      
+      return {
+        success: true,
+        message: response.data,
+      };
+    } else {
+      throw new Error("No authorization token in response headers");
     }
-    return response.data;
   } catch (error) {
     if (isAxiosError(error)) {
       console.error(
         "Axios error during login:",
         error.response?.data || error.message,
       );
+      throw new Error(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
     } else {
       console.error("Unexpected error during login:", error);
+      throw error;
     }
-    throw error;
   }
 };
+
+
+    
 
 /**
  * Logs out the currently authenticated admin user.
