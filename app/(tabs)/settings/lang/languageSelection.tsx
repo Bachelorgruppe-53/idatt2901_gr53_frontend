@@ -66,7 +66,9 @@ export default function LanguageSelectionScreen() {
         }}
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Text style={styles.header}>{t("changeLanguage")}</Text>
+        <Text style={[styles.header, { color: theme.text }]}>
+          {t("changeLanguage")}
+        </Text>
         <View style={styles.languageList}>
           {languages.map((lang) => {
             const isSelected = i18n.language === lang.code;
@@ -76,7 +78,7 @@ export default function LanguageSelectionScreen() {
                 style={[
                   styles.languageButton,
                   {
-                    borderColor: theme.text,
+                    borderColor: theme.border,
                     backgroundColor: isSelected
                       ? theme.backgroundSecondary
                       : "transparent",
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 4,
     borderWidth: 2,
     gap: 16,
   },
