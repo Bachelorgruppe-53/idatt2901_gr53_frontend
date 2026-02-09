@@ -27,6 +27,7 @@ export const Colors = {
     button: palette.darkBlue,
     buttontext: palette.white,
     placeholder: "#6C6C6C",
+    border: "#535353",
   },
   dark: {
     text: palette.white,
@@ -35,5 +36,6 @@ export const Colors = {
     button: palette.lightBlue,
     buttontext: palette.black,
     placeholder: "#AFAFAF",
+    border: "#8a8988",
   },
 };

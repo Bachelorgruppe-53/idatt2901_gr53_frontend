@@ -1,33 +1,37 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState
+} from "react";
+import { useColorScheme } from "react-native";
 
-// Definerer hva contexten skal inneholde
+type ThemeMode = "system" | "light" | "dark";
+
 interface ThemeContextType {
+  themeMode: ThemeMode;
   isDarkMode: boolean;
-  toggleTheme: () => void;
+  setThemeMode: (mode: ThemeMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
-  const [isDarkMode, setIsDarkMode] = useState(systemColorScheme === 'dark');
+  const [themeMode, setThemeMode] = useState<ThemeMode>("system");
 
-  // Oppdater hvis systemet endrer seg (valgfritt)
-  useEffect(() => {
-    setIsDarkMode(systemColorScheme === 'dark');
-  }, [systemColorScheme]);
-
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+  const isDarkMode = useMemo(() => {
+    if (themeMode === "system") return systemColorScheme === "dark";
+    return themeMode === "dark";
+  }, [themeMode, systemColorScheme]);
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+    <ThemeContext.Provider value={{ themeMode, isDarkMode, setThemeMode }}>
       {children}
     </ThemeContext.Provider>
   );
 }
 
-// En enkel hook for å bruke dette senere
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) throw new Error("useTheme must be used within a ThemeProvider");
