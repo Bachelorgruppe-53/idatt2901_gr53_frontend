@@ -33,12 +33,17 @@ export default function SettingsScreen() {
     >
       <View style={styles.container}>
         <View style={styles.section}>
-          <Text style={styles.header}>{t("settings")}</Text>
+          {/* <Text style={[styles.header, { color: theme.text }]}>
+            {t("settings")}
+          </Text> */}
           <View style={styles.imageWrapper}>
             <Image
               source={require("@/assets/images/about.png")}
               style={styles.image}
             />
+            <Text style={[styles.header, { color: theme.text }]}>
+              {t("aboutUs")}
+            </Text>
           </View>
           <Text style={[styles.description, { color: theme.text }]}>
             {t("aboutUsContent")}
@@ -135,6 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: Colors.light.text || Colors.dark.text,
+    marginTop: 20,
   },
   button: {
     flexDirection: "row",
