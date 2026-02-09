@@ -1,5 +1,5 @@
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
