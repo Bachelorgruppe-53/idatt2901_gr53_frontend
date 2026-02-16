@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text } from "react-native";
 
 /**
- * Admin button component for accessing admin login/dashboard.
+ * DEPRECATED USE settingsButton.tsx INSTEAD: Admin button component for accessing admin login/dashboard.
  * Routes to admin dashboard if authenticated, otherwise to login screen.
  * Matches the grid button styling in settings screen.
  *

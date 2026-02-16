@@ -1,13 +1,12 @@
 import JoinClassModal from "@/src/components/joinClass";
+import { QRScanner } from "@/src/components/QRScanner";
+import { Colors } from "@/src/constants/Colors";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { QRScanner } from "../../src/components/QRScanner";
-import { Colors } from "../../src/constants/Colors";
-import { useThemeColor } from "../../src/hooks/useThemeColor";
 
 /**
  * This page is the main landing page when the user opens the app.

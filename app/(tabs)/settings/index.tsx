@@ -1,103 +1,115 @@
-import AdminButton from "@/src/components/adminButton";
-import ChangeLanguageButton from "@/src/components/changeLanguageButton";
+import { Separator } from "@/src/components/Separator";
+import SettingsButton from "@/src/components/settingsButton";
 import { Colors } from "@/src/constants/Colors";
-import { useTheme } from "@/src/context/ThemeContext";
+import { useAuth } from "@/src/context/AuthContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { MaterialIcons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Image,
-  Linking,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
- * this page allows the user to change settings such as theme mode and language.
+ * This page allows the user to change settings such as theme mode and language.
  *
  * @returns JSX.Element
  */
-
-//TODO: implement functionality
 
 export default function SettingsScreen() {
   const theme = useThemeColor();
 
   const { t } = useTranslation("settings");
+  const insets = useSafeAreaInsets();
 
-  const { isDarkMode, toggleTheme } = useTheme();
-
-  const openURL = async (url: string) => {
-    // Check if the device supports the URL
-    const supported = await Linking.canOpenURL(url);
-
-    if (supported) {
-      // Open the URL in the device's default browser
-      await Linking.openURL(url);
-    } else {
-      // Handle cases where the URL cannot be opened
-      alert(`Don't know how to open this URL: ${url}`);
-    }
-  };
+  const { isAuthenticated } = useAuth();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Settings options in a grid layout */}
-      <View style={styles.grid}>
-        <Pressable
-          style={[styles.gridItem, { backgroundColor: theme.button }]}
-          onPress={toggleTheme}
-        >
-          <MaterialIcons
-            name={isDarkMode ? "dark-mode" : "light-mode"}
-            size={24}
-            color={theme.buttontext}
+    <ScrollView
+      style={{ backgroundColor: theme.background }}
+      contentContainerStyle={{
+        paddingBottom: insets.bottom + 20,
+      }}
+      contentInsetAdjustmentBehavior="automatic"
+    >
+      <View style={styles.container}>
+        <View style={styles.section}>
+          {/* <Text style={[styles.header, { color: theme.text }]}>
+            {t("settings")}
+          </Text> */}
+          <View style={styles.imageWrapper}>
+            <Image
+              source={require("@/assets/images/about.png")}
+              style={styles.image}
+            />
+            <Text style={[styles.header, { color: theme.text }]}>
+              {t("aboutUs")}
+            </Text>
+          </View>
+          <Text style={[styles.description, { color: theme.text }]}>
+            {t("aboutUsContent")}
+          </Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            {t("preferences")}
+          </Text>
+        </View>
+        <Separator />
+        {/* Language selection button */}
+        <SettingsButton
+          route="/settings/lang/languageSelection"
+          iconName="language"
+          labelKey="language"
+        />
+        <Separator />
+        <SettingsButton
+          route="/settings/theme/changeTheme"
+          iconName="brightness-6"
+          labelKey="theme"
+        />
+        <Separator />
+        {/* Admin button, login if not authenticated, dashboard if authenticated */}
+        {!isAuthenticated && (
+          <SettingsButton
+            route="/settings/admin/login"
+            iconName="admin-panel-settings"
+            labelKey="admin"
           />
-          <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-            {" "}
-            {isDarkMode ? t("lightMode") : t("darkMode")}
+        )}
+        {isAuthenticated && (
+          <SettingsButton
+            route="/settings/admin/dashboard"
+            iconName="admin-panel-settings"
+            labelKey="dashboard"
+          />
+        )}
+        <Separator />
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+            {t("settings")}
           </Text>
-        </Pressable>
-        <ChangeLanguageButton />
-        <AdminButton />
-        <Pressable
-          style={[styles.gridItem, { backgroundColor: theme.button }]}
-          onPress={() => alert("edit profil")}
-        >
-          <MaterialIcons name="person" size={24} color={theme.buttontext} />
-          <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-            {" "}
-            {t("editProfile")}
-          </Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.imageWrapper}>
-        <Image
-          source={require("@/assets/images/about.png")}
-          style={styles.image}
+        </View>
+        <Separator />
+        {/* TODO: need to add a route here */}
+        <SettingsButton
+          route="/settings/notifications/notificationSettings"
+          iconName="notifications"
+          labelKey="notificationSettings"
+        />
+        <Separator />
+        {/* TODO: need to add a route here */}
+        <SettingsButton
+          route="/settings/privacy/privacyPolicy"
+          iconName="privacy-tip"
+          labelKey="privacyPolicy"
+        />
+        <Separator />
+        {/* TODO: need to add a route here */}
+        <SettingsButton
+          route="/settings/feedback/feedbackForm"
+          iconName="feedback"
+          labelKey="feedback"
         />
       </View>
-
-      <Text style={[styles.header, { color: theme.text }]}>{t("aboutUs")}</Text>
-      <Text style={[styles.paragraph, { color: theme.text }]}>
-        {t("aboutUsContent")}
-      </Text>
-
-      <Pressable
-        style={[styles.button, { backgroundColor: theme.button }]}
-        onPress={() => openURL("https://forms.gle/fRM6GnwfrvnoytVe6")}
-      >
-        <MaterialIcons name="feedback" size={24} color={theme.buttontext} />
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          {" "}
-          {t("feedback")}
-        </Text>
-      </Pressable>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -105,23 +117,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingTop: 80,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    width: "100%",
-    gap: 15,
-    justifyContent: "center",
-  },
-  gridItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "40%",
-    height: 50,
-    borderRadius: 8,
-    padding: 10,
   },
   buttonText: {
     fontSize: 16,
@@ -129,8 +124,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   imageWrapper: {
-    marginTop: 60,
+    marginTop: 20,
     borderRadius: 100,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    marginBottom: 20,
   },
   image: {
     height: 200,
@@ -140,15 +139,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: "bold",
-    marginTop: 30,
     color: Colors.light.text || Colors.dark.text,
-  },
-  paragraph: {
-    fontSize: 16,
-    marginTop: 15,
-    paddingHorizontal: 20,
-    textAlign: "center",
-    color: Colors.light.text || Colors.dark.text,
+    marginTop: 20,
   },
   button: {
     flexDirection: "row",
@@ -159,5 +151,20 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 8,
     width: "80%",
+  },
+  section: {
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    marginTop: 15,
+  },
+  description: {
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 20,
   },
 });

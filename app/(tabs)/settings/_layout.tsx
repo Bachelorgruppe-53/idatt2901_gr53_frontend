@@ -33,6 +33,24 @@ export default function SettingsLayout() {
           headerTitle: t("language"),
         }}
       />
+      <Stack.Screen
+        name="theme/changeTheme"
+        options={{
+          headerBackTitle: "",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: t("theme"),
+        }}
+      />
+      <Stack.Screen
+        name="feedback/feedbackForm"
+        options={{
+          headerBackTitle: "",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: t("feedback"),
+        }}
+      />
     </Stack>
   );
 }
