@@ -4,6 +4,8 @@ import { useThemeColor } from '../hooks/useThemeColor';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from '../constants/Colors';
+import { useTranslation } from "react-i18next";
+
 
 
 /**
@@ -37,6 +39,9 @@ export default function AboutCareer({ careerName, onClose }: Props) {
   const [data, setData] = useState<PoiDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const { t } = useTranslation("aboutCareer");
+  
 
   const getBaseURL = () => {
     if (__DEV__) {
@@ -72,7 +77,7 @@ export default function AboutCareer({ careerName, onClose }: Props) {
         const json = await res.json() as PoiDto;
         setData(json);
         } catch (err) {
-            setErrorMsg("Kunne ikke laste informasjon. Prøv igjen senere.");
+            setErrorMsg(t("fetchError"));
             setData(null);
         } finally {
             setLoading(false);
@@ -96,12 +101,12 @@ export default function AboutCareer({ careerName, onClose }: Props) {
         <ScrollView contentContainerStyle={styles.content}>
             <View style={styles.header}>
                 <Text style={[styles.title, {color: theme.text }]}>
-                    {data?.title || careerName || "Ukjent yrke"}
+                    {data?.title || careerName || t("unknownTitle")}
                 </Text>
                 {typeof data?.points === "number" && (
                     <View style={styles.pointsBadge}>
                         <MaterialIcons name="stars" size={16} color={ Colors.brand.darkYellow } />
-                        <Text style={styles.pointsText}>{data.points} poeng</Text>
+                        <Text style={styles.pointsText}>{data.points} {t("points")}</Text>
                     </View>
                 )}
             </View>
@@ -110,16 +115,16 @@ export default function AboutCareer({ careerName, onClose }: Props) {
             <Text style={[styles.description, { color: theme.text }]}>{errorMsg}</Text>
             ) : (
             <Text style={[styles.description, { color: theme.text }]}>
-                {data?.description || "Ingen beskrivelse tilgjengelig."}
+                {data?.description || t("noDescription")}
             </Text>
             )}
 
             <Pressable style={[styles.button, { backgroundColor: theme.button }]} onPress={() => alert("Claim yrke funksjonalitet kommer snart!")}>
-                <Text style={[styles.link, {color: theme.buttontext }]}>Claim</Text>
+                <Text style={[styles.link, {color: theme.buttontext }]}>{t("claimButton")}</Text>
             </Pressable>
             
             <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={[styles.link, {color: theme.button }]}>Lukk</Text>
+            <Text style={[styles.link, {color: theme.button }]}>{t("closeButton")}</Text>
             </Pressable>
         </ScrollView>
         </SafeAreaView>
