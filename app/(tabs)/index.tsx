@@ -1,13 +1,14 @@
 import JoinClassModal from "@/src/components/joinClass";
+import AboutCareer from "@/src/components/aboutCareer";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
+import { router } from "expo-router";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -25,27 +26,22 @@ export default function Index() {
   const { isScanning, startScanning, stopScanning, permissionError } =
     useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
+  const [showCareerModal, setShowCareerModal] = useState(false);
+  const [selectedCareer, setSelectedCareer] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
 
   const { t } = useTranslation("home");
 
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await axios.get(`http://localhost:8080/api/test`);
-  //     setName(response.data?.name ?? String(response.data ?? ""));
-  //     console.log("Data fetched successfully");
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
   const handleScan = (data: string) => {
     stopScanning();
-    alert(`Skannet data: ${data}`);
+    const careerName = data.trim();
+    if (!careerName) {
+      alert("Ugyldig QR-kode.");
+      return;
+    }
+
+    setSelectedCareer(careerName);
+    setShowCareerModal(true);
   };
 
   const handleQRPress = async () => {
@@ -61,6 +57,15 @@ export default function Index() {
 
   if (showJoinClass) {
     return <JoinClassModal onClose={() => setShowJoinClass(false)} />;
+  }
+
+  if (showCareerModal && selectedCareer) {
+    return (
+      <AboutCareer
+        careerName={selectedCareer}
+        onClose={() => setShowCareerModal(false)}
+      />
+    );
   }
 
   return (
