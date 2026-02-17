@@ -2,7 +2,7 @@ import { Colors } from "@/src/constants/Colors";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
-import { Color, router } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { getToken } from "@/services/utils/secureStorage";
@@ -75,15 +75,19 @@ export default function GenerateClassCode() {
                 },
               }
             );
-            const classCode = response.data;
+
+            const classCode =
+              typeof response.data === "string" ? response.data : response.data?.code ?? "";
+
+            if (!classCode) {
+              Alert.alert("Feil", "Fikk ingen klassekode fra serveren.");
+              return;
+            }
+            
             console.log("Success! Class code:", classCode); // Debug log
 
-
-            setGeneratedCode(`${classCode}`);
+            setGeneratedCode(classCode);
             setShowCodeModal(true);
-
-            setClassName("");
-            setSchoolName("");
 
 
       } catch (error) {
