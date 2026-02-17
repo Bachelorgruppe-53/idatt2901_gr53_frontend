@@ -22,8 +22,6 @@ export default function GenerateClassCode() {
     const [showCodeModal, setShowCodeModal] = useState(false);
     const [generatedCode, setGeneratedCode] = useState("");
 
-
-
     const getBaseURL = () => {
       if (__DEV__) {
         if (Platform.OS === "android") {
