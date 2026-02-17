@@ -36,7 +36,7 @@ export default function Index() {
     stopScanning();
     const careerName = data.trim();
     if (!careerName) {
-      alert("Ugyldig QR-kode.");
+      alert(t("invalidQR"));
       return;
     }
 
@@ -47,7 +47,7 @@ export default function Index() {
   const handleQRPress = async () => {
     const started = await startScanning();
     if (!started) {
-      alert("Kamera-tilgang nektet. Vennligst gi tillatelse i innstillingene.");
+      alert(t("cameraDenied"));
     }
   };
 
