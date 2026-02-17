@@ -7,12 +7,15 @@ import { Colors } from '../constants/Colors';
 
 
 /**
- * This component displays information about a selected career.
+ * Component to display detailed information about a career/POI.
+ * Fetches data from the backend based on the provided career name.
  * 
  * @param careerName - The name of the career to display information about.
- * @param onClose - Function to call when closing the about career view.
+ * @param onClose - Callback function to close the modal.
  * 
  * @returns JSX.Element
+ * 
+ * TODO: Implement "Claim" functionality to allow users to claim a career and earn points.
  */
 
 
