@@ -1,5 +1,7 @@
 {
   "favoriteCareer": "Favorite Career",
   "takeTest": "Take the career test",
-  "joinClass": "Join a class"
+  "joinClass": "Join a class",
+  "invalidQR": "Invalid QR code. Please try again.",
+  "cameraDenied": "Camera access denied. Please grant permission in settings."
 }

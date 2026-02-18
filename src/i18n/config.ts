@@ -8,18 +8,21 @@ import enCommon from "./locales/en-US/common.json";
 import enHome from "./locales/en-US/home.json";
 import enNavbar from "./locales/en-US/navbar.json";
 import enSettings from "./locales/en-US/settings.json";
+import enAboutCarrer from "./locales/en-US/aboutCareer.json";
 
 import nbAuth from "./locales/no-NB/auth.json";
 import nbCommon from "./locales/no-NB/common.json";
 import nbHome from "./locales/no-NB/home.json";
 import nbNavbar from "./locales/no-NB/navbar.json";
 import nbSettings from "./locales/no-NB/settings.json";
+import nbAboutCarrer from "./locales/no-NB/aboutCareer.json";
 
 import nnAuth from "./locales/no-NN/auth.json";
 import nnCommon from "./locales/no-NN/common.json";
 import nnHome from "./locales/no-NN/home.json";
 import nnNavbar from "./locales/no-NN/navbar.json";
 import nnSettings from "./locales/no-NN/settings.json";
+import nnAboutCarrer from "./locales/no-NN/aboutCareer.json";
 
 const deviceLanguage = Localization.getLocales()[0]?.languageTag || "en-US";
 
@@ -54,6 +57,7 @@ i18n.use(initReactI18next).init({
       navbar: enNavbar,
       settings: enSettings,
       home: enHome,
+      aboutCareer: enAboutCarrer,
     },
     "no-NB": {
       common: nbCommon,
@@ -61,6 +65,7 @@ i18n.use(initReactI18next).init({
       navbar: nbNavbar,
       settings: nbSettings,
       home: nbHome,
+      aboutCareer: nbAboutCarrer,
     },
     "no-NN": {
       common: nnCommon,
@@ -68,11 +73,12 @@ i18n.use(initReactI18next).init({
       navbar: nnNavbar,
       settings: nnSettings,
       home: nnHome,
+      aboutCareer: nnAboutCarrer,
     },
   },
   lng: getSupportedLanguage(deviceLanguage),
   fallbackLng: "en-US",
-  ns: ["common", "auth", "navbar", "settings", "home"],
+  ns: ["common", "auth", "navbar", "settings", "home", "aboutCareer"],
   defaultNS: "common",
   interpolation: {
     escapeValue: false,

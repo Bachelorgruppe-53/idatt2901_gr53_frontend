@@ -79,65 +79,74 @@ export default function GenerateClassCode() {
         schoolName: schoolName.trim(),
       }); // Debug log
 
-      const response = await axios.post(
-        `${getBaseURL()}admin/code`,
-        {
-          className: className.trim(),
-          schoolName: schoolName.trim(),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
-      const classCode = response.data;
-      console.log("Success! Class code:", classCode); // Debug log
+            const response = await axios.post(`${getBaseURL()}admin/code`, 
+              {
+                className: className.trim(),
+                schoolName: schoolName.trim(),
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
 
-      setGeneratedCode(`${classCode}`);
-      setShowCodeModal(true);
+            const classCode =
+              typeof response.data === "string" ? response.data : response.data?.code ?? "";
 
-      setClassName("");
-      setSchoolName("");
-    } catch (error) {
-      console.error("Full error:", error); // Debug log
+            if (!classCode) {
+              Alert.alert("Feil", "Fikk ingen klassekode fra serveren.");
+              return;
+            }
+            
+            console.log("Success! Class code:", classCode); // Debug log
 
-      if (axios.isAxiosError(error)) {
-        console.log("Response status:", error.response?.status); // Debug log
-        console.log("Response data:", error.response?.data); // Debug log
-        console.log("Response headers:", error.response?.headers); // Debug log
+            setGeneratedCode(classCode);
+            setShowCodeModal(true);
 
-        const status = error.response?.status;
 
-        if (status === 401) {
-          Alert.alert(
-            "Autentiseringsfeil",
-            "Din sesjon har utløpt. Vennligst logg inn på nytt.",
-            [{ text: "OK", onPress: () => router.replace("./adminLogin") }],
-          );
-        } else if (status === 403) {
-          Alert.alert(
-            "Tilgangsfeil",
-            `Du har ikke tilgang til denne funksjonen.\n\nDetaljer: ${error.response?.data?.message || "Ingen tilleggsinfo"}`,
-          );
-        } else if (status === 500) {
-          Alert.alert(
-            "Serverfeil",
-            "En feil oppstod på serveren. Kontakt systemadministrator.",
-          );
-        } else {
-          Alert.alert("Feil", `Noe gikk galt (${status}). Prøv igjen senere.`);
-        }
-      } else {
-        Alert.alert(
-          "Feil",
-          "Kunne ikke koble til serveren. Sjekk nettverkstilkoblingen.",
-        );
+      } catch (error) {
+          console.error("Full error:", error); // Debug log
+          
+          if (axios.isAxiosError(error)) {
+              console.log("Response status:", error.response?.status); // Debug log
+              console.log("Response data:", error.response?.data); // Debug log
+              console.log("Response headers:", error.response?.headers); // Debug log
+              
+              const status = error.response?.status;
+              
+              if (status === 401) {
+                  Alert.alert(
+                      "Autentiseringsfeil",
+                      "Din sesjon har utløpt. Vennligst logg inn på nytt.",
+                      [{ text: "OK", onPress: () => router.replace("./adminLogin") }]
+                  );
+              } else if (status === 403) {
+                  Alert.alert(
+                      "Tilgangsfeil", 
+                      `Du har ikke tilgang til denne funksjonen.\n\nDetaljer: ${error.response?.data?.message || 'Ingen tilleggsinfo'}`
+                  );
+              } else if (status === 500) {
+                  Alert.alert(
+                      "Serverfeil",
+                      "En feil oppstod på serveren. Kontakt systemadministrator."
+                  );
+              } else {
+                  Alert.alert(
+                      "Feil", 
+                      `Noe gikk galt (${status}). Prøv igjen senere.`
+                  );
+              }
+          } else {
+              Alert.alert(
+                  "Feil", 
+                  "Kunne ikke koble til serveren. Sjekk nettverkstilkoblingen."
+              );
+          }
+      } finally {
+          setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   // Modal for displaying generated class code, copying to clipboard, etc.
