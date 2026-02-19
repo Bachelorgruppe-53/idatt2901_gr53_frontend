@@ -3,26 +3,29 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 // Import your translation files
+import enAboutCarrer from "./locales/en-US/aboutCareer.json";
 import enAuth from "./locales/en-US/auth.json";
 import enCommon from "./locales/en-US/common.json";
 import enHome from "./locales/en-US/home.json";
 import enNavbar from "./locales/en-US/navbar.json";
 import enSettings from "./locales/en-US/settings.json";
-import enAboutCarrer from "./locales/en-US/aboutCareer.json";
+import enStats from "./locales/en-US/stats.json";
 
+import nbAboutCarrer from "./locales/no-NB/aboutCareer.json";
 import nbAuth from "./locales/no-NB/auth.json";
 import nbCommon from "./locales/no-NB/common.json";
 import nbHome from "./locales/no-NB/home.json";
 import nbNavbar from "./locales/no-NB/navbar.json";
 import nbSettings from "./locales/no-NB/settings.json";
-import nbAboutCarrer from "./locales/no-NB/aboutCareer.json";
+import nbStats from "./locales/no-NB/stats.json";
 
+import nnAboutCarrer from "./locales/no-NN/aboutCareer.json";
 import nnAuth from "./locales/no-NN/auth.json";
 import nnCommon from "./locales/no-NN/common.json";
 import nnHome from "./locales/no-NN/home.json";
 import nnNavbar from "./locales/no-NN/navbar.json";
 import nnSettings from "./locales/no-NN/settings.json";
-import nnAboutCarrer from "./locales/no-NN/aboutCareer.json";
+import nnStats from "./locales/no-NN/stats.json";
 
 const deviceLanguage = Localization.getLocales()[0]?.languageTag || "en-US";
 
@@ -58,6 +61,7 @@ i18n.use(initReactI18next).init({
       settings: enSettings,
       home: enHome,
       aboutCareer: enAboutCarrer,
+      stats: enStats,
     },
     "no-NB": {
       common: nbCommon,
@@ -66,6 +70,7 @@ i18n.use(initReactI18next).init({
       settings: nbSettings,
       home: nbHome,
       aboutCareer: nbAboutCarrer,
+      stats: nbStats,
     },
     "no-NN": {
       common: nnCommon,
@@ -74,11 +79,12 @@ i18n.use(initReactI18next).init({
       settings: nnSettings,
       home: nnHome,
       aboutCareer: nnAboutCarrer,
+      stats: nnStats,
     },
   },
   lng: getSupportedLanguage(deviceLanguage),
   fallbackLng: "en-US",
-  ns: ["common", "auth", "navbar", "settings", "home", "aboutCareer"],
+  ns: ["common", "auth", "navbar", "settings", "home", "aboutCareer", "stats"],
   defaultNS: "common",
   interpolation: {
     escapeValue: false,
