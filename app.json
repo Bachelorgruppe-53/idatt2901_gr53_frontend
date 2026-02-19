@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.brahimage.appBacheloroppgave"
+      "bundleIdentifier": "com.brahimage.appBacheloroppgave",
+      "icon": "./assets/images/icon/sjuk.icon"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +19,6 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.brahimage.appBacheloroppgave",
       "config": {
