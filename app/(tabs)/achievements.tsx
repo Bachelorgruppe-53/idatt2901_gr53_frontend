@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   segmentedControl: {
     height: 45,
     overflow: "hidden",
-    marginBottom: Platform.OS === "ios" ? 80 : 10,
+    marginBottom: Platform.OS === "ios" ? 20 : 10,
     borderRadius: Platform.OS === "ios" ? 20 : 8,
   },
   segmentText: {
