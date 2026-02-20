@@ -5,6 +5,7 @@ import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 
 /**
  * Admin dashboard screen component.
@@ -14,12 +15,13 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function AdminDashboard() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
   const { setAuthenticated } = useAuth();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={themedStyles.container}>
       <Pressable
-        style={[styles.logoutButton, { backgroundColor: Colors.brand.red }]}
+        style={themedStyles.buttonRed}
         onPress={async () => {
           await logoutAdmin();
           setAuthenticated(false);

@@ -9,6 +9,8 @@ import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
 import { router } from "expo-router";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { BaseStyles } from "@/src/constants/Styles";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -22,6 +24,7 @@ import { router } from "expo-router";
 
 export default function Index() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
   const { isScanning, startScanning, stopScanning, permissionError } =
     useQRScanner();
@@ -69,13 +72,13 @@ export default function Index() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>
+    <View style={themedStyles.container}>
+      <Text style={themedStyles.heading}>
         St. Olavs hospital
       </Text>
-      <View style={styles.row}>
+      <View style={BaseStyles.rowCenter}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={[styles.favourite, { color: theme.text }]}>
+        <Text style={themedStyles.boldText}>
           {t("favoriteCareer")}
         </Text>
       </View>
@@ -85,43 +88,40 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[styles.name, { color: theme.text }]}> Hei, du!</Text>
+      <Text style={themedStyles.subheading}> Hei, du!</Text>
 
       <Pressable
         style={[
-          styles.button,
+          themedStyles.button,
           !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
         ]}
         onPress={() =>
           isReady ? alert("midlertidig alert - karrieretesten!") : null
         }
         disabled={!isReady}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+        <Text style={themedStyles.buttonText}>
           {t("takeTest")}
         </Text>
       </Pressable>
 
       <Pressable
         style={[
-          styles.button,
+          themedStyles.button,
           !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
         ]}
         onPress={() => setShowJoinClass(true)}
         disabled={!isReady}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+        <Text style={themedStyles.buttonText}>
           {t("joinClass")}
         </Text>
       </Pressable>
 
       <Pressable
         style={[
-          styles.buttonRound,
+          themedStyles.buttonRound,
           !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
         ]}
         onPress={handleQRPress}
         disabled={!isReady}
@@ -137,28 +137,6 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 80,
-    alignItems: "center",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 15,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    letterSpacing: 2.5,
-    marginBottom: 15,
-  },
-  favourite: {
-    fontSize: 18,
-    marginLeft: 10,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   imageWrapper: {
     marginTop: 20,
     borderRadius: 100,
@@ -167,29 +145,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
   },
-  name: {
-    fontSize: 25,
-    marginTop: 20,
-  },
-  button: {
-    marginTop: 30,
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 8,
-    width: "80%",
-    alignItems: "center",
-  },
-  buttonRound: {
-    marginTop: 30,
-    backgroundColor: Colors.brand.purple || Colors.brand.green,
-    padding: 15,
-    borderRadius: 50,
-  },
   buttonDisabled: {
     backgroundColor: Colors.brand.gray,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: "bold",
   },
 });
