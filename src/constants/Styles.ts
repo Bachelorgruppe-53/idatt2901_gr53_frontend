@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { Colors } from "./Colors";
 
 export const Spacing = {
@@ -129,12 +129,15 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
     container: {
         flex: 1,
         backgroundColor: theme.background,
+        justifyContent: "center",
+        alignItems: "center",
     },
     card: {
         backgroundColor: theme.backgroundSecondary,
         borderRadius: BorderRadius.md,
         padding: Spacing.md,
     },
+
     
     // buttons
     button: {
@@ -144,6 +147,9 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
         borderRadius: BorderRadius.md,
         alignItems: "center",
         justifyContent: "center",
+        padding: Spacing.md,
+        width: "80%",
+        marginVertical: Spacing.sm,
     },
     buttonRed: {
         backgroundColor: Colors.brand.red,
@@ -164,6 +170,9 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
         borderRadius: BorderRadius.round,
         alignItems: "center",
         justifyContent: "center",
+        marginVertical: Spacing.sm,
+        width: 70,
+        height: 70,
     },
 
     // text
@@ -182,7 +191,7 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
     },
     subheading: {
       color: theme.text,
-      fontSize: Typography.lg,
+      fontSize: Typography.xl,
       fontWeight: FontWeight.semibold,
     },
     boldText: {
@@ -216,4 +225,62 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       width: 1,
       backgroundColor: theme.border,
     },
+
+    // segmented control
+    segmentedControl: {
+      height: 45,
+      overflow: "hidden",
+      marginBottom: Platform.OS === "ios" ? 80 : 10,
+      borderRadius: Platform.OS === "ios" ? 20 : 8,
+      backgroundColor: theme.background,
+
+      
+    },
+    activeSegmentText: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: theme.buttontext,
+    },
+    segmentText: {
+      fontSize: 16,
+      color: theme.text,
+    },
+    segmentedView: {
+      paddingHorizontal: 40,
+      paddingVertical: 15,
+    },
+
+    // modals
+    modalBackdrop: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    modalCard: {
+      width: "80%",
+      padding: 20,
+      borderRadius: 12,
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: "600",
+      marginBottom: 8,
+    },
+    modalCode: {
+      fontSize: 22,
+      fontWeight: "700",
+      letterSpacing: 1,
+      marginBottom: 16,
+    },
+    modalActions: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    modalButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+    },
+
 })

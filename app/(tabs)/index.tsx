@@ -73,12 +73,12 @@ export default function Index() {
 
   return (
     <View style={themedStyles.container}>
-      <Text style={themedStyles.heading}>
+      <Text style={[themedStyles.heading, { position: "absolute", top: "10%" }]}>
         St. Olavs hospital
       </Text>
-      <View style={BaseStyles.rowCenter}>
+      <View style={[BaseStyles.rowCenter, { position: "absolute", top: "15%" }]} >
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={themedStyles.boldText}>
+        <Text style={themedStyles.subheading}>
           {t("favoriteCareer")}
         </Text>
       </View>
@@ -88,7 +88,7 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={themedStyles.subheading}> Hei, du!</Text>
+      <Text style={[themedStyles.subheading, { marginBottom: 10 }]}> Hei, du!</Text>
 
       <Pressable
         style={[
@@ -117,7 +117,6 @@ export default function Index() {
           {t("joinClass")}
         </Text>
       </Pressable>
-
       <Pressable
         style={[
           themedStyles.buttonRound,
@@ -138,7 +137,8 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   imageWrapper: {
-    marginTop: 20,
+    marginTop: 5,
+    marginBottom: 20,
     borderRadius: 100,
   },
   image: {

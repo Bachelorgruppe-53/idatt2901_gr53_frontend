@@ -6,6 +6,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Achievements from "@/src/components/unlockedAchievements";
 import Careers from "@/src/components/unlockedCareers";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { BaseStyles } from "@/src/constants/Styles";
+
 
 /**
  * This screen allows users to toggle between viewing unlocked careers and achievements.
@@ -16,56 +19,30 @@ import { useThemeColor } from "@/src/hooks/useThemeColor";
 export default function AchievementScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
+      style={[BaseStyles.flex, { backgroundColor: theme.background }]}
     >
-      <View style={styles.content}>
+      <View style={BaseStyles.flex}>
         {selectedIndex === 0 ? <Careers /> : <Achievements />}
       </View>
 
-      <View style={styles.header}>
+      <View style={themedStyles.segmentedView}>
         <SegmentedControl
           values={["Karrierer", "Merker"]}
           selectedIndex={selectedIndex}
           onChange={(event) => {
             setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
           }}
-          backgroundColor={theme.backgroundSecondary}
           tintColor={theme.button}
-          style={styles.segmentedControl}
-          activeFontStyle={{ color: theme.buttontext }}
-          fontStyle={{ color: theme.text }}
+          style={themedStyles.segmentedControl}
+          activeFontStyle={themedStyles.activeSegmentText}
+          fontStyle={themedStyles.segmentText}
         />
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 40,
-    paddingVertical: 15,
-  },
-  segmentedControl: {
-    height: 45,
-    overflow: "hidden",
-    marginBottom: Platform.OS === "ios" ? 80 : 10,
-    borderRadius: Platform.OS === "ios" ? 20 : 8,
-  },
-  segmentText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  content: {
-    flex: 1,
-  },
-});
