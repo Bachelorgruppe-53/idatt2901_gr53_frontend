@@ -52,7 +52,7 @@
             "useFrameworks": "static"
           },
           "android": {
-            "compileSdkVersion": 35
+            "compileSdkVersion": 36
           }
         }
       ],
@@ -72,7 +72,7 @@
         "projectId": "8ee55494-9190-4f6d-bc8d-0e4ca7fb57cf"
       }
     },
-    "owner": "brahimage",
+    "owner": "bacheloroppgavegr53",
     "updates": {
       "url": "https://u.expo.dev/8ee55494-9190-4f6d-bc8d-0e4ca7fb57cf"
     },
