@@ -43,6 +43,7 @@ export const BaseStyles = StyleSheet.create({
 
     rowCenter: { flexDirection: "row", justifyContent: "center", alignItems: "center" },
 
+    safeArea: { flex: 1 },
     // Spacing
     gap4: {gap: Spacing.xs},
     gap8: {gap: Spacing.sm},
@@ -95,6 +96,17 @@ export const BaseStyles = StyleSheet.create({
     my32: {marginVertical: Spacing.xl},
     my48: {marginVertical: Spacing.xxl},
 
+    mb16: {marginBottom: Spacing.md},
+    mt16: {marginTop: Spacing.md},
+    ml16: {marginLeft: Spacing.md},
+    mr16: {marginRight: Spacing.md},
+
+    // Size
+    wFull: { width: "100%" },
+    hFull: { height: "100%" },
+
+    w80: { width: "80%" },
+
     // Border Radius
     rounded4: {borderRadius: BorderRadius.sm},
     rounded8: {borderRadius: BorderRadius.md},
@@ -132,13 +144,25 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
         justifyContent: "center",
         alignItems: "center",
     },
+    containerAlign: {
+      flex: 1,
+      paddingHorizontal: Spacing.md,
+      justifyContent: "center",
+    },
     card: {
         backgroundColor: theme.backgroundSecondary,
         borderRadius: BorderRadius.md,
         padding: Spacing.md,
     },
+    backgroundFlex: {
+        flex: 1,
+        backgroundColor: theme.background,
+    },
+    settingsSection: {
+      width: "100%",
+      paddingHorizontal: Spacing.md
+    },
 
-    
     // buttons
     button: {
         backgroundColor: theme.button,
@@ -157,12 +181,20 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
         paddingHorizontal: Spacing.lg,
         borderRadius: BorderRadius.md,
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "center", 
+    },
+    logoutButton: {
+        position: "absolute",
+        top: 70,
+        right: 20,
+        padding: 10,
+        borderRadius: 5,
+        backgroundColor: Colors.brand.red,
     },
     buttonText: {
         color: theme.buttontext,
-        fontSize: 18,
-        fontWeight: "medium",
+        fontSize: Typography.base,
+        fontWeight: FontWeight.medium,
     },
     buttonRound: {
         backgroundColor: theme.button,
@@ -173,6 +205,22 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
         marginVertical: Spacing.sm,
         width: 70,
         height: 70,
+    },
+    settingsButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: Spacing.md,
+      borderRadius: BorderRadius.md,
+      borderWidth: 2,
+      gap: Spacing.md,
+    },
+    smallButtton: {
+      backgroundColor: theme.button,
+      paddingVertical: Spacing.sm,
+      paddingHorizontal: Spacing.md,
+      borderRadius: BorderRadius.sm,
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     // text
@@ -199,10 +247,18 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       fontSize: Typography.base,
       fontWeight: FontWeight.bold,
     },
+    placeholderText: {
+      color: theme.placeholder,
+      fontSize: Typography.base,
+    },
+    errorText: {
+      color: Colors.brand.red,
+      marginTop: Spacing.sm,
+      textAlign: "center",
+    },
 
     // inputs
     input: {
-      backgroundColor: theme.backgroundSecondary,
       borderWidth: 1,
       borderColor: theme.border,
       borderRadius: BorderRadius.md,
@@ -210,6 +266,7 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       paddingHorizontal: Spacing.md,
       color: theme.text,
       fontSize: Typography.base,
+      marginVertical: Spacing.sm,
     },
     inputFocused: {
       borderColor: theme.accent,
@@ -233,8 +290,6 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       marginBottom: Platform.OS === "ios" ? 80 : 10,
       borderRadius: Platform.OS === "ios" ? 20 : 8,
       backgroundColor: theme.background,
-
-      
     },
     activeSegmentText: {
       fontSize: 16,
@@ -253,7 +308,7 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
     // modals
     modalBackdrop: {
       flex: 1,
-      backgroundColor: "rgba(0,0,0,0.5)",
+      backgroundColor: "rgba(48, 48, 48, 0.5)",
       alignItems: "center",
       justifyContent: "center",
     },
@@ -273,14 +328,4 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       letterSpacing: 1,
       marginBottom: 16,
     },
-    modalActions: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-    },
-    modalButton: {
-      paddingVertical: 10,
-      paddingHorizontal: 16,
-      borderRadius: 8,
-    },
-
 })
