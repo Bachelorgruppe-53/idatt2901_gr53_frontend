@@ -3,10 +3,12 @@ import SettingsButton from "@/src/components/settingsButton";
 import { Colors } from "@/src/constants/Colors";
 import { useAuth } from "@/src/context/AuthContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { BaseStyles } from "@/src/constants/Styles";
 import { Image } from "expo-image";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
@@ -17,6 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
 
   const { t } = useTranslation("settings");
   const insets = useSafeAreaInsets();
@@ -25,14 +28,16 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView
-      style={{ backgroundColor: theme.background }}
+      style={themedStyles.backgroundFlex}
       contentContainerStyle={{
         paddingBottom: insets.bottom + 20,
+        paddingTop: Platform.OS === "android" ? insets.top + 20 : 20,
       }}
       contentInsetAdjustmentBehavior="automatic"
+      
     >
-      <View style={styles.container}>
-        <View style={styles.section}>
+      <View style={themedStyles.container}>
+        <View style={themedStyles.settingsSection}>
           {/* <Text style={[styles.header, { color: theme.text }]}>
             {t("settings")}
           </Text> */}
@@ -41,15 +46,18 @@ export default function SettingsScreen() {
               source={require("@/assets/images/about.png")}
               style={styles.image}
             />
-            <Text style={[styles.header, { color: theme.text }]}>
+            <Text style={[themedStyles.heading, { marginTop: 20 }]}>
               {t("aboutUs")}
             </Text>
           </View>
-          <Text style={[styles.description, { color: theme.text }]}>
+          <Text style={[themedStyles.text, BaseStyles.textCenter, { marginBottom: 20 }]}>
             {t("aboutUsContent")}
           </Text>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>
-            {t("preferences")}
+        </View>
+        <Separator />
+        <View style={themedStyles.settingsSection}>
+          <Text style={[themedStyles.subheading, { marginVertical: 10, textAlign: "left" }]}>
+              {t("preferences")}
           </Text>
         </View>
         <Separator />
@@ -82,8 +90,8 @@ export default function SettingsScreen() {
           />
         )}
         <Separator />
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>
+        <View style={themedStyles.settingsSection}>
+          <Text style={[themedStyles.subheading, { marginVertical: 10 }]}>
             {t("settings")}
           </Text>
         </View>
@@ -114,15 +122,6 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
   imageWrapper: {
     marginTop: 20,
     borderRadius: 100,
@@ -135,36 +134,5 @@ const styles = StyleSheet.create({
     height: 200,
     width: 200,
     resizeMode: "contain",
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: Colors.light.text || Colors.dark.text,
-    marginTop: 20,
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: Colors.light.button || Colors.dark.button,
-    paddingVertical: 15,
-    borderRadius: 8,
-    width: "80%",
-  },
-  section: {
-    width: "100%",
-    paddingHorizontal: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 15,
-    marginTop: 15,
-  },
-  description: {
-    fontSize: 14,
-    textAlign: "center",
-    marginBottom: 20,
   },
 });

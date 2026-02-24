@@ -6,6 +6,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { BaseStyles } from "@/src/constants/Styles";
 
 /**
  * Admin dashboard screen component.
@@ -21,7 +22,7 @@ export default function AdminDashboard() {
   return (
     <View style={themedStyles.container}>
       <Pressable
-        style={themedStyles.buttonRed}
+        style={themedStyles.logoutButton}
         onPress={async () => {
           await logoutAdmin();
           setAuthenticated(false);
@@ -30,62 +31,30 @@ export default function AdminDashboard() {
       >
         <Text style={{ color: Colors.brand.white }}>Logg ut</Text>
       </Pressable>
-      <View style={styles.header}>
+      <View style={BaseStyles.rowCenter}>
         <MaterialCommunityIcons
           name="shield-account"
           size={50}
           color={theme.text}
         />
-        <Text style={[styles.headerTitle, { color: theme.text }]}>
+        <Text style={themedStyles.heading}>
           Admin Dashboard
         </Text>
       </View>
       <Pressable
-        style={[styles.button, { backgroundColor: theme.button }]}
-        onPress={() => router.push("/admin/generateClassCode")}
+        style={themedStyles.button}
+        onPress={() => router.push("/(tabs)/settings/admin/generateClassCode")}
       >
-        <Text style={{ color: theme.buttontext }}>Generer Klassekode</Text>
+        <Text style={themedStyles.buttonText}>Generer Klassekode</Text>
       </Pressable>
       <Pressable
-        style={[styles.button, { backgroundColor: theme.button }]}
+        style={themedStyles.button}
         onPress={() => alert("Legg til nye yrker")}
       >
-        <Text style={{ color: theme.buttontext }}>Legg til nye yrker</Text>
+        <Text style={themedStyles.buttonText}>Legg til nye yrker</Text>
       </Pressable>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  logoutButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    padding: 10,
-    borderRadius: 5,
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 15,
-    paddingVertical: 15,
-    borderRadius: 8,
-    width: "80%",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    gap: 10,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-});
+

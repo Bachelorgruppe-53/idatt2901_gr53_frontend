@@ -1,13 +1,17 @@
 import { useTheme } from "@/src/context/ThemeContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { BaseStyles } from "@/src/constants/Styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ChangeThemeScreen() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
+
   const { t } = useTranslation("settings");
   const insets = useSafeAreaInsets();
   const { themeMode, setThemeMode } = useTheme();
@@ -23,7 +27,7 @@ export default function ChangeThemeScreen() {
   ];
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: theme.background }]}>
+    <View style={themedStyles.backgroundFlex}>
       <Stack.Screen
         options={{
           title: t("theme"),
@@ -32,25 +36,26 @@ export default function ChangeThemeScreen() {
         }}
       />
       <ScrollView
-        style={styles.container}
+        style={BaseStyles.flex}
         contentContainerStyle={{
           padding: 20,
           paddingBottom: insets.bottom + 20,
+          paddingTop: Platform.OS === "android" ? insets.top + 70 : 20,
         }}
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Text style={[styles.header, { color: theme.text }]}>
+        <Text style={themedStyles.heading}>
           {t("changeTheme")}
         </Text>
 
-        <View style={styles.list}>
+        <View style={BaseStyles.gap16}>
           {options.map((option) => {
             const isSelected = themeMode === option.key;
             return (
               <Pressable
                 key={option.key}
                 style={[
-                  styles.optionButton,
+                  themedStyles.settingsButton,
                   {
                     borderColor: theme.text,
                     backgroundColor: isSelected
@@ -61,7 +66,7 @@ export default function ChangeThemeScreen() {
                 onPress={() => setThemeMode(option.key)}
                 testID={`theme-${option.key}`}
               >
-                <View style={styles.optionRow}>
+                <View style={[BaseStyles.rowCenter, BaseStyles.gap16]}>
                   <MaterialIcons
                     name={option.icon}
                     size={22}
@@ -69,10 +74,9 @@ export default function ChangeThemeScreen() {
                   />
                   <Text
                     style={[
-                      styles.optionText,
+                      themedStyles.text,
                       {
-                        color: theme.text,
-                        fontWeight: isSelected ? "700" : "600",
+                        fontWeight: isSelected ? "700" : "500",
                       },
                     ]}
                   >
@@ -87,33 +91,3 @@ export default function ChangeThemeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  list: {
-    gap: 16,
-  },
-  optionButton: {
-    padding: 16,
-    borderRadius: 4,
-    borderWidth: 2,
-  },
-  optionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  optionText: {
-    fontSize: 18,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-});
