@@ -25,6 +25,15 @@ export default function SettingsLayout() {
         }}
       />
       <Stack.Screen
+        name="admin/generateClassCode"
+        options={{
+          headerBackTitle: "Admin Dashboard",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: t("generateClassCode"),
+        }}
+      />
+      <Stack.Screen
         name="lang/languageSelection"
         options={{
           headerBackTitle: "",
