@@ -15,7 +15,7 @@ export default function Scoreboard(props: ScoreboardProps) {
   const { t } = useTranslation("stats");
   const userPoints = props.points ?? 250;
   const maxScore = Math.max(...props.scores, userPoints, 1);
-  const placeholderCount = 8;
+  const placeholderCount = 12;
 
   const ranked = props.entities
     .map((entity, index) => ({
