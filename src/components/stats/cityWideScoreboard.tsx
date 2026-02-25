@@ -20,7 +20,7 @@ export default function CityScoreboard() {
           "Tiller ungdomskole",
         ]}
         scores={[1200, 950, 800, 750, 600, 580, 520, 480, 450, 420, 380, 340]}
-        scoreboardType="cityWide"
+        scoreboardType="cityScoreboard"
       />
     </View>
   );

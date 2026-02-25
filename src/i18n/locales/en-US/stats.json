@@ -1,5 +1,7 @@
 {
   "classScoreboard": "Class",
-  "cityScoreboard": "City",
-  "schoolScoreboard": "School"
+  "cityScoreboard": "County",
+  "schoolScoreboard": "School",
+  "scoreboardSubtitle": "Top List",
+  "yourPoints": "Your Points"
 }
