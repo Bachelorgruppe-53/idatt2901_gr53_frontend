@@ -21,6 +21,7 @@ export default function SchoolScoreboard() {
   const [entities, setEntities] = useState<string[]>([]);
   const [scores, setScores] = useState<number[]>([]);
   const [points, setPoints] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -44,7 +45,6 @@ export default function SchoolScoreboard() {
           return null;
         }
 
-        console.log("User school:", summary.schoolName);
         return summary;
       } catch (err) {
         if (isAxiosError(err)) {
@@ -107,6 +107,7 @@ export default function SchoolScoreboard() {
 
     const loadSchoolClasses = async () => {
       try {
+        setIsLoading(true);
         setError(null);
 
         // First fetch user summary to get school name
@@ -144,6 +145,8 @@ export default function SchoolScoreboard() {
       } catch (error) {
         console.error("Failed to load school classes:", error);
         setError("Failed to load school classes");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -163,9 +166,10 @@ export default function SchoolScoreboard() {
       <Scoreboard
         entities={entities}
         scores={scores}
-        scoreboardType="schoolWide"
+        scoreboardType="schoolScoreboard"
         pointsLabel="yourPoints"
         points={points}
+        isLoading={isLoading}
       />
     </View>
   );
