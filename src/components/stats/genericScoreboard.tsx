@@ -7,11 +7,13 @@ type ScoreboardProps = {
   scores: number[];
   scoreboardType: string;
   isLoading?: boolean;
+  points?: number;
+  pointsLabel?: string;
 };
 
 export default function Scoreboard(props: ScoreboardProps) {
   const { t } = useTranslation("stats");
-  const userPoints = 250;
+  const userPoints = props.points ?? 250;
   const maxScore = Math.max(...props.scores, userPoints, 1);
   const placeholderCount = 8;
 
@@ -84,7 +86,7 @@ export default function Scoreboard(props: ScoreboardProps) {
 
           <View style={styles.userChip}>
             <Text style={styles.userChipLabel}>
-              {t("yourPoints", "Dine poeng")}
+              {t(props.pointsLabel ?? "yourPoints", "Dine poeng")}
             </Text>
             <Text style={styles.userChipValue}>{userPoints}p</Text>
           </View>

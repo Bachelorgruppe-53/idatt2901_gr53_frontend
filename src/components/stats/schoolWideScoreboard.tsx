@@ -20,6 +20,7 @@ import { StyleSheet, Text, View } from "react-native";
 export default function SchoolScoreboard() {
   const [entities, setEntities] = useState<string[]>([]);
   const [scores, setScores] = useState<number[]>([]);
+  const [points, setPoints] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function SchoolScoreboard() {
         );
 
         const summary = response.data;
+        setPoints(summary.points);
         if (!summary.schoolName) {
           setError("User is not registered to a school");
           return null;
@@ -162,6 +164,8 @@ export default function SchoolScoreboard() {
         entities={entities}
         scores={scores}
         scoreboardType="schoolWide"
+        pointsLabel="yourPoints"
+        points={points}
       />
     </View>
   );
