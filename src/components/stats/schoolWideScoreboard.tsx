@@ -17,6 +17,11 @@ import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+/**
+ * School-wide scoreboard that lists all classes in the user's school.
+ *
+ * @returns JSX.Element
+ */
 export default function SchoolScoreboard() {
   const [entities, setEntities] = useState<string[]>([]);
   const [scores, setScores] = useState<number[]>([]);
@@ -26,6 +31,7 @@ export default function SchoolScoreboard() {
   const [userClass, setUserClass] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch user summary to obtain school and class context.
     const getSummary = async (): Promise<UserSummary | null> => {
       const userId = await ensureUserId();
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
@@ -65,6 +71,7 @@ export default function SchoolScoreboard() {
       }
     };
 
+    // Normalize responses that may come as paged or raw arrays.
     const normalizeSchoolClasses = (
       response: GetSchoolClassesResponse,
     ): SchoolClassSummary[] | null => {
@@ -83,6 +90,7 @@ export default function SchoolScoreboard() {
       return null;
     };
 
+    // Fetch all classes for a given school name.
     const getSchoolClasses = async (
       name: string,
     ): Promise<GetSchoolClassesResponse> => {
@@ -105,12 +113,13 @@ export default function SchoolScoreboard() {
       return response.data;
     };
 
+    // Load school classes and map them into the scoreboard.
     const loadSchoolClasses = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // First fetch user summary to get school name
+        // First fetch user summary to get school name.
         const summary = await getSummary();
         if (!summary) {
           return;

@@ -1,10 +1,16 @@
 import { StyleSheet, View } from "react-native";
 import Scoreboard from "./genericScoreboard";
 
+/**
+ * City-wide scoreboard showing a static list of schools.
+ *
+ * @returns JSX.Element
+ */
 export default function CityScoreboard() {
   return (
     <View style={styles.screen}>
       <Scoreboard
+        // Static data placeholder; replace with API data when available.
         entities={[
           "Cissi Klein vgs",
           "Thora Storm vgs",

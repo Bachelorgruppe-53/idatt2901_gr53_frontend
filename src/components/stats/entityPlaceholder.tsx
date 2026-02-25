@@ -1,5 +1,10 @@
 import { StyleSheet, View } from "react-native";
 
+/**
+ * Placeholder for scoreboard entities to render while page loads
+ *
+ * @returns JSX.Element
+ */
 export default function EntityPlaceholder() {
   return (
     <View style={styles.row}>

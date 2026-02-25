@@ -16,6 +16,11 @@ import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+/**
+ * Class-wide scoreboard that lists all members of the user's class.
+ *
+ * @returns JSX.Element
+ */
 export default function ClassScoreboard() {
   const [entities, setEntities] = useState<string[]>([]);
   const [scores, setScores] = useState<number[]>([]);
@@ -25,6 +30,7 @@ export default function ClassScoreboard() {
   const [currentNickname, setCurrentNickname] = useState<string>("");
 
   useEffect(() => {
+    // Fetch user summary to obtain class code and current nickname.
     const getSummary = async (): Promise<UserSummary | null> => {
       const userId = await ensureUserId();
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
@@ -65,6 +71,7 @@ export default function ClassScoreboard() {
       }
     };
 
+    // Fetch class members by class code.
     const getClassMembers = async (code: string): Promise<GetClassResponse> => {
       const requestBody: GetClassRequest = {
         code,
@@ -86,12 +93,13 @@ export default function ClassScoreboard() {
       return response.data;
     };
 
+    // Load and map class members into the scoreboard.
     const loadClassMembers = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // First fetch user summary to get class code
+        // First fetch user summary to get class code.
         const summary = await getSummary();
         if (!summary) {
           return;

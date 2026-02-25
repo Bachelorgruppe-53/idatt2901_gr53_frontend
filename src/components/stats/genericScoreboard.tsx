@@ -12,12 +12,24 @@ type ScoreboardProps = {
   highlightedEntity?: string;
 };
 
+/**
+ * Generic scoreboard that ranks entities by score and renders a simple bar chart.
+ *
+ * @param props.entities Names to display (same order as scores).
+ * @param props.scores Points per entity.
+ * @param props.scoreboardType i18n key for the title.
+ * @param props.isLoading Show placeholders while data loads.
+ * @param props.points Points to show in the header chip (defaults to 250).
+ * @param props.pointsLabel i18n key for the chip label.
+ * @param props.highlightedEntity Entity name to visually emphasize.
+ */
 export default function Scoreboard(props: ScoreboardProps) {
   const { t } = useTranslation("stats");
   const userPoints = props.points ?? 250;
   const maxScore = Math.max(...props.scores, userPoints, 1);
   const placeholderCount = 12;
 
+  // Pair entities with scores and sort descending for ranking.
   const ranked = props.entities
     .map((entity, index) => ({
       entity,
@@ -25,6 +37,7 @@ export default function Scoreboard(props: ScoreboardProps) {
     }))
     .sort((a, b) => b.score - a.score);
 
+  // Deterministic color from entity name for rank badge.
   const getEntityBadgeStyle = (entity: string) => {
     let hash = 0;
 
@@ -100,6 +113,7 @@ export default function Scoreboard(props: ScoreboardProps) {
                 ))
               : ranked.map((entry, index) => {
                   const rank = index + 1;
+                  // Width is relative to the max score to keep bars proportional.
                   const barWidth = `${Math.round(
                     (entry.score / maxScore) * 100,
                   )}%`;
