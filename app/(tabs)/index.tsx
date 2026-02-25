@@ -1,14 +1,15 @@
-import JoinClassModal from "@/src/components/joinClass";
+import { registerDevice } from "@/services/authService";
 import AboutCareer from "@/src/components/aboutCareer";
+import JoinClassModal from "@/src/components/joinClass";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
-import { router } from "expo-router";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -94,12 +95,12 @@ export default function Index() {
           { backgroundColor: theme.button },
         ]}
         onPress={() =>
-          isReady ? alert("midlertidig alert - karrieretesten!") : null
+          registerDevice().then(() => router.push("/(tabs)/stats"))
         }
         disabled={!isReady}
       >
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          {t("takeTest")}
+          {t("registerDevice(TEMP)")}
         </Text>
       </Pressable>
 
