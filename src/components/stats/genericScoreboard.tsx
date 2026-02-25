@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   },
 
   rowHighlighted: {
-    backgroundColor: "#00000033",
+    // backgroundColor: "#00000033",
     // borderRadius: 12,
     // padding: 6,
   },
