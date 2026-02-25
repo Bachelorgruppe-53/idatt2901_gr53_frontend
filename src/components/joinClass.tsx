@@ -1,5 +1,7 @@
-import axios from "axios";
-import React, { useState } from "react";
+import { getApiBaseUrl } from "@/services/apiConfig";
+import { ensureUserId } from "@/services/authService";
+import axios, { isAxiosError } from "axios";
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Colors } from "../constants/Colors";
 import { useThemeColor } from "../hooks/useThemeColor";
@@ -20,7 +22,7 @@ const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
   const [error, setError] = useState("");
   const theme = useThemeColor();
 
-  const validateAndSubmit = () => {
+  const validateAndSubmit = async () => {
     // Clear previous error
     setError("");
 
@@ -43,19 +45,40 @@ const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
     }
 
     // If all validations pass
-    axios
-      .post("https://localhost:8080/class/join", { code: classCode })
-      // TODO: send info om bruker også
-      .then((response) => {
-        // Handle success (e.g., show success message, update UI)
-        alert("Du har blitt med i klassen!");
-        onClose();
-      })
-      .catch((error) => {
-        // Handle error (e.g., show error message)
-        setError("Feil ved tilkobling til serveren. Vennligst prøv igjen.");
-      });
-    onClose();
+
+    console.log("Submitting class code:", classCode);
+    try {
+      const userId = await ensureUserId();
+      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+      const response = await axios.post(
+        `${baseUrl}/user/join`,
+        { code: classCode },
+        { headers: { "X-User-ID": userId } },
+      );
+
+      console.log("Successfully joined class:", response.data);
+      alert("Du har blitt med i klassen!");
+      onClose();
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const backendMessage =
+          typeof error.response?.data === "string"
+            ? error.response.data
+            : error.response?.data && typeof error.response.data === "object"
+              ? JSON.stringify(error.response.data)
+              : error.message;
+
+        console.error("Join class failed:", backendMessage);
+        setError(
+          backendMessage ||
+            "Feil ved tilkobling til serveren. Vennligst prøv igjen.",
+        );
+        return;
+      }
+
+      console.error("Join class failed:", error);
+      setError("Feil ved tilkobling til serveren. Vennligst prøv igjen.");
+    }
   };
 
   return (
