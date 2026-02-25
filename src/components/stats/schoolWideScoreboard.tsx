@@ -23,6 +23,7 @@ export default function SchoolScoreboard() {
   const [points, setPoints] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [userClass, setUserClass] = useState<string | null>(null);
 
   useEffect(() => {
     const getSummary = async (): Promise<UserSummary | null> => {
@@ -39,7 +40,7 @@ export default function SchoolScoreboard() {
         );
 
         const summary = response.data;
-        setPoints(summary.points);
+        setUserClass(summary.className);
         if (!summary.schoolName) {
           setError("User is not registered to a school");
           return null;
@@ -101,7 +102,6 @@ export default function SchoolScoreboard() {
         requestBody,
         { headers },
       );
-
       return response.data;
     };
 
@@ -142,6 +142,11 @@ export default function SchoolScoreboard() {
 
         setEntities(classes.map((item) => item.className));
         setScores(classes.map((item) => item.points));
+
+        const highlightedClass = classes.find(
+          (item) => item.className === summary.className,
+        );
+        setPoints(highlightedClass?.points ?? 0);
       } catch (error) {
         console.error("Failed to load school classes:", error);
         setError("Failed to load school classes");
@@ -167,9 +172,10 @@ export default function SchoolScoreboard() {
         entities={entities}
         scores={scores}
         scoreboardType="schoolScoreboard"
-        pointsLabel="yourPoints"
+        pointsLabel="classPoints"
         points={points}
         isLoading={isLoading}
+        highlightedEntity={userClass ?? undefined}
       />
     </View>
   );

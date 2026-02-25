@@ -9,6 +9,7 @@ type ScoreboardProps = {
   isLoading?: boolean;
   points?: number;
   pointsLabel?: string;
+  highlightedEntity?: string;
 };
 
 export default function Scoreboard(props: ScoreboardProps) {
@@ -86,7 +87,7 @@ export default function Scoreboard(props: ScoreboardProps) {
 
           <View style={styles.userChip}>
             <Text style={styles.userChipLabel}>
-              {t(props.pointsLabel ?? "yourPoints", "Dine poeng")}
+              {t(props.pointsLabel ?? "yourPoints")}
             </Text>
             <Text style={styles.userChipValue}>{userPoints}p</Text>
           </View>
@@ -102,9 +103,18 @@ export default function Scoreboard(props: ScoreboardProps) {
                   const barWidth = `${Math.round(
                     (entry.score / maxScore) * 100,
                   )}%`;
+                  const isHighlighted =
+                    props.highlightedEntity &&
+                    entry.entity === props.highlightedEntity;
 
                   return (
-                    <View key={`${entry.entity}-${rank}`} style={styles.row}>
+                    <View
+                      key={`${entry.entity}-${rank}`}
+                      style={[
+                        styles.row,
+                        isHighlighted && styles.rowHighlighted,
+                      ]}
+                    >
                       <View
                         style={[
                           styles.rankBadge,
@@ -211,6 +221,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     width: "100%",
+  },
+
+  rowHighlighted: {
+    backgroundColor: "#00000033",
+    // borderRadius: 12,
+    // padding: 6,
   },
 
   rankBadge: {
