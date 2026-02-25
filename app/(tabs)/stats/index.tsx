@@ -22,9 +22,9 @@ export default function StatsScreen() {
           {selectedIndex === 0 ? (
             <ClassScoreboard />
           ) : selectedIndex === 1 ? (
-            <CityScoreboard />
-          ) : (
             <SchoolScoreboard />
+          ) : (
+            <CityScoreboard />
           )}
         </View>
 
@@ -32,8 +32,8 @@ export default function StatsScreen() {
           <SegmentedControl
             values={[
               t("classScoreboard"),
-              t("cityScoreboard"),
               t("schoolScoreboard"),
+              t("cityScoreboard"),
             ]}
             selectedIndex={selectedIndex}
             onChange={(event) => {
