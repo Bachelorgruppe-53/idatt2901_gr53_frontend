@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store";
 
 const TOKEN_KEY = "admin_auth_token";
 const REFRESH_TOKEN_KEY = "admin_refresh_token";
+const USER_ID_KEY = "user_id";
 
 /**
  * Store authentication token securely
@@ -63,6 +64,33 @@ export const getRefreshToken = async (): Promise<string | null> => {
   }
 };
 
+export const saveUserId = async (userId: string): Promise<void> => {
+  try {
+    await SecureStore.setItemAsync(USER_ID_KEY, userId);
+  } catch (error) {
+    console.error("Error saving user id:", error);
+    throw error;
+  }
+};
+
+export const getUserId = async (): Promise<string | null> => {
+  try {
+    return await SecureStore.getItemAsync(USER_ID_KEY);
+  } catch (error) {
+    console.error("Error retrieving user id:", error);
+    return null;
+  }
+};
+
+export const deleteUserId = async (): Promise<void> => {
+  try {
+    await SecureStore.deleteItemAsync(USER_ID_KEY);
+  } catch (error) {
+    console.error("Error deleting user id:", error);
+    throw error;
+  }
+};
+
 /**
  * Delete all stored tokens
  */
@@ -70,6 +98,7 @@ export const clearTokens = async (): Promise<void> => {
   try {
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+    await SecureStore.deleteItemAsync(USER_ID_KEY);
   } catch (error) {
     console.error("Error clearing tokens:", error);
     throw error;
