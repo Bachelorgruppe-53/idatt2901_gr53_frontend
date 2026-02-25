@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: 40,
+    paddingHorizontal: 30,
     paddingVertical: 15,
   },
   segmentedControl: {

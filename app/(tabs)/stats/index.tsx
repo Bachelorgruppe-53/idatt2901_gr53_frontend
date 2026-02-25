@@ -20,9 +20,9 @@ export default function StatsScreen() {
       >
         <View style={styles.content}>
           {selectedIndex === 0 ? (
-            <CityScoreboard />
-          ) : selectedIndex === 1 ? (
             <ClassScoreboard />
+          ) : selectedIndex === 1 ? (
+            <CityScoreboard />
           ) : (
             <SchoolScoreboard />
           )}
