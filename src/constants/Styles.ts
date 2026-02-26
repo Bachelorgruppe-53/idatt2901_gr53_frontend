@@ -36,113 +36,131 @@ const FontWeight = {
 };
 
 export const BaseStyles = StyleSheet.create({
-    // Layout
-    flex: { flex: 1 },
-    row: { flexDirection: "row" },
-    center: { justifyContent: "center", alignItems: "center" },
+  // Layout
+  flex: { flex: 1 },
+  row: { flexDirection: "row" },
+  center: { justifyContent: "center", alignItems: "center" },
+  alignCenter: { alignItems: "center" },
 
-    rowCenter: { flexDirection: "row", justifyContent: "center", alignItems: "center" },
+  rowCenter: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
-    safeArea: { flex: 1 },
-    // Spacing
-    gap4: {gap: Spacing.xs},
-    gap8: {gap: Spacing.sm},
-    gap16: {gap: Spacing.md},
-    gap24: {gap: Spacing.lg},
-    gap32: {gap: Spacing.xl},
-    gap48: {gap: Spacing.xxl},
+  safeArea: { flex: 1 },
 
-    // padding
-    p4: {padding: Spacing.xs},
-    p8: {padding: Spacing.sm},
-    p16: {padding: Spacing.md},
-    p24: {padding: Spacing.lg},
-    p32: {padding: Spacing.xl},
-    p48: {padding: Spacing.xxl},
+  // Spacing
+  gap4: { gap: Spacing.xs },
+  gap8: { gap: Spacing.sm },
+  gap16: { gap: Spacing.md },
+  gap24: { gap: Spacing.lg },
+  gap32: { gap: Spacing.xl },
+  gap48: { gap: Spacing.xxl },
 
-    px4: {paddingHorizontal: Spacing.xs},
-    px8: {paddingHorizontal: Spacing.sm},
-    px16: {paddingHorizontal: Spacing.md},
-    px24: {paddingHorizontal: Spacing.lg},
-    px32: {paddingHorizontal: Spacing.xl},
-    px48: {paddingHorizontal: Spacing.xxl},
+  // padding
+  p4: { padding: Spacing.xs },
+  p8: { padding: Spacing.sm },
+  p16: { padding: Spacing.md },
+  p24: { padding: Spacing.lg },
+  p32: { padding: Spacing.xl },
+  p48: { padding: Spacing.xxl },
 
-    py4: {paddingVertical: Spacing.xs},
-    py8: {paddingVertical: Spacing.sm},
-    py16: {paddingVertical: Spacing.md},
-    py24: {paddingVertical: Spacing.lg},
-    py32: {paddingVertical: Spacing.xl},
-    py48: {paddingVertical: Spacing.xxl},
+  px4: { paddingHorizontal: Spacing.xs },
+  px8: { paddingHorizontal: Spacing.sm },
+  px16: { paddingHorizontal: Spacing.md },
+  px24: { paddingHorizontal: Spacing.lg },
+  px32: { paddingHorizontal: Spacing.xl },
+  px48: { paddingHorizontal: Spacing.xxl },
 
-    // Margin
-    m4: {margin: Spacing.xs},
-    m8: {margin: Spacing.sm},
-    m16: {margin: Spacing.md},
-    m24: {margin: Spacing.lg},
-    m32: {margin: Spacing.xl},
-    m48: {margin: Spacing.xxl},
+  py4: { paddingVertical: Spacing.xs },
+  py8: { paddingVertical: Spacing.sm },
+  py16: { paddingVertical: Spacing.md },
+  py24: { paddingVertical: Spacing.lg },
+  py32: { paddingVertical: Spacing.xl },
+  py48: { paddingVertical: Spacing.xxl },
 
-    mx4: {marginHorizontal: Spacing.xs},
-    mx8: {marginHorizontal: Spacing.sm},
-    mx16: {marginHorizontal: Spacing.md},
-    mx24: {marginHorizontal: Spacing.lg},
-    mx32: {marginHorizontal: Spacing.xl},
-    mx48: {marginHorizontal: Spacing.xxl},
+  // Margin
+  m4: { margin: Spacing.xs },
+  m8: { margin: Spacing.sm },
+  m16: { margin: Spacing.md },
+  m24: { margin: Spacing.lg },
+  m32: { margin: Spacing.xl },
+  m48: { margin: Spacing.xxl },
 
-    my4: {marginVertical: Spacing.xs},
-    my8: {marginVertical: Spacing.sm},
-    my16: {marginVertical: Spacing.md},
-    my24: {marginVertical: Spacing.lg},
-    my32: {marginVertical: Spacing.xl},
-    my48: {marginVertical: Spacing.xxl},
+  mx4: { marginHorizontal: Spacing.xs },
+  mx8: { marginHorizontal: Spacing.sm },
+  mx16: { marginHorizontal: Spacing.md },
+  mx24: { marginHorizontal: Spacing.lg },
+  mx32: { marginHorizontal: Spacing.xl },
+  mx48: { marginHorizontal: Spacing.xxl },
 
-    mb16: {marginBottom: Spacing.md},
-    mt16: {marginTop: Spacing.md},
-    ml16: {marginLeft: Spacing.md},
-    mr16: {marginRight: Spacing.md},
+  my4: { marginVertical: Spacing.xs },
+  my8: { marginVertical: Spacing.sm },
+  my16: { marginVertical: Spacing.md },
+  my24: { marginVertical: Spacing.lg },
+  my32: { marginVertical: Spacing.xl },
+  my48: { marginVertical: Spacing.xxl },
 
-    // Size
-    wFull: { width: "100%" },
-    hFull: { height: "100%" },
+  mb16: { marginBottom: Spacing.md },
+  mt16: { marginTop: Spacing.md },
+  ml16: { marginLeft: Spacing.md },
+  mr16: { marginRight: Spacing.md },
 
-    w80: { width: "80%" },
+  // Size
+  wFull: { width: "100%" },
+  hFull: { height: "100%" },
 
-    // Border Radius
-    rounded4: {borderRadius: BorderRadius.sm},
-    rounded8: {borderRadius: BorderRadius.md},
-    rounded12: {borderRadius: BorderRadius.lg},
-    rounded16: {borderRadius: BorderRadius.xl},
-    roundedFull: {borderRadius: BorderRadius.round},
-    
-    // typography
-    textXs: { fontSize: Typography.xs },
-    textSm: { fontSize: Typography.sm },
-    textBase: { fontSize: Typography.base },
-    textLg: { fontSize: Typography.lg },
-    textXl: { fontSize: Typography.xl },
-    textXxl: { fontSize: Typography.xxl },
-    textXxxl: { fontSize: Typography.xxxl },
-    
-    fontRegular: { fontWeight: FontWeight.regular },
-    fontMedium: { fontWeight: FontWeight.medium },
-    fontSemibold: { fontWeight: FontWeight.semibold },
-    fontBold: { fontWeight: FontWeight.bold },
-    
-    textCenter: { textAlign: "center" },
-    textLeft: { textAlign: "left" },
-    textRight: { textAlign: "right" },
-})
+  w80: { width: "80%" },
 
+  // Border Radius
+  rounded4: { borderRadius: BorderRadius.sm },
+  rounded8: { borderRadius: BorderRadius.md },
+  rounded12: { borderRadius: BorderRadius.lg },
+  rounded16: { borderRadius: BorderRadius.xl },
+  roundedFull: { borderRadius: BorderRadius.round },
+
+  // typography
+  textXs: { fontSize: Typography.xs },
+  textSm: { fontSize: Typography.sm },
+  textBase: { fontSize: Typography.base },
+  textLg: { fontSize: Typography.lg },
+  textXl: { fontSize: Typography.xl },
+  textXxl: { fontSize: Typography.xxl },
+  textXxxl: { fontSize: Typography.xxxl },
+
+  fontRegular: { fontWeight: FontWeight.regular },
+  fontMedium: { fontWeight: FontWeight.medium },
+  fontSemibold: { fontWeight: FontWeight.semibold },
+  fontBold: { fontWeight: FontWeight.bold },
+
+  textCenter: { textAlign: "center" },
+  textLeft: { textAlign: "left" },
+  textRight: { textAlign: "right" },
+
+  // containers
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    gap: 20,
+    width: "100%",
+    padding: 40,
+    marginTop: 80,
+  },
+});
 
 // styles using themecolors
-export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.dark) =>
+export const createThemedStyles = (
+  theme: typeof Colors.light | typeof Colors.dark,
+) =>
   StyleSheet.create({
     // containers
     container: {
-        flex: 1,
-        backgroundColor: theme.background,
-        justifyContent: "center",
-        alignItems: "center",
+      flex: 1,
+      backgroundColor: theme.background,
+      justifyContent: "center",
+      alignItems: "center",
     },
     containerAlign: {
       flex: 1,
@@ -150,61 +168,67 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       justifyContent: "center",
     },
     card: {
-        backgroundColor: theme.backgroundSecondary,
-        borderRadius: BorderRadius.md,
-        padding: Spacing.md,
+      backgroundColor: theme.backgroundSecondary,
+      borderRadius: BorderRadius.md,
+      padding: Spacing.md,
     },
     backgroundFlex: {
-        flex: 1,
-        backgroundColor: theme.background,
+      flex: 1,
+      backgroundColor: theme.background,
     },
     settingsSection: {
       width: "100%",
-      paddingHorizontal: Spacing.md
+      paddingHorizontal: Spacing.md,
+    },
+    content: {
+      padding: Spacing.xl,
+      justifyContent: "center",
+      alignItems: "center",
+      flex: 1,
     },
 
     // buttons
     button: {
-        backgroundColor: theme.button,
-        paddingVertical: Spacing.md,
-        paddingHorizontal: Spacing.lg,
-        borderRadius: BorderRadius.md,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: Spacing.md,
-        width: "80%",
-        marginVertical: Spacing.sm,
+      backgroundColor: theme.button,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.lg,
+      borderRadius: BorderRadius.md,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: Spacing.md,
+      width: "80%",
+      marginVertical: Spacing.sm,
     },
     buttonRed: {
-        backgroundColor: Colors.brand.red,
-        paddingVertical: Spacing.md,
-        paddingHorizontal: Spacing.lg,
-        borderRadius: BorderRadius.md,
-        alignItems: "center",
-        justifyContent: "center", 
+      backgroundColor: Colors.brand.red,
+      paddingVertical: Spacing.md,
+      paddingHorizontal: Spacing.lg,
+      borderRadius: BorderRadius.md,
+      alignItems: "center",
+      justifyContent: "center",
     },
     logoutButton: {
-        position: "absolute",
-        top: 70,
-        right: 20,
-        padding: 10,
-        borderRadius: 5,
-        backgroundColor: Colors.brand.red,
+      position: "absolute",
+      top: 70,
+      right: 20,
+      padding: 10,
+      borderRadius: 5,
+      backgroundColor: Colors.brand.red,
     },
     buttonText: {
-        color: theme.buttontext,
-        fontSize: Typography.base,
-        fontWeight: FontWeight.medium,
+      color: theme.buttontext,
+      fontSize: Typography.base,
+      fontWeight: FontWeight.medium,
     },
     buttonRound: {
-        backgroundColor: theme.button,
-        padding: Spacing.md,
-        borderRadius: BorderRadius.round,
-        alignItems: "center",
-        justifyContent: "center",
-        marginVertical: Spacing.sm,
-        width: 70,
-        height: 70,
+      backgroundColor: theme.button,
+      padding: Spacing.md,
+      borderRadius: BorderRadius.round,
+      alignItems: "center",
+      justifyContent: "center",
+      marginVertical: Spacing.sm,
+      width: 70,
+      height: 70,
     },
     settingsButton: {
       flexDirection: "row",
@@ -214,13 +238,19 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       borderWidth: 2,
       gap: Spacing.md,
     },
-    smallButtton: {
+    smallButton: {
       backgroundColor: theme.button,
       paddingVertical: Spacing.sm,
       paddingHorizontal: Spacing.md,
       borderRadius: BorderRadius.sm,
       alignItems: "center",
       justifyContent: "center",
+    },
+    closeButton: {
+      position: "absolute",
+      top: 40,
+      right: 20,
+      padding: 10,
     },
 
     // text
@@ -246,6 +276,11 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       color: theme.text,
       fontSize: Typography.base,
       fontWeight: FontWeight.bold,
+    },
+    semiboldText: {
+      color: theme.text,
+      fontSize: Typography.base,
+      fontWeight: FontWeight.semibold,
     },
     placeholderText: {
       color: theme.placeholder,
@@ -277,6 +312,9 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
     separator: {
       height: 1,
       backgroundColor: theme.border,
+      alignSelf: "stretch",
+      marginVertical: Spacing.sm,
+      marginHorizontal: Spacing.md,
     },
     separatorVertical: {
       width: 1,
@@ -316,6 +354,7 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       width: "80%",
       padding: 20,
       borderRadius: 12,
+      backgroundColor: theme.background,
     },
     modalTitle: {
       fontSize: 18,
@@ -328,4 +367,4 @@ export const createThemedStyles = (theme: typeof Colors.light | typeof Colors.da
       letterSpacing: 1,
       marginBottom: 16,
     },
-})
+  });
