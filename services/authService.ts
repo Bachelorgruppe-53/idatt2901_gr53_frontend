@@ -3,6 +3,7 @@ import {
   clearTokens,
   getToken,
   getUserId,
+  saveNickname,
   saveToken,
   saveUserId,
 } from "@/services/utils/secureStorage";
@@ -59,6 +60,26 @@ const extractUserIdFromResponse = (data: unknown): string | null => {
     readUserUuid(userRecord.id) ??
     readUserUuid(userRecord.sub)
   );
+};
+
+const extractNicknameFromResponse = (data: unknown): string | null => {
+  if (typeof data === "string") {
+    const trimmedNickname = data.trim();
+    return trimmedNickname.length > 0 ? trimmedNickname : null;
+  }
+
+  if (!data || typeof data !== "object") {
+    return null;
+  }
+
+  const record = data as Record<string, unknown>;
+  const nickname = record.nickname;
+  if (typeof nickname !== "string") {
+    return null;
+  }
+
+  const trimmedNickname = nickname.trim();
+  return trimmedNickname.length > 0 ? trimmedNickname : null;
 };
 
 const decodeUserIdFromJwt = (token: string): string | null => {
@@ -147,6 +168,13 @@ export const registerDevice = async (): Promise<string> => {
     }
 
     await saveUserId(userId);
+
+    const nickname = extractNicknameFromResponse(response.data);
+    if (nickname) {
+      await saveNickname(nickname);
+      console.log("Nickname saved from registration:", nickname);
+    }
+
     console.log("Device registered successfully with user ID:", userId);
     return userId;
   } catch (error) {
