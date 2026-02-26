@@ -1,4 +1,6 @@
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { useThemedStyles } from "../hooks/useStyleSheet";
+import { BaseStyles } from "../constants/Styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Href, router } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -23,6 +25,8 @@ export default function SettingsButton({
   labelKey,
 }: SettingsButtonProps) {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
+  
   const { t } = useTranslation("settings");
 
   const handleSettingsPress = () => {
@@ -32,7 +36,7 @@ export default function SettingsButton({
   return (
     <Pressable onPress={handleSettingsPress} style={styles.button}>
       <MaterialIcons name={iconName} size={24} color={theme.text} />
-      <Text style={[styles.buttonText, { color: theme.text }]}>
+      <Text style={[themedStyles.boldText, BaseStyles.mx16]}>
         {t(labelKey)}
       </Text>
     </Pressable>
@@ -47,9 +51,5 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingLeft: 20,
     borderRadius: 8,
-  },
-  buttonText: {
-    marginLeft: 10,
-    fontSize: 16,
   },
 });

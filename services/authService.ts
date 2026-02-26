@@ -4,6 +4,7 @@ import {
   saveToken,
 } from "@/services/utils/secureStorage";
 import axios, { isAxiosError } from "axios";
+import { router } from "expo-router";
 import { Platform } from "react-native";
 
 /**
@@ -121,6 +122,7 @@ export const loginAdmin = async (username: string, password: string) => {
 export const logoutAdmin = async (): Promise<void> => {
   try {
     await clearTokens();
+    router.replace("/settings/admin/login");
   } catch (error) {
     await clearTokens();
     throw error;

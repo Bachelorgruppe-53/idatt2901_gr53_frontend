@@ -213,14 +213,14 @@ export default function GenerateClassCode() {
             </Text>
             <View style={[BaseStyles.rowCenter, {justifyContent: "space-between"}]}>
               <Pressable
-                style={[themedStyles.smallButtton]}
+                style={[themedStyles.smallButton]}
                 onPress={handleCopy}
               >
                 <Text style={themedStyles.buttonText}>Kopier</Text>
               </Pressable>
               <Pressable
                 style={[
-                  themedStyles.smallButtton,
+                  themedStyles.smallButton,
                   { backgroundColor: Colors.brand.red },
                 ]}
                 onPress={() => setShowCodeModal(false)}

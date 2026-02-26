@@ -1,12 +1,10 @@
 import { Separator } from "@/src/components/Separator";
 import SettingsButton from "@/src/components/settingsButton";
-import { Colors } from "@/src/constants/Colors";
 import { useAuth } from "@/src/context/AuthContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { BaseStyles } from "@/src/constants/Styles";
 import { Image } from "expo-image";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -54,7 +52,6 @@ export default function SettingsScreen() {
             {t("aboutUsContent")}
           </Text>
         </View>
-        <Separator />
         <View style={themedStyles.settingsSection}>
           <Text style={[themedStyles.subheading, { marginVertical: 10, textAlign: "left" }]}>
               {t("preferences")}
@@ -116,6 +113,7 @@ export default function SettingsScreen() {
           iconName="feedback"
           labelKey="feedback"
         />
+        <Separator />
       </View>
     </ScrollView>
   );

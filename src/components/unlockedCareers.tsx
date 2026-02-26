@@ -1,6 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, View, Image, Pressable, Modal, ScrollView } from "react-native";
 import { useThemeColor } from "../hooks/useThemeColor";
+import { useThemedStyles } from "../hooks/useStyleSheet";
+import { BaseStyles } from "../constants/Styles";
 import AboutCareer from "./aboutCareer";
 
 /**
@@ -12,6 +14,7 @@ import AboutCareer from "./aboutCareer";
 //TODO: implement functionality to fetch career data dynamically
 export default function Careers() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
 
   const [modalVisible, setModalVisible] = React.useState(false);
   const [selectedCareer, setSelectedCareer] = React.useState<string | null>(null);
@@ -22,9 +25,7 @@ export default function Careers() {
   }
 
   return (
-    <View style={[
-        styles.container,
-        { backgroundColor: theme.background },]}>
+    <View style={themedStyles.container}>
 
         <Modal
             animationType="slide"
@@ -38,48 +39,49 @@ export default function Careers() {
 
         </Modal>
 
-        <ScrollView contentContainerStyle={styles.grid}>
-            <Pressable style={styles.careerItem}
+        <ScrollView contentContainerStyle={BaseStyles.grid}>
+            <Pressable style={[BaseStyles.alignCenter, { width: "28%" }]}
                 onPress={() => handlePress("Sykepleier")}>
                 <Image
                     source={require("../../assets/images/careers/nurse.png")}
                     style={styles.image}/> 
-                <Text style={[styles.careerText, { color: theme.text }]}>Sykepleier</Text>
+                <Text style={[themedStyles.boldText, BaseStyles.my8]}>Sykepleier</Text>
             </Pressable>
-            <Pressable style={styles.careerItem}
+            
+            <Pressable style={[BaseStyles.alignCenter, { width: "28%" }]}
                 onPress={() => handlePress("Jordmor")}>
                 <Image
                     source={require("../../assets/images/careers/midwife.png")}
                     style={styles.image}/> 
-                <Text style={[styles.careerText, { color: theme.text }]}>Jordmor</Text>
+                <Text style={[themedStyles.boldText, BaseStyles.my8]}>Jordmor</Text>
             </Pressable>
-            <Pressable style={styles.careerItem}
+            <Pressable style={[BaseStyles.alignCenter, { width: "28%" }]}
                 onPress={() => handlePress("Utvikler")}>
                 <Image
                     source={require("../../assets/images/careers/developer.png")}
                     style={styles.image}/> 
-                <Text style={[styles.careerText, { color: theme.text }]}>Utvikler</Text>
+                <Text style={[themedStyles.boldText, BaseStyles.my8]}>Utvikler</Text>
             </Pressable>
-            <Pressable style={styles.careerItem}
+            <Pressable style={[BaseStyles.alignCenter, { width: "28%" }]}
                 onPress={() => handlePress("Renholder")}>
                 <Image
                     source={require("../../assets/images/careers/cleaner.png")}
                     style={styles.image}/> 
-                <Text style={[styles.careerText, { color: theme.text }]}>Renholder</Text>
+                <Text style={[themedStyles.boldText, BaseStyles.my8]}>Renholder</Text>
             </Pressable>
-            <Pressable style={styles.careerItem}
+            <Pressable style={[BaseStyles.alignCenter, { width: "28%" }]}
                 onPress={() => handlePress("Kirurg")}>
                 <Image
                     source={require("../../assets/images/careers/surgeon.png")}
                     style={styles.image}/> 
-                <Text style={[styles.careerText, { color: theme.text }]}>Kirurg</Text>
+                <Text style={[themedStyles.boldText, BaseStyles.my8]}>Kirurg</Text>
             </Pressable>
-            <Pressable style={styles.careerItem}
+            <Pressable style={[BaseStyles.alignCenter, { width: "28%" }]}
                 onPress={() => handlePress("Lege")}>
                 <Image
                     source={require("../../assets/images/careers/doctor.png")}
                     style={styles.image}/> 
-                <Text style={[styles.careerText, { color: theme.text }]}>Lege</Text>
+                <Text style={[themedStyles.boldText, BaseStyles.my8]}>Lege</Text>
             </Pressable>
         </ScrollView>   
     </View>
@@ -87,29 +89,6 @@ export default function Careers() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    gap: 20,
-    width: "100%",
-    padding: 40,
-    marginTop: 80,
-  },
-  careerItem: {
-    alignItems: "center",
-    width: "28%",
-  },
-  careerText: {
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: "bold",
-    alignContent: "center",
-  },
   image: {
     width: 60,
     height: 60,

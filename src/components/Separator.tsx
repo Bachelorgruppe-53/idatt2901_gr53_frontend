@@ -1,19 +1,11 @@
-import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { StyleSheet, View } from "react-native";
+import { useThemedStyles } from "../hooks/useStyleSheet";
+import { View } from "react-native";
 
 export function Separator() {
-  const borderColor = useThemeColor();
+  const themedStyles = useThemedStyles();
 
   return (
-    <View style={[styles.separator, { backgroundColor: borderColor.border }]} />
+    <View style={themedStyles.separator}/>
   );
 }
 
-const styles = StyleSheet.create({
-  separator: {
-    alignSelf: "stretch",
-    height: 1,
-    marginHorizontal: 16,
-    marginVertical: 8,
-  },
-});
