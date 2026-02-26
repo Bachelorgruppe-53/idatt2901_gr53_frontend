@@ -1,4 +1,4 @@
-import JoinClassModal from "@/src/components/joinClass";
+import { JoinClassModal } from "@/src/components/joinClass";
 import AboutCareer from "@/src/components/aboutCareer";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
