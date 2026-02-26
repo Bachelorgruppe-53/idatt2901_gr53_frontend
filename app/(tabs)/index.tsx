@@ -1,5 +1,7 @@
-import { JoinClassModal } from "@/src/components/joinClass";
+import { registerDevice } from "@/services/authService";
+import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/aboutCareer";
+import { JoinClassModal } from "@/src/components/joinClass";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
@@ -8,7 +10,6 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
-import { router } from "expo-router";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { BaseStyles } from "@/src/constants/Styles";
 
@@ -26,14 +27,40 @@ export default function Index() {
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
-  const { isScanning, startScanning, stopScanning, permissionError } =
-    useQRScanner();
+  const { isScanning, startScanning, stopScanning } = useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [showCareerModal, setShowCareerModal] = useState(false);
   const [selectedCareer, setSelectedCareer] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
+  const [remountKey, setRemountKey] = useState(0);
 
   const { t } = useTranslation("home");
+
+  const loadNickname = async () => {
+    console.log("Loading nickname from secure storage...");
+    const cached = await getNickname();
+    console.log("Nickname loaded:", cached);
+    if (cached) {
+      setName(cached);
+    }
+  };
+
+  // Load nickname from storage on mount
+  useEffect(() => {
+    console.log("Index component mounted, loading nickname...");
+    void loadNickname();
+  }, []);
+
+  const handleRegisterDevice = async () => {
+    try {
+      await registerDevice();
+      await loadNickname();
+      setRemountKey((prev) => prev + 1);
+    } catch (error) {
+      console.error("Failed to register device:", error);
+      alert(t("registerFailed", "Failed to register device"));
+    }
+  };
 
   const handleScan = (data: string) => {
     stopScanning();
@@ -72,7 +99,10 @@ export default function Index() {
   }
 
   return (
-    <View style={themedStyles.container}>
+    <View
+      key={remountKey}
+      style={themedStyles.container}
+    >
       <Text style={[themedStyles.heading, { position: "absolute", top: "10%" }]}>
         St. Olavs hospital
       </Text>
@@ -88,20 +118,21 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[themedStyles.subheading, { marginBottom: 10 }]}> Hei, du!</Text>
+      <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>{t("hello")},</Text>
+      <Text style={[themedStyles.subheading]}>
+        {name ? name : t("welcomeMessage")}!
+      </Text>
 
       <Pressable
         style={[
           themedStyles.button,
           !isReady && styles.buttonDisabled,
         ]}
-        onPress={() =>
-          isReady ? alert("midlertidig alert - karrieretesten!") : null
-        }
+        onPress={handleRegisterDevice}
         disabled={!isReady}
       >
         <Text style={themedStyles.buttonText}>
-          {t("takeTest")}
+          {/* {t("takeTest")} */} register device (TEMP)
         </Text>
       </Pressable>
 
@@ -144,6 +175,24 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
+  },
+  name: {
+    fontSize: 25,
+    marginTop: 20,
+  },
+  button: {
+    marginTop: 30,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    width: "80%",
+    alignItems: "center",
+  },
+  buttonRound: {
+    marginTop: 30,
+    backgroundColor: Colors.brand.purple || Colors.brand.green,
+    padding: 15,
+    borderRadius: 50,
   },
   buttonDisabled: {
     backgroundColor: Colors.brand.gray,

@@ -3,5 +3,6 @@
   "takeTest": "Ta karrieretesten",
   "joinClass": "Bli med i ein klasse",
   "invalidQR": "Ugyldig QR-kode. Prøv igjen.",
-  "cameraDenied": "Kamera-tilgang nekta. Vennligst gi tillatelse i innstillingane."
+  "cameraDenied": "Kamera-tilgang nekta. Vennligst gi tillatelse i innstillingane.",
+  "hello": "Hei"
 }

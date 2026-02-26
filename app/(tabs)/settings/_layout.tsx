@@ -9,7 +9,7 @@ export default function SettingsLayout() {
       <Stack.Screen
         name="admin/login"
         options={{
-          headerBackTitle: "Settings",
+          headerBackTitle: t("settings"),
           headerTransparent: true,
           headerBackButtonDisplayMode: "minimal",
           headerTitle: "",
@@ -18,7 +18,7 @@ export default function SettingsLayout() {
       <Stack.Screen
         name="admin/dashboard"
         options={{
-          headerBackTitle: "Settings",
+          headerBackTitle: t("settings"),
           headerTransparent: true,
           headerBackButtonDisplayMode: "minimal",
           headerTitle: "",
@@ -36,7 +36,7 @@ export default function SettingsLayout() {
       <Stack.Screen
         name="lang/languageSelection"
         options={{
-          headerBackTitle: "",
+          headerBackTitle: t("settings"),
           headerTransparent: true,
           headerBackButtonDisplayMode: "minimal",
           headerTitle: t("language"),
@@ -45,7 +45,7 @@ export default function SettingsLayout() {
       <Stack.Screen
         name="theme/changeTheme"
         options={{
-          headerBackTitle: "",
+          headerBackTitle: t("settings"),
           headerTransparent: true,
           headerBackButtonDisplayMode: "minimal",
           headerTitle: t("theme"),
@@ -54,7 +54,7 @@ export default function SettingsLayout() {
       <Stack.Screen
         name="feedback/feedbackForm"
         options={{
-          headerBackTitle: "",
+          headerBackTitle: t("settings"),
           headerTransparent: true,
           headerBackButtonDisplayMode: "minimal",
           headerTitle: t("feedback"),

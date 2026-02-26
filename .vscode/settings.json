@@ -13,6 +13,8 @@
     "admin",
     "maps",
     "language",
-    "stylesheet"
+    "stylesheet",
+    "stats",
+    "api"
   ]
 }

@@ -1,0 +1,47 @@
+import Constants from "expo-constants";
+import { Platform } from "react-native";
+
+const DEFAULT_BACKEND_PORT = "8080";
+
+const trimTrailingSlash = (value: string): string => value.replace(/\/$/, "");
+
+const getHostFromExpoConfig = (): string | null => {
+  const hostUri = Constants.expoConfig?.hostUri;
+  if (!hostUri) {
+    return null;
+  }
+
+  const host = hostUri.split(":")[0];
+  return host || null;
+};
+
+const getConfiguredApiUrl = (): string | null => {
+  const value = process.env.EXPO_PUBLIC_API_URL?.trim();
+  if (!value) {
+    return null;
+  }
+
+  return trimTrailingSlash(value);
+};
+
+export const getApiBaseUrl = (): string => {
+  const configuredApiUrl = getConfiguredApiUrl();
+  if (configuredApiUrl) {
+    return configuredApiUrl;
+  }
+
+  if (!__DEV__) {
+    return "";
+  }
+
+  if (Platform.OS === "android") {
+    return `http://10.0.2.2:${DEFAULT_BACKEND_PORT}`;
+  }
+
+  const expoHost = getHostFromExpoConfig();
+  if (expoHost) {
+    return `http://${expoHost}:${DEFAULT_BACKEND_PORT}`;
+  }
+
+  return `http://localhost:${DEFAULT_BACKEND_PORT}`;
+};
