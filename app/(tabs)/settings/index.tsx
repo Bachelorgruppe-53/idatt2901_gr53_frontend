@@ -4,7 +4,6 @@ import { Colors } from "@/src/constants/Colors";
 import { useAuth } from "@/src/context/AuthContext";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { Image } from "expo-image";
-import React from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

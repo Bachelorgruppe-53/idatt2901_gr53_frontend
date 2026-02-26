@@ -12,6 +12,8 @@
     "achievements",
     "admin",
     "maps",
-    "language"
+    "language",
+    "stats",
+    "api"
   ]
 }

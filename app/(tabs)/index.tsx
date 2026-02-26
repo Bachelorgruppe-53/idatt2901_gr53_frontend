@@ -1,5 +1,7 @@
-import JoinClassModal from "@/src/components/joinClass";
+import { registerDevice } from "@/services/authService";
+import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/aboutCareer";
+import JoinClassModal from "@/src/components/joinClass";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
@@ -8,7 +10,6 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
-import { router } from "expo-router";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -23,14 +24,40 @@ import { router } from "expo-router";
 export default function Index() {
   const theme = useThemeColor();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
-  const { isScanning, startScanning, stopScanning, permissionError } =
-    useQRScanner();
+  const { isScanning, startScanning, stopScanning } = useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [showCareerModal, setShowCareerModal] = useState(false);
   const [selectedCareer, setSelectedCareer] = useState<string | null>(null);
   const [name, setName] = useState<string>("");
+  const [remountKey, setRemountKey] = useState(0);
 
   const { t } = useTranslation("home");
+
+  const loadNickname = async () => {
+    console.log("Loading nickname from secure storage...");
+    const cached = await getNickname();
+    console.log("Nickname loaded:", cached);
+    if (cached) {
+      setName(cached);
+    }
+  };
+
+  // Load nickname from storage on mount
+  useEffect(() => {
+    console.log("Index component mounted, loading nickname...");
+    void loadNickname();
+  }, []);
+
+  const handleRegisterDevice = async () => {
+    try {
+      await registerDevice();
+      await loadNickname();
+      setRemountKey((prev) => prev + 1);
+    } catch (error) {
+      console.error("Failed to register device:", error);
+      alert(t("registerFailed", "Failed to register device"));
+    }
+  };
 
   const handleScan = (data: string) => {
     stopScanning();
@@ -69,14 +96,17 @@ export default function Index() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View
+      key={remountKey}
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
       <Text style={[styles.title, { color: theme.text }]}>
         St. Olavs hospital
       </Text>
       <View style={styles.row}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
         <Text style={[styles.favourite, { color: theme.text }]}>
-          {t("favoriteCareer")}
+          {t("favoriteCareer")}r
         </Text>
       </View>
       <View style={styles.imageWrapper}>
@@ -85,7 +115,10 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[styles.name, { color: theme.text }]}> Hei, du!</Text>
+      <Text style={[styles.name, { color: theme.text }]}>{t("hello")},</Text>
+      <Text style={[styles.welcomeMessage, { color: theme.text }]}>
+        {name ? name : t("welcomeMessage")}!
+      </Text>
 
       <Pressable
         style={[
@@ -93,13 +126,11 @@ export default function Index() {
           !isReady && styles.buttonDisabled,
           { backgroundColor: theme.button },
         ]}
-        onPress={() =>
-          isReady ? alert("midlertidig alert - karrieretesten!") : null
-        }
+        onPress={handleRegisterDevice}
         disabled={!isReady}
       >
         <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          {t("takeTest")}
+          {/* {t("takeTest")} */} register device (TEMP)
         </Text>
       </Pressable>
 
@@ -170,6 +201,14 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 25,
     marginTop: 20,
+    textAlign: "center",
+  },
+  welcomeMessage: {
+    fontSize: 25,
+    marginTop: 10,
+    textAlign: "center",
+    paddingHorizontal: 40,
+    fontWeight: "600",
   },
   button: {
     marginTop: 30,
