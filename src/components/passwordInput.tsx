@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { Pressable, TextInput } from "react-native-gesture-handler";
+import { BaseStyles } from "../constants/Styles";
+import { useThemedStyles } from "../hooks/useStyleSheet";
 
 interface PasswordInputProps {
   value: string;
@@ -15,6 +17,8 @@ interface PasswordInputProps {
 const PasswordInput = ({ value, onChangeText, testID }: PasswordInputProps) => {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
+
   const { t } = useTranslation("auth");
   const togglePasswordVisibility = () => {
     setSecureTextEntry(!secureTextEntry);
@@ -23,7 +27,7 @@ const PasswordInput = ({ value, onChangeText, testID }: PasswordInputProps) => {
   return (
     <View
       style={[
-        styles.inputContainer,
+        themedStyles.input,
         { borderColor: theme.text, backgroundColor: theme.background },
       ]}
     >
@@ -41,7 +45,7 @@ const PasswordInput = ({ value, onChangeText, testID }: PasswordInputProps) => {
       />
       <Pressable
         onPress={togglePasswordVisibility}
-        style={styles.iconButton}
+        style={BaseStyles.p8}
         testID={testID ? `${testID}-toggle` : undefined}
       >
         <MaterialIcons
@@ -65,14 +69,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 16,
+    marginVertical: 16,
   },
   input: {
     flex: 1,
     padding: 12,
     fontSize: 16,
-  },
-  iconButton: {
-    padding: 8,
   },
 });

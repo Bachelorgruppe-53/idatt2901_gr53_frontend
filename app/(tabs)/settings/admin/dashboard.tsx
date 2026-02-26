@@ -1,12 +1,12 @@
 import { logoutAdmin } from "@/services/authService";
 import { Colors } from "@/src/constants/Colors";
+import { BaseStyles } from "@/src/constants/Styles";
 import { useAuth } from "@/src/context/AuthContext";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
-import { BaseStyles } from "@/src/constants/Styles";
+import { Pressable, Text, View } from "react-native";
 
 /**
  * Admin dashboard screen component.
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
         onPress={async () => {
           await logoutAdmin();
           setAuthenticated(false);
-          router.back();
+          router.push("/(tabs)/settings/admin/login");
         }}
       >
         <Text style={{ color: Colors.brand.white }}>Logg ut</Text>
@@ -37,9 +37,7 @@ export default function AdminDashboard() {
           size={50}
           color={theme.text}
         />
-        <Text style={themedStyles.heading}>
-          Admin Dashboard
-        </Text>
+        <Text style={themedStyles.heading}>Admin Dashboard</Text>
       </View>
       <Pressable
         style={themedStyles.button}
@@ -56,5 +54,3 @@ export default function AdminDashboard() {
     </View>
   );
 }
-
-
