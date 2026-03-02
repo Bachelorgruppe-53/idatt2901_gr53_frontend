@@ -7,8 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from '../constants/Colors';
 import { useTranslation } from "react-i18next";
-
-
+import { ensureUserId } from '@/services/authService';
 
 /**
  * Component to display detailed information about a career/POI.
@@ -22,13 +21,15 @@ import { useTranslation } from "react-i18next";
  * TODO: Implement "Claim" functionality to allow users to claim a career and earn points.
  */
 
-
 interface PoiDto {
   title: string;
   description: string;
   lat: number;
   lon: number;
   points: number;
+  color: number;
+  area: string;
+  place: string;
 }
 
 interface Props {
@@ -63,19 +64,22 @@ export default function AboutCareer({ careerName, onClose }: Props) {
         setErrorMsg(null);
 
         try {
-        const res = await fetch(`${getBaseURL()}/poi/career`, {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            },
-            body: JSON.stringify({ name: careerName }),
-        });
+          const userId = await ensureUserId();
+          console.log("Fetching career data for:", careerName);
+          console.log("Using user ID:", userId);
+
+          const res = await fetch(`${getBaseURL()}/poi/career`, {
+              method: "POST",
+              headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+              "X-User-ID": userId,
+              },
+              body: JSON.stringify({ name: careerName }),
+          });
 
         if (!res.ok) {
             throw new Error(`Server error: ${res.status}`);
-            setData(null);
-            return;
         }
 
         const json = await res.json() as PoiDto;
@@ -104,11 +108,11 @@ export default function AboutCareer({ careerName, onClose }: Props) {
         <SafeAreaView style={themedStyles.container}>
         <ScrollView contentContainerStyle={themedStyles.content}>
             <View style={BaseStyles.mb16}>
-                <Text style={themedStyles.heading}>
+                <Text style={[themedStyles.heading, BaseStyles.rowCenter, BaseStyles.p8]}>
                     {data?.title || careerName || t("unknownTitle")}
                 </Text>
                 {typeof data?.points === "number" && (
-                    <View style={[BaseStyles.rowCenter, BaseStyles.py4, BaseStyles.gap4]}>
+                    <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
                         <MaterialIcons name="stars" size={16} color={ Colors.brand.darkYellow } />
                         <Text style={themedStyles.semiboldText}>{data.points} {t("points")}</Text>
                     </View>
@@ -118,7 +122,7 @@ export default function AboutCareer({ careerName, onClose }: Props) {
             {errorMsg ? (
             <Text style={themedStyles.text}>{errorMsg}</Text>
             ) : (
-            <Text style={[themedStyles.text, BaseStyles.my16]}>
+            <Text style={[themedStyles.text, BaseStyles.m16]}>
                 {data?.description || t("noDescription")}
             </Text>
             )}
