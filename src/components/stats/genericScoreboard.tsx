@@ -91,7 +91,7 @@ export default function Scoreboard(props: ScoreboardProps) {
   };
 
   return (
-    <View style={themedStyles.container}>
+    <View style={BaseStyles.p24}>
       <View style={styles.card}>
         <View style={styles.header}>
           <View style={BaseStyles.flex}>
@@ -128,7 +128,7 @@ export default function Scoreboard(props: ScoreboardProps) {
                     <View
                       key={`${entry.entity}-${rank}`}
                       style={[
-                        BaseStyles.rowCenter,
+                        BaseStyles.rowCenter, BaseStyles.gap16,
                         isHighlighted && styles.rowHighlighted,
                       ]}
                     >
@@ -142,7 +142,7 @@ export default function Scoreboard(props: ScoreboardProps) {
                       </View>
 
                       <View style={BaseStyles.flex}>
-                        <View style={BaseStyles.rowCenter}>
+                        <View style={[BaseStyles.rowCenter, { justifyContent: "space-between" }]}>
                           <Text
                             style={themedStyles.semiboldText}
                             numberOfLines={1}
@@ -174,8 +174,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 20,
     paddingBottom: 0,
-    paddingHorizontal: 24,
     height: "100%",
+    gap: 12,
   },
 
   header: {

@@ -12,11 +12,11 @@ export default function EntityPlaceholder() {
   const themedStyles = useThemedStyles();
 
   return (
-    <View style={[BaseStyles.rowCenter, BaseStyles.gap16]}>
+    <View style={[BaseStyles.rowCenter]}>
       <View style={styles.rankBadge} />
 
       <View style={BaseStyles.flex}>
-        <View style={[BaseStyles.rowCenter, BaseStyles.mx8, { justifyContent: "space-between" }]}>
+        <View style={[BaseStyles.rowCenter, { justifyContent: "space-between" }]}>
           <View style={styles.placeholderEntity} />
           <View style={styles.placeholderScore} />
         </View>
