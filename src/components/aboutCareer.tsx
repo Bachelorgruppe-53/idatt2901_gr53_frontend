@@ -83,8 +83,6 @@ export default function AboutCareer({ careerName, onClose }: Props) {
         }
 
         const json = await res.json() as PoiDto;
-        console.log("Received POI data:", json); // Add this line
-        console.log("Description:", json.description); // Add this line
         setData(json);
         } catch (err) {
             setErrorMsg(t("fetchError"));
