@@ -1,4 +1,7 @@
 import { StyleSheet, View } from "react-native";
+import { BaseStyles } from "@/src/constants/Styles";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { Colors } from "@/src/constants/Colors";
 
 /**
  * Placeholder for scoreboard entities to render while page loads
@@ -6,12 +9,14 @@ import { StyleSheet, View } from "react-native";
  * @returns JSX.Element
  */
 export default function EntityPlaceholder() {
+  const themedStyles = useThemedStyles();
+
   return (
-    <View style={styles.row}>
+    <View style={[BaseStyles.rowCenter]}>
       <View style={styles.rankBadge} />
 
-      <View style={styles.rowContent}>
-        <View style={styles.rowHeader}>
+      <View style={BaseStyles.flex}>
+        <View style={[BaseStyles.rowCenter, { justifyContent: "space-between" }]}>
           <View style={styles.placeholderEntity} />
           <View style={styles.placeholderScore} />
         </View>
@@ -25,57 +30,35 @@ export default function EntityPlaceholder() {
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    width: "100%",
-  },
-
   rankBadge: {
     width: 34,
     height: 34,
     borderRadius: 12,
-    backgroundColor: "#D6D6D6",
+    backgroundColor: Colors.brand.gray,
     flexShrink: 0,
   },
-
-  rowContent: {
-    flex: 1,
-  },
-
-  rowHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 6,
-  },
-
   placeholderEntity: {
     height: 14,
     width: "60%",
     borderRadius: 8,
-    backgroundColor: "#D6D6D6",
+    backgroundColor: Colors.brand.gray,
   },
-
   placeholderScore: {
     height: 12,
     width: 36,
     borderRadius: 8,
-    backgroundColor: "#D6D6D6",
+    backgroundColor: Colors.brand.gray,
   },
-
   barTrack: {
     height: 8,
     borderRadius: 999,
-    backgroundColor: "#D6D6D6",
+    backgroundColor: Colors.brand.gray,
     overflow: "hidden",
   },
-
   barFill: {
     height: "100%",
     width: "45%",
     borderRadius: 999,
-    backgroundColor: "#C4C4C4",
+    backgroundColor: Colors.brand.gray,
   },
 });

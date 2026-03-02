@@ -1,4 +1,5 @@
 import { StyleSheet, View } from "react-native";
+import { BaseStyles } from "@/src/constants/Styles";
 import Scoreboard from "./genericScoreboard";
 
 /**
@@ -8,7 +9,7 @@ import Scoreboard from "./genericScoreboard";
  */
 export default function CityScoreboard() {
   return (
-    <View style={styles.screen}>
+    <View style={BaseStyles.flex}>
       <Scoreboard
         // Static data placeholder; replace with API data when available.
         entities={[
@@ -31,9 +32,3 @@ export default function CityScoreboard() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-});

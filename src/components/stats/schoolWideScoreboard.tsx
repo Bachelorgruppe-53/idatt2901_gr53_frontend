@@ -16,6 +16,9 @@ import Scoreboard from "@/src/components/stats/genericScoreboard";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { BaseStyles } from "../../constants/Styles";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { ThemeContext } from "@react-navigation/native";
 
 /**
  * School-wide scoreboard that lists all classes in the user's school.
@@ -29,6 +32,7 @@ export default function SchoolScoreboard() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userClass, setUserClass] = useState<string | null>(null);
+  const themedStyles = useThemedStyles();
 
   useEffect(() => {
     // Fetch user summary to obtain school and class context.
@@ -169,14 +173,14 @@ export default function SchoolScoreboard() {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View style={themedStyles.container}>
+        <Text style={themedStyles.errorText}>{error}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.screen}>
+    <View style={BaseStyles.flex}>
       <Scoreboard
         entities={entities}
         scores={scores}
@@ -189,20 +193,3 @@ export default function SchoolScoreboard() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  errorText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
-});

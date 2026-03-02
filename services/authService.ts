@@ -8,6 +8,8 @@ import {
   saveUserId,
 } from "@/services/utils/secureStorage";
 import axios, { isAxiosError } from "axios";
+import { router } from "expo-router";
+import { Platform } from "react-native";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -317,6 +319,7 @@ export const loginAdmin = async (username: string, password: string) => {
 export const logoutAdmin = async (): Promise<void> => {
   try {
     await clearTokens();
+    router.replace("/settings/admin/login");
   } catch (error) {
     await clearTokens();
     throw error;

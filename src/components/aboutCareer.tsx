@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import { useThemeColor } from '../hooks/useThemeColor';
+import { useThemedStyles } from '../hooks/useStyleSheet';
+import { BaseStyles } from '../constants/Styles';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from '../constants/Colors';
@@ -36,6 +38,8 @@ interface Props {
 
 export default function AboutCareer({ careerName, onClose }: Props) {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
+
   const [data, setData] = useState<PoiDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -85,108 +89,48 @@ export default function AboutCareer({ careerName, onClose }: Props) {
         
     };
 
-    load();
-    }, [careerName]);
+  load();
+  }, [careerName]);
 
     if (loading) {
         return (
-        <View style={[styles.container, styles.center, { backgroundColor: theme.background }]}>
+        <View style={themedStyles.container}>
             <ActivityIndicator size="large" color={theme.button} />
         </View>
         );
     }
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-        <ScrollView contentContainerStyle={styles.content}>
-            <View style={styles.header}>
-                <Text style={[styles.title, {color: theme.text }]}>
+        <SafeAreaView style={themedStyles.container}>
+        <ScrollView contentContainerStyle={themedStyles.content}>
+            <View style={BaseStyles.mb16}>
+                <Text style={themedStyles.heading}>
                     {data?.title || careerName || t("unknownTitle")}
                 </Text>
                 {typeof data?.points === "number" && (
-                    <View style={styles.pointsBadge}>
+                    <View style={[BaseStyles.rowCenter, BaseStyles.py4, BaseStyles.gap4]}>
                         <MaterialIcons name="stars" size={16} color={ Colors.brand.darkYellow } />
-                        <Text style={styles.pointsText}>{data.points} {t("points")}</Text>
+                        <Text style={themedStyles.semiboldText}>{data.points} {t("points")}</Text>
                     </View>
                 )}
             </View>
 
             {errorMsg ? (
-            <Text style={[styles.description, { color: theme.text }]}>{errorMsg}</Text>
+            <Text style={themedStyles.text}>{errorMsg}</Text>
             ) : (
-            <Text style={[styles.description, { color: theme.text }]}>
+            <Text style={[themedStyles.text, BaseStyles.my16]}>
                 {data?.description || t("noDescription")}
             </Text>
             )}
 
-            <Pressable style={[styles.button, { backgroundColor: theme.button }]} onPress={() => alert("Claim yrke funksjonalitet kommer snart!")}>
-                <Text style={[styles.link, {color: theme.buttontext }]}>{t("claimButton")}</Text>
+            <Pressable style={themedStyles.button} onPress={() => alert("Claim yrke funksjonalitet kommer snart!")}>
+                <Text style={[themedStyles.buttonText]}>{t("claimButton")}</Text>
             </Pressable>
             
-            <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={[styles.link, {color: theme.button }]}>{t("closeButton")}</Text>
+            <Pressable style={themedStyles.closeButton} onPress={onClose}>
+              <MaterialIcons name="close" size={24} color={theme.text} />
             </Pressable>
         </ScrollView>
-        </SafeAreaView>
+      </SafeAreaView>
     );
-    }  
-
-
-const styles = StyleSheet.create({
-  container: { 
-    flex: 1 
-  },
-  content: { 
-    padding: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1 
-  },
-  title: { 
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20
-  },
-  description: { 
-    fontSize: 16, 
-    marginBottom: 40 
-  },
-  link: { 
-    fontSize: 16, 
-    textDecorationLine: 'underline', 
-  },
-  center: {
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  header: {
-    marginBottom: 16,
-  },
-  pointsBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginTop: 6,
-  },
-  pointsText: {
-    fontWeight: "600",
-  },
-  button: {
-    marginTop: 30,
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 8,
-    width: "80%",
-    alignItems: "center",
-  },
-  closeButton: {
-    marginTop: 30,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: "transparent",
-    },
-});
+  }  

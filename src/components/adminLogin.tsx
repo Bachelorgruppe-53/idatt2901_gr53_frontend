@@ -18,6 +18,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
 import { useThemeColor } from "../hooks/useThemeColor";
 import PasswordInput from "./passwordInput";
+import { useThemedStyles } from "../hooks/useStyleSheet";
+import { BaseStyles } from "../constants/Styles";
+import { ThemeContext } from "@react-navigation/native";
 
 /**
  * Component for admin login screen.
@@ -33,6 +36,7 @@ const AdminLogin = () => {
 
   const router = useRouter();
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
   let errorMessage: string | null = null;
 
   const handleLogin = async (username: string, password: string) => {
@@ -52,20 +56,17 @@ const AdminLogin = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={BaseStyles.flex}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <View
-            style={[styles.container, { backgroundColor: theme.background }]}
+            style={themedStyles.containerAlign}
           >
-            <Text style={[styles.label, { color: theme.text }]}>Username</Text>
+            <Text style={themedStyles.boldText}>Username</Text>
             <TextInput
-              style={[
-                styles.input,
-                { color: theme.text, borderColor: theme.text },
-              ]}
+              style={themedStyles.input}
               onChangeText={setUsername}
               value={username}
               placeholder="Enter username"
@@ -73,8 +74,7 @@ const AdminLogin = () => {
               autoCapitalize="none"
             />
 
-            <Text style={[styles.label, { color: theme.text }]}>Password</Text>
-
+            <Text style={themedStyles.boldText}>Password</Text>
             <PasswordInput
               value={password}
               onChangeText={setPassword}
@@ -86,11 +86,7 @@ const AdminLogin = () => {
               onPress={() => {
                 handleLogin(username, password);
               }}
-              style={{
-                backgroundColor: theme.button,
-                padding: 10,
-                borderRadius: 8,
-              }}
+              style={[themedStyles.button, { width: "100%" }]}
             >
               <View
                 style={{
@@ -104,7 +100,7 @@ const AdminLogin = () => {
                   size={24}
                   color={theme.buttontext}
                 />
-                <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+                <Text style={themedStyles.buttonText}>
                   {" "}
                   Logg inn
                 </Text>
@@ -112,7 +108,7 @@ const AdminLogin = () => {
             </Pressable>
             <View>
               {errorMessage && (
-                <Text style={styles.errorText}>{errorMessage}</Text>
+                <Text style={themedStyles.errorText}>{errorMessage}</Text>
               )}
             </View>
           </View>
@@ -124,43 +120,3 @@ const AdminLogin = () => {
 
 export default AdminLogin;
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    justifyContent: "center",
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  input: {
-    alignSelf: "stretch",
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  button: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  errorText: {
-    color: "red",
-    marginTop: 10,
-    textAlign: "center",
-  },
-});

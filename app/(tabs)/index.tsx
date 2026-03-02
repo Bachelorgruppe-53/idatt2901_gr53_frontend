@@ -1,7 +1,7 @@
 import { registerDevice } from "@/services/authService";
 import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/aboutCareer";
-import JoinClassModal from "@/src/components/joinClass";
+import { JoinClassModal } from "@/src/components/joinClass";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
@@ -10,6 +10,8 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { BaseStyles } from "@/src/constants/Styles";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -23,6 +25,7 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
 
 export default function Index() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
   const { isScanning, startScanning, stopScanning } = useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
@@ -98,15 +101,15 @@ export default function Index() {
   return (
     <View
       key={remountKey}
-      style={[styles.container, { backgroundColor: theme.background }]}
+      style={themedStyles.container}
     >
-      <Text style={[styles.title, { color: theme.text }]}>
+      <Text style={[themedStyles.heading, { position: "absolute", top: "10%" }]}>
         St. Olavs hospital
       </Text>
-      <View style={styles.row}>
+      <View style={[BaseStyles.rowCenter, { position: "absolute", top: "15%" }]} >
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={[styles.favourite, { color: theme.text }]}>
-          {t("favoriteCareer")}r
+        <Text style={themedStyles.subheading}>
+          {t("favoriteCareer")}
         </Text>
       </View>
       <View style={styles.imageWrapper}>
@@ -115,44 +118,40 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[styles.name, { color: theme.text }]}>{t("hello")},</Text>
-      <Text style={[styles.welcomeMessage, { color: theme.text }]}>
+      <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>{t("hello")},</Text>
+      <Text style={[themedStyles.subheading]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
 
       <Pressable
         style={[
-          styles.button,
+          themedStyles.button,
           !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
         ]}
         onPress={handleRegisterDevice}
         disabled={!isReady}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+        <Text style={themedStyles.buttonText}>
           {/* {t("takeTest")} */} register device (TEMP)
         </Text>
       </Pressable>
 
       <Pressable
         style={[
-          styles.button,
+          themedStyles.button,
           !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
         ]}
         onPress={() => setShowJoinClass(true)}
         disabled={!isReady}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+        <Text style={themedStyles.buttonText}>
           {t("joinClass")}
         </Text>
       </Pressable>
-
       <Pressable
         style={[
-          styles.buttonRound,
+          themedStyles.buttonRound,
           !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
         ]}
         onPress={handleQRPress}
         disabled={!isReady}
@@ -168,30 +167,9 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 80,
-    alignItems: "center",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 15,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    letterSpacing: 2.5,
-    marginBottom: 15,
-  },
-  favourite: {
-    fontSize: 18,
-    marginLeft: 10,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   imageWrapper: {
-    marginTop: 20,
+    marginTop: 5,
+    marginBottom: 20,
     borderRadius: 100,
   },
   image: {
@@ -201,14 +179,6 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 25,
     marginTop: 20,
-    textAlign: "center",
-  },
-  welcomeMessage: {
-    fontSize: 25,
-    marginTop: 10,
-    textAlign: "center",
-    paddingHorizontal: 40,
-    fontWeight: "600",
   },
   button: {
     marginTop: 30,
@@ -226,9 +196,5 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     backgroundColor: Colors.brand.gray,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: "bold",
   },
 });

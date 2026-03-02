@@ -1,16 +1,26 @@
-import React, { useRef, useCallback } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import MapView, { Callout, Marker, PROVIDER_GOOGLE, Camera } from 'react-native-maps';
-import { Colors } from '../../constants/Colors';
-import { useTheme } from '../../context/ThemeContext';
-import { QRScanner } from '../QRScanner';
-import { useQRScanner } from '@/src/hooks/useQRScanner';
-import { locations } from './mapData';
-import { MapMarker } from './MapMarker';
+import { useQRScanner } from "@/src/hooks/useQRScanner";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useCallback, useRef } from "react";
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from "react-native";
+import MapView, {
+  PROVIDER_GOOGLE
+} from "react-native-maps";
+import { Colors } from "../../constants/Colors";
+import { useTheme } from "../../context/ThemeContext";
+import { QRScanner } from "../QRScanner";
+import { locations } from "./mapData";
+import { MapMarker } from "./MapMarker";
 
 /**
  * This component displays a map with markers and allows users to scan QR codes to unlock careers.
- * 
+ *
  * @returns JSX.Element
  */
 
@@ -23,22 +33,31 @@ interface MapProps {
   onScanPress?: () => void;
 }
 
-export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) => {
+export const MapComponent = ({
+  style,
+  initialLocation,
+  onScanPress,
+}: MapProps) => {
   const { isDarkMode } = useTheme();
+  const themedStyles = useThemedStyles();
+
   const { isScanning, startScanning, stopScanning } = useQRScanner();
-  
+
   const mapRef = useRef<MapView>(null);
 
-  const handleScan = useCallback((data: string) => {
-    stopScanning();
-    alert(`Skannet data: ${data}`);
-  }, [stopScanning]);
+  const handleScan = useCallback(
+    (data: string) => {
+      stopScanning();
+      alert(`Skannet data: ${data}`);
+    },
+    [stopScanning],
+  );
 
   const handleZoom = async (zoomIn: boolean) => {
     if (!mapRef.current) return;
 
     const camera = await mapRef.current.getCamera();
-    if (Platform.OS === 'ios' && camera.altitude !== undefined) {
+    if (Platform.OS === "ios" && camera.altitude !== undefined) {
       camera.altitude /= zoomIn ? 2 : 0.5;
     } else if (camera.zoom !== undefined) {
       camera.zoom += zoomIn ? 1 : -1;
@@ -48,20 +67,18 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
   };
 
   if (isScanning) {
-    return (
-      <QRScanner onScan={handleScan} onClose={stopScanning} />
-    );
+    return <QRScanner onScan={handleScan} onClose={stopScanning} />;
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={themedStyles.container}>
       <MapView
         ref={mapRef}
-        provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
-        zoomControlEnabled={Platform.OS === 'android'}
+        provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
+        zoomControlEnabled={Platform.OS === "android"}
         showsCompass={true}
         style={styles.map}
-        userInterfaceStyle={isDarkMode ? 'dark' : 'light'}
+        userInterfaceStyle={isDarkMode ? "dark" : "light"}
         initialRegion={{
           latitude: initialLocation?.latitude ?? 63.420377,
           longitude: initialLocation?.longitude ?? 10.390158,
@@ -70,21 +87,24 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
         }}
       >
         {locations.map((loc, index) => (
-          <MapMarker 
-            key={loc.id} 
-            location={loc} 
-            onScan={() => startScanning()} 
+          <MapMarker
+            key={loc.id}
+            location={loc}
+            onScan={() => startScanning()}
           />
-        ))}   
-      </MapView>     
+        ))}
+      </MapView>
 
       {/* Custom Zoom-kontroller for iOS */}
-      {Platform.OS === 'ios' && (
+      {Platform.OS === "ios" && (
         <View style={styles.zoomButtonsContainer}>
           <Pressable style={styles.zoomButton} onPress={() => handleZoom(true)}>
             <Text style={styles.zoomText}>+</Text>
           </Pressable>
-          <Pressable style={styles.zoomButton} onPress={() => handleZoom(false)}>
+          <Pressable
+            style={styles.zoomButton}
+            onPress={() => handleZoom(false)}
+          >
             <Text style={styles.zoomText}>−</Text>
           </Pressable>
         </View>
@@ -94,52 +114,27 @@ export const MapComponent = ({ style, initialLocation, onScanPress }: MapProps) 
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    overflow: 'hidden',
-  },
   map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  calloutContainer: {
-    padding: 10,
-    width: 200,
-  },
-  calloutTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  calloutDescription: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 10,
-  },
-  scanButton: {
-    backgroundColor: Colors.brand.darkBlue,
-    padding: 8,
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  scanButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
   zoomButtonsContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 100,
     right: 15,
     gap: 10,
   },
   zoomButton: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     width: 45,
     height: 45,
     borderRadius: 22.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
