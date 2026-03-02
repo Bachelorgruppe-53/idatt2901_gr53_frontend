@@ -7,6 +7,7 @@ import { Colors } from "../constants/Colors";
 import { useThemeColor } from "../hooks/useThemeColor";
 import { useThemedStyles } from "../hooks/useStyleSheet";
 import { BaseStyles } from "../constants/Styles";
+import { useTranslation } from "react-i18next";
 
 /**
  * This component renders a modal that allows users to join a class by entering a class code.
@@ -26,25 +27,27 @@ export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();
 
+  const { t } = useTranslation("class");
+
   const validateAndSubmit = async () => {
     // Clear previous error
     setError("");
 
     // Validation: Check if empty
     if (!classCode.trim()) {
-      setError("Klassekode kan ikke være tom");
+      setError(t("classCodeEmpty"));
       return;
     }
 
     // Validation: Check length (example: must be 6 characters)
     if (classCode.length !== 6) {
-      setError("Klassekode må være 6 tegn");
+      setError(t("sixCharacterError"));
       return;
     }
 
     // Validation: Check if alphanumeric only
     if (!/^[a-zA-Z0-9]+$/.test(classCode)) {
-      setError("Klassekode kan bare inneholde bokstaver og tall");
+      setError(t("invalidCharacterError"));
       return;
     }
 
@@ -61,7 +64,7 @@ export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
       );
 
       console.log("Successfully joined class:", response.data);
-      alert("Du har blitt med i klassen!");
+      alert(t("joinedClassSuccess"));
       onClose();
     } catch (error) {
       if (isAxiosError(error)) {
@@ -75,25 +78,25 @@ export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
         console.error("Join class failed:", backendMessage);
         setError(
           backendMessage ||
-            "Feil ved tilkobling til serveren. Vennligst prøv igjen.",
+            t("serverError"),
         );
         return;
       }
 
       console.error("Join class failed:", error);
-      setError("Feil ved tilkobling til serveren. Vennligst prøv igjen.");
+      setError(t("serverError"));
     }
   };
 
   return (
     <View style={themedStyles.modalBackdrop}>
-      <View style={BaseStyles.center}>
+      <View style={[BaseStyles.center, BaseStyles.w80]}>
         <View style={[themedStyles.modalCard, BaseStyles.gap8]}>
-          <Text style={themedStyles.modalTitle}>Bli med i en klasse</Text>
-          <Text style={themedStyles.text}>Skriv inn klassekoden din her:</Text>
+          <Text style={themedStyles.modalTitle}>{t("joinClass")}</Text>
+          <Text style={themedStyles.text}>{t("enterClassCode")}</Text>
           <TextInput
             style={themedStyles.input}
-            placeholder="Klassekode"
+            placeholder={t("classCode")}
             placeholderTextColor={theme.placeholder}
             value={classCode}
             onChangeText={(text) => {
@@ -106,13 +109,13 @@ export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
             style={themedStyles.smallButton}
             onPress={validateAndSubmit}
           >
-            <Text style={themedStyles.buttonText}>Bli med</Text>
+            <Text style={themedStyles.buttonText}>{t("join")}</Text>
           </Pressable>
           <Pressable
             style={[themedStyles.smallButton, { backgroundColor: Colors.brand.red }]}
             onPress={onClose}
           >
-            <Text style={themedStyles.buttonText}>Lukk</Text>
+            <Text style={themedStyles.buttonText}>{t("close")}</Text>
           </Pressable>
         </View>
       </View>
