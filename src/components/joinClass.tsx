@@ -94,6 +94,7 @@ export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
           <TextInput
             style={themedStyles.input}
             placeholder="Klassekode"
+            placeholderTextColor={theme.placeholder}
             value={classCode}
             onChangeText={(text) => {
               setClassCode(text);

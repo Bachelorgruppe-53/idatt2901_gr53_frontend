@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import EntityPlaceholder from "./entityPlaceholder";
 import { BaseStyles } from "@/src/constants/Styles";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { Colors } from "@/src/constants/Colors";
 
 type ScoreboardProps = {
   entities: string[];
@@ -31,6 +33,7 @@ export default function Scoreboard(props: ScoreboardProps) {
   const maxScore = Math.max(...props.scores, userPoints, 1);
   const placeholderCount = 12;
   const themedStyles = useThemedStyles();
+  const theme = useThemeColor();
 
   // Pair entities with scores and sort descending for ranking.
   const ranked = props.entities
@@ -102,7 +105,7 @@ export default function Scoreboard(props: ScoreboardProps) {
           </View>
 
           <View style={styles.userChip}>
-            <Text style={styles.userChipLabel}>
+            <Text style={[styles.userChipLabel, themedStyles.text]}>
               {t(props.pointsLabel ?? "yourPoints")}
             </Text>
             <Text style={styles.userChipValue}>{userPoints}p</Text>
@@ -170,7 +173,6 @@ export default function Scoreboard(props: ScoreboardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#EFEEE6",
     borderRadius: 20,
     paddingVertical: 20,
     paddingBottom: 0,
@@ -197,7 +199,6 @@ const styles = StyleSheet.create({
 
   userChipLabel: {
     fontSize: 11,
-    color: "#000000",
   },
 
   userChipValue: {

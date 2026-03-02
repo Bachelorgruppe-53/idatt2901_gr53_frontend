@@ -360,6 +360,7 @@ export const createThemedStyles = (
       fontSize: 18,
       fontWeight: "600",
       marginBottom: 8,
+      color: theme.text,
     },
     modalCode: {
       fontSize: 22,
