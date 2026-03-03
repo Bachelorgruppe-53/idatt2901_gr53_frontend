@@ -21,5 +21,6 @@
   "accountSettings": "Kontoinnstillingar",
   "helpSupport": "Hjelp og støtte",
   "generateClassCode": "Generer klassekode",
-  "submitFeedback": "Send inn tilbakemelding"
+  "submitFeedback": "Send inn tilbakemelding",
+  "adminDashboard": "Admin Oversyn"
 }
