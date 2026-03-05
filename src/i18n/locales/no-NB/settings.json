@@ -20,5 +20,7 @@
   "termsOfService": "Vilkår for bruk",
   "accountSettings": "Kontoinnstillinger",
   "helpSupport": "Hjelp og støtte",
-  "generateClassCode": "Generer klassekode"
+  "generateClassCode": "Generer klassekode",
+  "submitFeedback": "Send inn tilbakemelding",
+  "adminDashboard": "Admin Oversikt"
 }

@@ -27,7 +27,7 @@ export default function SettingsLayout() {
       <Stack.Screen
         name="admin/generateClassCode"
         options={{
-          headerBackTitle: "Admin Dashboard",
+          headerBackTitle: t("adminDashboard"),
           headerTransparent: true,
           headerBackButtonDisplayMode: "minimal",
           headerTitle: t("generateClassCode"),

@@ -5,6 +5,7 @@ import { initReactI18next } from "react-i18next";
 // Import your translation files
 import enAboutCarrer from "./locales/en-US/aboutCareer.json";
 import enAuth from "./locales/en-US/auth.json";
+import enClass from "./locales/en-US/class.json";
 import enCommon from "./locales/en-US/common.json";
 import enHome from "./locales/en-US/home.json";
 import enNavbar from "./locales/en-US/navbar.json";
@@ -13,6 +14,7 @@ import enStats from "./locales/en-US/stats.json";
 
 import nbAboutCarrer from "./locales/no-NB/aboutCareer.json";
 import nbAuth from "./locales/no-NB/auth.json";
+import nbClass from "./locales/no-NB/class.json";
 import nbCommon from "./locales/no-NB/common.json";
 import nbHome from "./locales/no-NB/home.json";
 import nbNavbar from "./locales/no-NB/navbar.json";
@@ -21,6 +23,7 @@ import nbStats from "./locales/no-NB/stats.json";
 
 import nnAboutCarrer from "./locales/no-NN/aboutCareer.json";
 import nnAuth from "./locales/no-NN/auth.json";
+import nnClass from "./locales/no-NN/class.json";
 import nnCommon from "./locales/no-NN/common.json";
 import nnHome from "./locales/no-NN/home.json";
 import nnNavbar from "./locales/no-NN/navbar.json";
@@ -62,6 +65,7 @@ i18n.use(initReactI18next).init({
       home: enHome,
       aboutCareer: enAboutCarrer,
       stats: enStats,
+      class: enClass,
     },
     "no-NB": {
       common: nbCommon,
@@ -71,6 +75,7 @@ i18n.use(initReactI18next).init({
       home: nbHome,
       aboutCareer: nbAboutCarrer,
       stats: nbStats,
+      class: nbClass,
     },
     "no-NN": {
       common: nnCommon,
@@ -80,11 +85,12 @@ i18n.use(initReactI18next).init({
       home: nnHome,
       aboutCareer: nnAboutCarrer,
       stats: nnStats,
+      class: nnClass,
     },
   },
   lng: getSupportedLanguage(deviceLanguage),
   fallbackLng: "en-US",
-  ns: ["common", "auth", "navbar", "settings", "home", "aboutCareer", "stats"],
+  ns: ["common", "auth", "navbar", "settings", "home", "aboutCareer", "stats", "class"],
   defaultNS: "common",
   interpolation: {
     escapeValue: false,
