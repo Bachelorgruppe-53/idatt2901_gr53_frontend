@@ -14,6 +14,7 @@
     "maps",
     "language",
     "stats",
-    "api"
+    "api",
+    "quiz"
   ]
 }
