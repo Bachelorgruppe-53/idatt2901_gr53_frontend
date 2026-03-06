@@ -1,8 +1,10 @@
 import { registerDevice } from "@/services/authService";
 import { getNickname } from "@/services/utils/secureStorage";
-import AboutCareer from "@/src/components/aboutCareer";
+import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
+import { BaseStyles } from "@/src/constants/Styles";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,8 +12,6 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
-import { BaseStyles } from "@/src/constants/Styles";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -99,18 +99,17 @@ export default function Index() {
   }
 
   return (
-    <View
-      key={remountKey}
-      style={themedStyles.container}
-    >
-      <Text style={[themedStyles.heading, { position: "absolute", top: "10%" }]}>
+    <View key={remountKey} style={themedStyles.container}>
+      <Text
+        style={[themedStyles.heading, { position: "absolute", top: "10%" }]}
+      >
         St. Olavs hospital
       </Text>
-      <View style={[BaseStyles.rowCenter, { position: "absolute", top: "15%" }]} >
+      <View
+        style={[BaseStyles.rowCenter, { position: "absolute", top: "15%" }]}
+      >
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={themedStyles.subheading}>
-          {t("favoriteCareer")}
-        </Text>
+        <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
       </View>
       <View style={styles.imageWrapper}>
         <Image
@@ -118,16 +117,15 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>{t("hello")},</Text>
+      <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>
+        {t("hello")},
+      </Text>
       <Text style={[themedStyles.subheading]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
 
       <Pressable
-        style={[
-          themedStyles.button,
-          !isReady && styles.buttonDisabled,
-        ]}
+        style={[themedStyles.button, !isReady && styles.buttonDisabled]}
         onPress={handleRegisterDevice}
         disabled={!isReady}
       >
@@ -137,22 +135,14 @@ export default function Index() {
       </Pressable>
 
       <Pressable
-        style={[
-          themedStyles.button,
-          !isReady && styles.buttonDisabled,
-        ]}
+        style={[themedStyles.button, !isReady && styles.buttonDisabled]}
         onPress={() => setShowJoinClass(true)}
         disabled={!isReady}
       >
-        <Text style={themedStyles.buttonText}>
-          {t("joinClass")}
-        </Text>
+        <Text style={themedStyles.buttonText}>{t("joinClass")}</Text>
       </Pressable>
       <Pressable
-        style={[
-          themedStyles.buttonRound,
-          !isReady && styles.buttonDisabled,
-        ]}
+        style={[themedStyles.buttonRound, !isReady && styles.buttonDisabled]}
         onPress={handleQRPress}
         disabled={!isReady}
       >
