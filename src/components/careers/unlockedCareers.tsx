@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Image,
+  ImageSourcePropType,
   Modal,
   Pressable,
   ScrollView,
@@ -8,10 +8,20 @@ import {
   Text,
   View,
 } from "react-native";
+import { Image } from 'expo-image';
 import { BaseStyles } from "../../constants/Styles";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
 import { useThemeColor } from "../../hooks/useThemeColor";
 import AboutCareer from "./aboutCareer";
+import CareerBadge from "./careerBadge";
+
+interface Career {
+  career_id: number;
+  name: string;
+  imageSource?: ImageSourcePropType;
+}
+
+const DEFAULT_CAREER_IMAGE = require("../../../assets/images/careers/default.png");
 
 /**
  * This component displays a grid of career options that users can select to view more information.
@@ -24,15 +34,38 @@ export default function Careers() {
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();
 
+  const [careers, setCareers] = useState<Career[]>([]);
   const [modalVisible, setModalVisible] = React.useState(false);
-  const [selectedCareer, setSelectedCareer] = React.useState<string | null>(
+  const [selectedCareer, setSelectedCareer] = React.useState<number | null>(
     null,
   );
 
-  const handlePress = (careerName: string) => {
-    setSelectedCareer(careerName);
+  const hardcodedCareers: Career[] = [
+    { career_id: 1, name: "Sykepleier"},
+    { career_id: 2, name: "Jordmor" },
+    { career_id: 3, name: "Utvikler" },
+    { career_id: 4, name: "Renholder" },
+    { career_id: 5, name: "Kirurg" },
+    { career_id: 6, name: "Lege" },
+  ];
+
+  useEffect(() => {
+    // TODO: Replace with actual backend fetch when available
+    // For now, using hardcoded data
+    setCareers(hardcodedCareers);
+  }, []);
+
+  const handlePress = (career_id: number) => {
+    setSelectedCareer(career_id);
     setModalVisible(true);
   };
+
+  const getImageSource = (career: Career): ImageSourcePropType => {
+    if (career.imageSource) {
+      return career.imageSource;
+    }
+    return DEFAULT_CAREER_IMAGE;
+  };  
 
   return (
     <View style={themedStyles.container}>
@@ -45,75 +78,21 @@ export default function Careers() {
         }}
       >
         <AboutCareer
-          careerName={selectedCareer}
+          careerName={careers.find((c) => c.career_id === selectedCareer)?.name || ""}
           onClose={() => setModalVisible(false)}
         />
       </Modal>
 
       <ScrollView contentContainerStyle={BaseStyles.grid}>
-        <Pressable
-          style={[BaseStyles.alignCenter, { width: "28%" }]}
-          onPress={() => handlePress("Sykepleier")}
-        >
-          <Image
-            source={require("../../assets/images/careers/nurse.png")}
-            style={styles.image}
+        {hardcodedCareers.map((career) => (
+          <CareerBadge
+            key={career.career_id}
+            career_id={career.career_id}
+            careerName={career.name}
+            imageSource={getImageSource(career)}
+            onPress={handlePress}
           />
-          <Text style={[themedStyles.boldText, BaseStyles.my8]}>
-            Sykepleier
-          </Text>
-        </Pressable>
-
-        <Pressable
-          style={[BaseStyles.alignCenter, { width: "28%" }]}
-          onPress={() => handlePress("Jordmor")}
-        >
-          <Image
-            source={require("../../assets/images/careers/midwife.png")}
-            style={styles.image}
-          />
-          <Text style={[themedStyles.boldText, BaseStyles.my8]}>Jordmor</Text>
-        </Pressable>
-        <Pressable
-          style={[BaseStyles.alignCenter, { width: "28%" }]}
-          onPress={() => handlePress("Utvikler")}
-        >
-          <Image
-            source={require("../../assets/images/careers/developer.png")}
-            style={styles.image}
-          />
-          <Text style={[themedStyles.boldText, BaseStyles.my8]}>Utvikler</Text>
-        </Pressable>
-        <Pressable
-          style={[BaseStyles.alignCenter, { width: "28%" }]}
-          onPress={() => handlePress("Renholder")}
-        >
-          <Image
-            source={require("../../assets/images/careers/cleaner.png")}
-            style={styles.image}
-          />
-          <Text style={[themedStyles.boldText, BaseStyles.my8]}>Renholder</Text>
-        </Pressable>
-        <Pressable
-          style={[BaseStyles.alignCenter, { width: "28%" }]}
-          onPress={() => handlePress("Kirurg")}
-        >
-          <Image
-            source={require("../../assets/images/careers/surgeon.png")}
-            style={styles.image}
-          />
-          <Text style={[themedStyles.boldText, BaseStyles.my8]}>Kirurg</Text>
-        </Pressable>
-        <Pressable
-          style={[BaseStyles.alignCenter, { width: "28%" }]}
-          onPress={() => handlePress("Lege")}
-        >
-          <Image
-            source={require("../../assets/images/careers/doctor.png")}
-            style={styles.image}
-          />
-          <Text style={[themedStyles.boldText, BaseStyles.my8]}>Lege</Text>
-        </Pressable>
+        ))}
       </ScrollView>
     </View>
   );

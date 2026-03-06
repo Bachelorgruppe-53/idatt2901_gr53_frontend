@@ -71,9 +71,7 @@ export default function AboutCareer({ careerName, onClose }: Props) {
 
       try {
         const userId = await ensureUserId();
-        console.log("Fetching career data for:", careerName);
-        console.log("Using user ID:", userId);
-
+        
         const res = await fetch(`${getBaseURL()}/poi/career`, {
           method: "POST",
           headers: {
