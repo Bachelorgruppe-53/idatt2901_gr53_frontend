@@ -3,6 +3,17 @@ import { StyleSheet, Text, Image, Pressable, ImageSourcePropType } from "react-n
 import { useThemedStyles } from "../../hooks/useStyleSheet";
 import { BaseStyles } from "../../constants/Styles";
 
+/**
+ * CareerBadge component that displays a badge for a career/POI.
+ * @props career_id - Unique identifier for the career.
+ * @props careerName - Name of the career to display.
+ * @props imageSource - Image source for the career badge.
+ * @props onPress - Callback function to handle press events, receives career_id and careerName as arguments.
+ * @returns JSX.Element
+ * 
+ * TODO: Implement dynamic image fetching based on career_id when backend support is available.
+ */
+
 type CareerBadgeProps = {
   career_id: number;
   careerName: string;
