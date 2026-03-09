@@ -1,6 +1,6 @@
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Platform,
   Pressable,
@@ -15,7 +15,7 @@ import MapView, {
 import { Colors } from "../../constants/Colors";
 import { useTheme } from "../../context/ThemeContext";
 import { QRScanner } from "../QRScanner";
-import { locations } from "./mapData";
+import { fetchLocations, MapLocation } from "./mapData";
 import { MapMarker } from "./MapMarker";
 
 /**
@@ -40,10 +40,23 @@ export const MapComponent = ({
 }: MapProps) => {
   const { isDarkMode } = useTheme();
   const themedStyles = useThemedStyles();
-
   const { isScanning, startScanning, stopScanning } = useQRScanner();
 
+  const [locations, setLocations] = useState<MapLocation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const mapRef = useRef<MapView>(null);
+
+  // Load locations from backend on mount
+  useEffect(() => {
+    const loadLocations = async () => {
+      setIsLoading(true);
+      const fetchedLocations = await fetchLocations();
+      setLocations(fetchedLocations);
+      setIsLoading(false);
+    };
+
+    void loadLocations();
+  }, []);
 
   const handleScan = useCallback(
     (data: string) => {
@@ -52,6 +65,7 @@ export const MapComponent = ({
     },
     [stopScanning],
   );
+
 
   const handleZoom = async (zoomIn: boolean) => {
     if (!mapRef.current) return;
