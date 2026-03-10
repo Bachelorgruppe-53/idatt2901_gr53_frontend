@@ -21,7 +21,6 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
  * @returns JSX.Element
  */
 
-// TODO: add all functionality to buttons and QR scanner
 
 export default function Index() {
   const theme = useThemeColor();
@@ -30,7 +29,7 @@ export default function Index() {
   const { isScanning, startScanning, stopScanning } = useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [showCareerModal, setShowCareerModal] = useState(false);
-  const [selectedCareer, setSelectedCareer] = useState<string | null>(null);
+  const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
   const [name, setName] = useState<string>("");
   const [remountKey, setRemountKey] = useState(0);
 
@@ -64,13 +63,14 @@ export default function Index() {
 
   const handleScan = (data: string) => {
     stopScanning();
-    const careerName = data.trim();
-    if (!careerName) {
-      alert(t("invalidQR"));
+    const scannedId = parseInt(data.trim(), 10);
+    
+    if (isNaN(scannedId) || scannedId <= 0) {
+      alert(t("invalidQR", "Invalid QR code"));
       return;
     }
 
-    setSelectedCareer(careerName);
+    setSelectedCareerId(scannedId);
     setShowCareerModal(true);
   };
 
@@ -89,10 +89,10 @@ export default function Index() {
     return <JoinClassModal onClose={() => setShowJoinClass(false)} />;
   }
 
-  if (showCareerModal && selectedCareer) {
+  if (showCareerModal && selectedCareerId) {
     return (
       <AboutCareer
-        careerName={selectedCareer}
+        careerId={selectedCareerId}
         onClose={() => setShowCareerModal(false)}
       />
     );
