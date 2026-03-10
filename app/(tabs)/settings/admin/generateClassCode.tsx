@@ -1,3 +1,4 @@
+import { getApiBaseUrl } from "@/services/apiConfig";
 import { getToken } from "@/services/utils/secureStorage";
 import { Colors } from "@/src/constants/Colors";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
@@ -11,9 +12,7 @@ import { useState } from "react";
 import {
   Alert,
   Modal,
-  Platform,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -35,16 +34,7 @@ export default function GenerateClassCode() {
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [generatedCode, setGeneratedCode] = useState("");
 
-  const getBaseURL = () => {
-    if (__DEV__) {
-      if (Platform.OS === "android") {
-        return "http://10.0.2.2:8080/";
-      }
-      return "http://localhost:8080/";
-    }
-    return ""; // TODO: Set production URL here
-    // Todo: Isolate this function in a separate utility file for reuse?
-  };
+
 
   const handleCopy = async () => {
     await Clipboard.setStringAsync(generatedCode);
@@ -61,6 +51,7 @@ export default function GenerateClassCode() {
 
     try {
       const token = await getToken();
+      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
 
       console.log("Using token:", token); // debug log
       console.log(
@@ -77,13 +68,13 @@ export default function GenerateClassCode() {
         return;
       }
 
-      console.log("Sending request to:", `${getBaseURL()}admin/code`); // Debug log
+      console.log("Sending request to:", `${baseUrl}/admin/code`); // Debug log
       console.log("Request body:", {
         className: className.trim(),
         schoolName: schoolName.trim(),
       }); // Debug log
 
-            const response = await axios.post(`${getBaseURL()}admin/code`, 
+            const response = await axios.post(`${baseUrl}/admin/code`, 
               {
                 className: className.trim(),
                 schoolName: schoolName.trim(),
