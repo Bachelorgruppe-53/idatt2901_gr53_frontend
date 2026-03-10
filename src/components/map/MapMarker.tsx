@@ -25,7 +25,7 @@ export const MapMarker = ({ location, onScan }: Props) => (
     <Callout onPress={onScan}>
       <View style={styles.calloutContainer}>
         <Text style={styles.calloutTitle}>{location.title}</Text>
-        <Text style={styles.calloutDescription}>{location.description}</Text>
+        <Text style={styles.calloutDescription}>{location.place}</Text>
         <View style={styles.scanButton}>
           <Text style={styles.scanButtonText}>Åpne QR-skanner →</Text>
         </View>

@@ -253,6 +253,41 @@ export const createThemedStyles = (
       padding: 10,
     },
 
+    // dropdowns
+    dropdownButton: {
+      backgroundColor: theme.buttontext,
+      borderRadius: BorderRadius.md,
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.sm,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "50%",
+    },
+    dropdownButtonText: {
+      fontSize: Typography.base,
+      fontWeight: FontWeight.semibold,
+      color: theme.text,
+    },
+    dropdownButtonTextActive: {
+      fontSize: Typography.base,
+      fontWeight: FontWeight.semibold,
+      color: theme.text,
+    },
+    dropdownMenu: {
+      backgroundColor: theme.buttontext,
+      borderRadius: BorderRadius.md,
+      marginTop: 4,
+      maxHeight: 200,
+    },
+    dropdownItem: {
+      paddingHorizontal: Spacing.md,
+      paddingVertical: Spacing.sm,
+    },
+    dropdownItemActive: {
+      backgroundColor: theme.backgroundSecondary,
+    },
+
     // text
     text: {
       color: theme.text,
