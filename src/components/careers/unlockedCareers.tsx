@@ -8,7 +8,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { Image } from 'expo-image';
 import { BaseStyles } from "../../constants/Styles";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
 import { useThemeColor } from "../../hooks/useThemeColor";
@@ -35,10 +34,8 @@ export default function Careers() {
   const themedStyles = useThemedStyles();
 
   const [careers, setCareers] = useState<Career[]>([]);
-  const [modalVisible, setModalVisible] = React.useState(false);
-  const [selectedCareer, setSelectedCareer] = React.useState<number | null>(
-    null,
-  );
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
 
   const hardcodedCareers: Career[] = [
     { career_id: 1, name: "Sykepleier"},
@@ -47,6 +44,9 @@ export default function Careers() {
     { career_id: 4, name: "Renholder" },
     { career_id: 5, name: "Kirurg" },
     { career_id: 6, name: "Lege" },
+    { career_id: 7, name: "Økonom" },
+    { career_id: 8, name: "Helsefagarbeider" },
+    { career_id: 9, name: "Portør" },
   ];
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function Careers() {
   }, []);
 
   const handlePress = (career_id: number) => {
-    setSelectedCareer(career_id);
+    setSelectedCareerId(career_id);
     setModalVisible(true);
   };
 
@@ -78,13 +78,13 @@ export default function Careers() {
         }}
       >
         <AboutCareer
-          careerName={careers.find((c) => c.career_id === selectedCareer)?.name || ""}
+          careerId={selectedCareerId}
           onClose={() => setModalVisible(false)}
         />
       </Modal>
 
       <ScrollView contentContainerStyle={BaseStyles.grid}>
-        {hardcodedCareers.map((career) => (
+        {careers.map((career) => (
           <CareerBadge
             key={career.career_id}
             career_id={career.career_id}

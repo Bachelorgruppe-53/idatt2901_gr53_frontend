@@ -1,10 +1,10 @@
 import { ensureUserId } from "@/services/authService";
+import { getApiBaseUrl } from "@/services/apiConfig";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
     ActivityIndicator,
-    Platform,
     Pressable,
     ScrollView,
     Text,
@@ -18,9 +18,9 @@ import { useThemeColor } from "../../hooks/useThemeColor";
 
 /**
  * Component to display detailed information about a career/POI.
- * Fetches data from the backend based on the provided career name.
+ * Fetches data from the backend based on the provided career ID.
  *
- * @param careerName - The name of the career to display information about.
+ * @param careerId - The ID of the career to display information about.
  * @param onClose - Callback function to close the modal.
  *
  * @returns JSX.Element
@@ -39,12 +39,16 @@ interface PoiDto {
   place: string;
 }
 
+interface IdRequest {
+  id: number;
+}
+
 interface Props {
-  careerName: string | null;
+  careerId: number | null;
   onClose: () => void;
 }
 
-export default function AboutCareer({ careerName, onClose }: Props) {
+export default function AboutCareer({ careerId, onClose }: Props) {
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();
 
@@ -54,16 +58,8 @@ export default function AboutCareer({ careerName, onClose }: Props) {
 
   const { t } = useTranslation("aboutCareer");
 
-  const getBaseURL = () => {
-    if (__DEV__) {
-      if (Platform.OS === "android") return "http://10.0.2.2:8080";
-      return "http://localhost:8080";
-    }
-    return ""; // TODO: Set production URL here
-  };
-
   useEffect(() => {
-    if (!careerName) return;
+    if (careerId === null) return;
 
     const load = async () => {
       setLoading(true);
@@ -71,24 +67,34 @@ export default function AboutCareer({ careerName, onClose }: Props) {
 
       try {
         const userId = await ensureUserId();
+        const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+
+        const body: IdRequest = { id: careerId };
         
-        const res = await fetch(`${getBaseURL()}/poi/career`, {
+        const res = await fetch(`${baseUrl}/poi/career`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
             "X-User-ID": userId,
           },
-          body: JSON.stringify({ name: careerName }),
+          body: JSON.stringify(body),
         });
 
         if (!res.ok) {
           throw new Error(`Server error: ${res.status}`);
         }
 
-        const json = (await res.json()) as PoiDto;
-        setData(json);
+        const json = (await res.json()) as PoiDto | string;
+
+        if (typeof json === "string") {
+          setErrorMsg(json);
+          setData(null);
+        } else {
+          setData(json);
+        }
       } catch (err) {
+        console.error("Failed to fetch career:", err);
         setErrorMsg(t("fetchError"));
         setData(null);
       } finally {
@@ -97,7 +103,7 @@ export default function AboutCareer({ careerName, onClose }: Props) {
     };
 
     load();
-  }, [careerName]);
+  }, [careerId, t]);
 
   if (loading) {
     return (
@@ -114,7 +120,7 @@ export default function AboutCareer({ careerName, onClose }: Props) {
           <Text
             style={[themedStyles.heading, BaseStyles.rowCenter, BaseStyles.p8]}
           >
-            {data?.title || careerName || t("unknownTitle")}
+            {data?.title || t("unknownTitle")}
           </Text>
           {typeof data?.points === "number" && (
             <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
