@@ -1,6 +1,9 @@
+import { getApiBaseUrl } from "@/services/apiConfig";
 import { getToken } from "@/services/utils/secureStorage";
 import { Colors } from "@/src/constants/Colors";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { BaseStyles } from "@/src/constants/Styles";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
 import * as Clipboard from "expo-clipboard";
@@ -9,9 +12,7 @@ import { useState } from "react";
 import {
   Alert,
   Modal,
-  Platform,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -25,22 +26,15 @@ import {
 
 export default function GenerateClassCode() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
+
   const [className, setClassName] = useState("");
   const [schoolName, setSchoolName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [generatedCode, setGeneratedCode] = useState("");
 
-  const getBaseURL = () => {
-    if (__DEV__) {
-      if (Platform.OS === "android") {
-        return "http://10.0.2.2:8080/";
-      }
-      return "http://localhost:8080/";
-    }
-    return ""; // TODO: Set production URL here
-    // Todo: Isolate this function in a separate utility file for reuse?
-  };
+
 
   const handleCopy = async () => {
     await Clipboard.setStringAsync(generatedCode);
@@ -57,6 +51,7 @@ export default function GenerateClassCode() {
 
     try {
       const token = await getToken();
+      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
 
       console.log("Using token:", token); // debug log
       console.log(
@@ -73,13 +68,13 @@ export default function GenerateClassCode() {
         return;
       }
 
-      console.log("Sending request to:", `${getBaseURL()}admin/code`); // Debug log
+      console.log("Sending request to:", `${baseUrl}/admin/code`); // Debug log
       console.log("Request body:", {
         className: className.trim(),
         schoolName: schoolName.trim(),
       }); // Debug log
 
-            const response = await axios.post(`${getBaseURL()}admin/code`, 
+            const response = await axios.post(`${baseUrl}/admin/code`, 
               {
                 className: className.trim(),
                 schoolName: schoolName.trim(),
@@ -152,29 +147,22 @@ export default function GenerateClassCode() {
   // Modal for displaying generated class code, copying to clipboard, etc.
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Pressable style={styles.backButton} onPress={() => router.back()}>
-        <MaterialCommunityIcons
-          name="arrow-left"
-          size={30}
-          color={theme.text}
-        />
-      </Pressable>
-      <View style={styles.header}>
+    <View style={themedStyles.container}>
+      <View style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.m16]}>
         <MaterialCommunityIcons
           name="shield-account"
           size={50}
           color={theme.text}
         />
-        <Text style={[styles.headerTitle, { color: theme.text }]}>
+        <Text style={themedStyles.heading}>
           Generer Klassekode
         </Text>
       </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={{ color: theme.text }}>Klassenavn:</Text>
+      <View style={[BaseStyles.w80, BaseStyles.mb16]}>
+        <Text style={themedStyles.boldText}>Klassenavn:</Text>
         <TextInput
-          style={[styles.input, { color: theme.text }]}
+          style={themedStyles.input}
           placeholder="Skriv inn klassenavn her"
           placeholderTextColor={theme.placeholder}
           value={className}
@@ -182,10 +170,10 @@ export default function GenerateClassCode() {
         />
       </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={{ color: theme.text }}>Skole:</Text>
+      <View style={[BaseStyles.w80, BaseStyles.mb16]}>
+        <Text style={themedStyles.boldText}>Skole:</Text>
         <TextInput
-          style={[styles.input, { color: theme.text }]}
+          style={themedStyles.input}
           placeholder="Skriv inn skole her"
           placeholderTextColor={theme.placeholder}
           value={schoolName}
@@ -194,41 +182,41 @@ export default function GenerateClassCode() {
       </View>
 
       <Pressable
-        style={[styles.button, { backgroundColor: Colors.brand.green }]}
+        style={[themedStyles.button, { backgroundColor: Colors.brand.green }]}
         onPress={handleGenerateClassCode}
         disabled={isLoading}
       >
-        <Text style={{ color: Colors.brand.white }}>
+        <Text style={themedStyles.buttonText}>
           {isLoading ? "Genererer..." : "Generer Klassekode"}
         </Text>
       </Pressable>
 
       <Modal transparent visible={showCodeModal} animationType="fade">
-        <View style={styles.modalBackdrop}>
+        <View style={themedStyles.modalBackdrop}>
           <View
-            style={[styles.modalCard, { backgroundColor: theme.background }]}
+            style={[themedStyles.modalCard, { backgroundColor: theme.background }]}
           >
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
-              Klassekode
+            <Text style={[themedStyles.text, BaseStyles.my8]}>
+              Klassekode: 
             </Text>
-            <Text style={[styles.modalCode, { color: theme.text }]}>
+            <Text style={[themedStyles.heading, BaseStyles.mb16]}>
               {generatedCode}
             </Text>
-            <View style={styles.modalActions}>
+            <View style={[BaseStyles.rowCenter, {justifyContent: "space-between"}]}>
               <Pressable
-                style={[styles.modalButton, { backgroundColor: theme.button }]}
+                style={[themedStyles.smallButton]}
                 onPress={handleCopy}
               >
-                <Text style={{ color: theme.buttontext }}>Kopier</Text>
+                <Text style={themedStyles.buttonText}>Kopier</Text>
               </Pressable>
               <Pressable
                 style={[
-                  styles.modalButton,
+                  themedStyles.smallButton,
                   { backgroundColor: Colors.brand.red },
                 ]}
                 onPress={() => setShowCodeModal(false)}
               >
-                <Text style={{ color: Colors.brand.white }}>Lukk</Text>
+                <Text style={[themedStyles.buttonText, { color: Colors.brand.white }]}>Lukk</Text>
               </Pressable>
             </View>
           </View>
@@ -237,87 +225,3 @@ export default function GenerateClassCode() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  logoutButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    padding: 10,
-    borderRadius: 5,
-  },
-  backButton: {
-    position: "absolute",
-    top: 40,
-    left: 20,
-    padding: 10,
-    borderRadius: 5,
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 15,
-    paddingVertical: 15,
-    borderRadius: 8,
-    width: "80%",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-    gap: 10,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  input: {
-    height: 40,
-    borderColor: Colors.brand.gray,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    width: "100%",
-  },
-  inputContainer: {
-    width: "80%",
-    marginBottom: 20,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  modalCard: {
-    width: "80%",
-    padding: 20,
-    borderRadius: 12,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  modalCode: {
-    fontSize: 22,
-    fontWeight: "700",
-    letterSpacing: 1,
-    marginBottom: 16,
-  },
-  modalActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  modalButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-});

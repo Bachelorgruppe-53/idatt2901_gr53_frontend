@@ -1,6 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import EntityPlaceholder from "./entityPlaceholder";
+import { BaseStyles } from "@/src/constants/Styles";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { Colors } from "@/src/constants/Colors";
 
 type ScoreboardProps = {
   entities: string[];
@@ -28,6 +32,8 @@ export default function Scoreboard(props: ScoreboardProps) {
   const userPoints = props.points ?? 250;
   const maxScore = Math.max(...props.scores, userPoints, 1);
   const placeholderCount = 12;
+  const themedStyles = useThemedStyles();
+  const theme = useThemeColor();
 
   // Pair entities with scores and sort descending for ranking.
   const ranked = props.entities
@@ -88,25 +94,25 @@ export default function Scoreboard(props: ScoreboardProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={BaseStyles.p24}>
       <View style={styles.card}>
         <View style={styles.header}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.title}>{t(props.scoreboardType)}</Text>
-            <Text style={styles.subtitle}>
+          <View style={BaseStyles.flex}>
+            <Text style={themedStyles.heading}>{t(props.scoreboardType)}</Text>
+            <Text style={themedStyles.placeholderText}>
               {t("scoreboardSubtitle", "Toppliste")}
             </Text>
           </View>
 
           <View style={styles.userChip}>
-            <Text style={styles.userChipLabel}>
+            <Text style={[styles.userChipLabel, themedStyles.text]}>
               {t(props.pointsLabel ?? "yourPoints")}
             </Text>
             <Text style={styles.userChipValue}>{userPoints}p</Text>
           </View>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.list}>
+          <View style={[BaseStyles.gap16, BaseStyles.px8]}>
             {props.isLoading
               ? Array.from({ length: placeholderCount }).map((_, index) => (
                   <EntityPlaceholder key={`placeholder-${index}`} />
@@ -125,7 +131,7 @@ export default function Scoreboard(props: ScoreboardProps) {
                     <View
                       key={`${entry.entity}-${rank}`}
                       style={[
-                        styles.row,
+                        BaseStyles.rowCenter, BaseStyles.gap16,
                         isHighlighted && styles.rowHighlighted,
                       ]}
                     >
@@ -135,24 +141,24 @@ export default function Scoreboard(props: ScoreboardProps) {
                           getEntityBadgeStyle(entry.entity),
                         ]}
                       >
-                        <Text style={styles.rankBadgeText}>{rank}</Text>
+                        <Text style={themedStyles.boldText}>{rank}</Text>
                       </View>
 
-                      <View style={styles.rowContent}>
-                        <View style={styles.rowHeader}>
+                      <View style={BaseStyles.flex}>
+                        <View style={[BaseStyles.rowCenter, { justifyContent: "space-between" }]}>
                           <Text
-                            style={styles.entity}
+                            style={themedStyles.semiboldText}
                             numberOfLines={1}
                             ellipsizeMode="tail"
                           >
                             {entry.entity}
                           </Text>
 
-                          <Text style={styles.score}>{entry.score}p</Text>
+                          <Text style={themedStyles.semiboldText}>{entry.score}p</Text>
                         </View>
 
                         <View style={styles.barTrack}>
-                          <View style={[styles.barFill, { width: barWidth }]} />
+                          <View style={styles.barFill} />
                         </View>
                       </View>
                     </View>
@@ -166,23 +172,12 @@ export default function Scoreboard(props: ScoreboardProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-
   card: {
-    backgroundColor: "#EFEEE6",
     borderRadius: 20,
     paddingVertical: 20,
     paddingBottom: 0,
-    paddingHorizontal: 24,
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 12 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 20,
-    // elevation: 6,
     height: "100%",
+    gap: 12,
   },
 
   header: {
@@ -191,18 +186,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 16,
     marginBottom: 20,
-  },
-
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#000000",
-  },
-
-  subtitle: {
-    marginTop: 4,
-    fontSize: 13,
-    color: "#636a75",
   },
 
   userChip: {
@@ -216,25 +199,12 @@ const styles = StyleSheet.create({
 
   userChipLabel: {
     fontSize: 11,
-    color: "#000000",
   },
 
   userChipValue: {
     fontSize: 16,
     fontWeight: "700",
     color: "#3c3c3c",
-  },
-
-  list: {
-    gap: 14,
-    paddingBottom: 4,
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    width: "100%",
   },
 
   rowHighlighted: {
@@ -250,22 +220,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
-  },
-
-  rankBadgeText: {
-    color: "#0F172A",
-    fontWeight: "700",
-  },
-
-  rowContent: {
-    flex: 1,
-  },
-
-  rowHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 6,
   },
 
   entity: {

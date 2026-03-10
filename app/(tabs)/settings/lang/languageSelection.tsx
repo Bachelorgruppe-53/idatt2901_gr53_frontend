@@ -1,10 +1,12 @@
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View, Platform } from "react-native";
 import CountryFlag from "react-native-country-flag";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BaseStyles } from "@/src/constants/Styles";
 
 // Custom flag component that supports both ISO codes and custom SVG
 const FlagDisplay = ({
@@ -31,6 +33,7 @@ const FlagDisplay = ({
 
 export default function LanguageSelectionScreen() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
   const { i18n, t } = useTranslation("settings");
   const insets = useSafeAreaInsets();
 
@@ -50,7 +53,7 @@ export default function LanguageSelectionScreen() {
   };
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: theme.background }]}>
+    <View style={[BaseStyles.flex, { backgroundColor: theme.background }]}>
       <Stack.Screen
         options={{
           title: t("language"),
@@ -59,26 +62,27 @@ export default function LanguageSelectionScreen() {
         }}
       />
       <ScrollView
-        style={styles.container}
+        style={BaseStyles.flex}
         contentContainerStyle={{
           padding: 20,
           paddingBottom: insets.bottom + 20,
+          paddingTop: Platform.OS === "android" ? insets.top + 70 : 20,
         }}
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Text style={[styles.header, { color: theme.text }]}>
+        <Text style={themedStyles.heading}>
           {t("changeLanguage")}
         </Text>
-        <View style={styles.languageList}>
+        <View style={BaseStyles.gap16}>
           {languages.map((lang) => {
             const isSelected = i18n.language === lang.code;
             return (
               <Pressable
                 key={lang.code}
                 style={[
-                  styles.languageButton,
+                  themedStyles.settingsButton,
                   {
-                    borderColor: theme.border,
+                    borderColor: theme.button,
                     backgroundColor: isSelected
                       ? theme.backgroundSecondary
                       : "transparent",
@@ -87,7 +91,7 @@ export default function LanguageSelectionScreen() {
                 onPress={() => handleLanguageChange(lang.code)}
                 testID={`language-${lang.code}`}
               >
-                <View style={styles.flagContainer}>
+                <View style={BaseStyles.gap16}>
                   <FlagDisplay
                     isoCode={"isoCode" in lang ? lang.isoCode : undefined}
                     customFlag={
@@ -97,10 +101,9 @@ export default function LanguageSelectionScreen() {
                 </View>
                 <Text
                   style={[
-                    styles.languageName,
+                    themedStyles.text,
                     {
-                      color: theme.text,
-                      fontWeight: isSelected ? "700" : "600",
+                      fontWeight: isSelected ? "700" : "500",
                     },
                   ]}
                 >
@@ -116,39 +119,8 @@ export default function LanguageSelectionScreen() {
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  languageList: {
-    gap: 16,
-  },
-  languageButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 4,
-    borderWidth: 2,
-    gap: 16,
-  },
-  flagContainer: {
-    width: 40,
-    height: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   customFlag: {
     width: 32,
     height: 24,
-  },
-  languageName: {
-    fontSize: 18,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
   },
 });

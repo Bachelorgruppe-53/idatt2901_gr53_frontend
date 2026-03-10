@@ -55,7 +55,7 @@
             "useFrameworks": "static"
           },
           "android": {
-            "compileSdkVersion": 35
+            "compileSdkVersion": 36
           }
         }
       ],

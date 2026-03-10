@@ -5,6 +5,9 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Colors } from "../constants/Colors";
 import { useThemeColor } from "../hooks/useThemeColor";
+import { useThemedStyles } from "../hooks/useStyleSheet";
+import { BaseStyles } from "../constants/Styles";
+import { useTranslation } from "react-i18next";
 
 /**
  * This component renders a modal that allows users to join a class by entering a class code.
@@ -17,10 +20,14 @@ interface JoinClassModalProps {
   onClose: () => void;
 }
 
-const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
+export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
   const [classCode, setClassCode] = useState("");
   const [error, setError] = useState("");
+
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
+
+  const { t } = useTranslation("class");
 
   const validateAndSubmit = async () => {
     // Clear previous error
@@ -28,19 +35,19 @@ const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
 
     // Validation: Check if empty
     if (!classCode.trim()) {
-      setError("Klassekode kan ikke være tom");
+      setError(t("classCodeEmpty"));
       return;
     }
 
     // Validation: Check length (example: must be 6 characters)
     if (classCode.length !== 6) {
-      setError("Klassekode må være 6 tegn");
+      setError(t("sixCharacterError"));
       return;
     }
 
     // Validation: Check if alphanumeric only
     if (!/^[a-zA-Z0-9]+$/.test(classCode)) {
-      setError("Klassekode kan bare inneholde bokstaver og tall");
+      setError(t("invalidCharacterError"));
       return;
     }
 
@@ -57,7 +64,7 @@ const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
       );
 
       console.log("Successfully joined class:", response.data);
-      alert("Du har blitt med i klassen!");
+      alert(t("joinedClassSuccess"));
       onClose();
     } catch (error) {
       if (isAxiosError(error)) {
@@ -71,116 +78,47 @@ const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
         console.error("Join class failed:", backendMessage);
         setError(
           backendMessage ||
-            "Feil ved tilkobling til serveren. Vennligst prøv igjen.",
+            t("serverError"),
         );
         return;
       }
 
       console.error("Join class failed:", error);
-      setError("Feil ved tilkobling til serveren. Vennligst prøv igjen.");
+      setError(t("serverError"));
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Bli med i en klasse</Text>
-          <Text style={styles.subText}>Skriv inn klassekoden din her:</Text>
+    <View style={themedStyles.modalBackdrop}>
+      <View style={[BaseStyles.center, BaseStyles.w80]}>
+        <View style={[themedStyles.modalCard, BaseStyles.gap8]}>
+          <Text style={themedStyles.modalTitle}>{t("joinClass")}</Text>
+          <Text style={themedStyles.text}>{t("enterClassCode")}</Text>
           <TextInput
-            style={styles.input}
-            placeholder="Klassekode"
+            style={themedStyles.input}
+            placeholder={t("classCode")}
+            placeholderTextColor={theme.placeholder}
             value={classCode}
             onChangeText={(text) => {
               setClassCode(text);
               setError(""); // Clear error when user types
             }}
           />
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {error ? <Text style={themedStyles.errorText}>{error}</Text> : null}
           <Pressable
-            style={[styles.button, { backgroundColor: theme.button }]}
+            style={themedStyles.smallButton}
             onPress={validateAndSubmit}
           >
-            <Text style={styles.buttonText}>Bli med</Text>
+            <Text style={themedStyles.buttonText}>{t("join")}</Text>
           </Pressable>
           <Pressable
-            style={[styles.button, { backgroundColor: Colors.brand.red }]}
+            style={[themedStyles.smallButton, { backgroundColor: Colors.brand.red }]}
             onPress={onClose}
           >
-            <Text style={styles.buttonText}>Lukk</Text>
+            <Text style={themedStyles.buttonText}>{t("close")}</Text>
           </Pressable>
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    width: "100%",
-    height: "100%",
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  subText: {
-    marginBottom: 20,
-    textAlign: "center",
-    fontSize: 14,
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    width: 200,
-    borderRadius: 8,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  button: {
-    borderRadius: 8,
-    padding: 10,
-    marginTop: 10,
-    width: 150,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-});
-
-export default JoinClassModal;

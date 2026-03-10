@@ -1,18 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
+import { useThemedStyles } from "../hooks/useStyleSheet";
 
 // TODO: implement later
 export default function Achievements() {
+  const themedStyles = useThemedStyles();
+  
   return (
-    <View style={styles.container}>
+    <View style={themedStyles.container}>
       <Text>Achievements Screen</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

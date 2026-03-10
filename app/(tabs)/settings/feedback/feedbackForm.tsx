@@ -1,16 +1,22 @@
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useTranslation } from "react-i18next";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function FeedbackForm() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
+
+  const { t } = useTranslation("settings");
+  
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={themedStyles.container}>
       <Pressable
-        style={[styles.button, { backgroundColor: theme.button }]}
+        style={themedStyles.button}
         onPress={() => openURL("https://forms.gle/fRM6GnwfrvnoytVe6")}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          Submit Feedback
+        <Text style={themedStyles.buttonText}>
+          {t("submitFeedback")}
         </Text>
       </Pressable>
     </View>
@@ -29,19 +35,3 @@ const openURL = async (url: string) => {
     alert(`Don't know how to open this URL: ${url}`);
   }
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  button: {
-    marginTop: 20,
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    fontSize: 16,
-  },
-});

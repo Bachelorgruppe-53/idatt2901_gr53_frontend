@@ -2,6 +2,8 @@ import CityScoreboard from "@/src/components/stats/cityWideScoreboard";
 import ClassScoreboard from "@/src/components/stats/classWideScoreboard";
 import SchoolScoreboard from "@/src/components/stats/schoolWideScoreboard";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { BaseStyles } from "@/src/constants/Styles";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,14 +13,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function StatsScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
   const { t } = useTranslation("stats");
 
   return (
-    <View style={styles.container}>
+    <View style={BaseStyles.flex}>
       <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.background }]}
+        style={themedStyles.backgroundFlex}
       >
-        <View style={styles.content}>
+        <View style={BaseStyles.flex}>
           {selectedIndex === 0 ? (
             <ClassScoreboard />
           ) : selectedIndex === 1 ? (
@@ -28,7 +31,7 @@ export default function StatsScreen() {
           )}
         </View>
 
-        <View style={styles.header}>
+        <View style={themedStyles.segmentedView}>
           <SegmentedControl
             values={[
               t("classScoreboard"),
@@ -39,9 +42,8 @@ export default function StatsScreen() {
             onChange={(event) => {
               setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
             }}
-            backgroundColor={theme.backgroundSecondary}
             tintColor={theme.button}
-            style={styles.segmentedControl}
+            style={themedStyles.segmentedControl}
             activeFontStyle={{ color: theme.buttontext }}
             fontStyle={{ color: theme.text }}
           />
@@ -50,30 +52,3 @@ export default function StatsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-  },
-  segmentedControl: {
-    height: 45,
-    overflow: "hidden",
-    marginBottom: Platform.OS === "ios" ? 20 : 10,
-    borderRadius: Platform.OS === "ios" ? 20 : 8,
-  },
-  segmentText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  content: {
-    flex: 1,
-  },
-});

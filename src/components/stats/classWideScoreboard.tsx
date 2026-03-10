@@ -15,6 +15,8 @@ import Scoreboard from "@/src/components/stats/genericScoreboard";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { BaseStyles } from "../../constants/Styles";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 
 /**
  * Class-wide scoreboard that lists all members of the user's class.
@@ -28,6 +30,7 @@ export default function ClassScoreboard() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentNickname, setCurrentNickname] = useState<string>("");
+  const themedStyles = useThemedStyles();
 
   useEffect(() => {
     // Fetch user summary to obtain class code and current nickname.
@@ -128,14 +131,14 @@ export default function ClassScoreboard() {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View style={[themedStyles.content, BaseStyles.p24]}>
+        <Text style={themedStyles.errorText}>{error}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.screen}>
+    <View style={BaseStyles.flex}>
       <Scoreboard
         entities={entities}
         scores={scores}
@@ -148,20 +151,3 @@ export default function ClassScoreboard() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  errorText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
-});

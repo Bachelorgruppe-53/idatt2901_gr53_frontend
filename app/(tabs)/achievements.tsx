@@ -1,10 +1,12 @@
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useState } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import Careers from "@/src/components/careers/unlockedCareers";
 import Achievements from "@/src/components/unlockedAchievements";
-import Careers from "@/src/components/unlockedCareers";
+import { BaseStyles } from "@/src/constants/Styles";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 
 /**
@@ -16,56 +18,29 @@ import { useThemeColor } from "@/src/hooks/useThemeColor";
 export default function AchievementScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.background }]}
+      style={[BaseStyles.flex, { backgroundColor: theme.background }]}
     >
-      <View style={styles.content}>
+      <View style={BaseStyles.flex}>
         {selectedIndex === 0 ? <Careers /> : <Achievements />}
       </View>
 
-      <View style={styles.header}>
+      <View style={themedStyles.segmentedView}>
         <SegmentedControl
           values={["Karrierer", "Merker"]}
           selectedIndex={selectedIndex}
           onChange={(event) => {
             setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
           }}
-          backgroundColor={theme.backgroundSecondary}
           tintColor={theme.button}
-          style={styles.segmentedControl}
-          activeFontStyle={{ color: theme.buttontext }}
-          fontStyle={{ color: theme.text }}
+          style={themedStyles.segmentedControl}
+          activeFontStyle={themedStyles.activeSegmentText}
+          fontStyle={themedStyles.segmentText}
         />
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-  },
-  segmentedControl: {
-    height: 45,
-    overflow: "hidden",
-    marginBottom: Platform.OS === "ios" ? 20 : 10,
-    borderRadius: Platform.OS === "ios" ? 20 : 8,
-  },
-  segmentText: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  text: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  content: {
-    flex: 1,
-  },
-});

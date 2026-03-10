@@ -1,8 +1,10 @@
 import { registerDevice } from "@/services/authService";
 import { getNickname } from "@/services/utils/secureStorage";
-import AboutCareer from "@/src/components/aboutCareer";
-import JoinClassModal from "@/src/components/joinClass";
+import AboutCareer from "@/src/components/careers/aboutCareer";
+import { JoinClassModal } from "@/src/components/joinClass";
+import { BaseStyles } from "@/src/constants/Styles";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -19,15 +21,15 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
  * @returns JSX.Element
  */
 
-// TODO: add all functionality to buttons and QR scanner
 
 export default function Index() {
   const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
   const isReady = true; // Midlertidig hardkodet til true for testing, disable knapper hvis false
   const { isScanning, startScanning, stopScanning } = useQRScanner();
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [showCareerModal, setShowCareerModal] = useState(false);
-  const [selectedCareer, setSelectedCareer] = useState<string | null>(null);
+  const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
   const [name, setName] = useState<string>("");
   const [remountKey, setRemountKey] = useState(0);
 
@@ -61,13 +63,14 @@ export default function Index() {
 
   const handleScan = (data: string) => {
     stopScanning();
-    const careerName = data.trim();
-    if (!careerName) {
-      alert(t("invalidQR"));
+    const scannedId = parseInt(data.trim(), 10);
+    
+    if (isNaN(scannedId) || scannedId <= 0) {
+      alert(t("invalidQR", "Invalid QR code"));
       return;
     }
 
-    setSelectedCareer(careerName);
+    setSelectedCareerId(scannedId);
     setShowCareerModal(true);
   };
 
@@ -86,28 +89,27 @@ export default function Index() {
     return <JoinClassModal onClose={() => setShowJoinClass(false)} />;
   }
 
-  if (showCareerModal && selectedCareer) {
+  if (showCareerModal && selectedCareerId) {
     return (
       <AboutCareer
-        careerName={selectedCareer}
+        careerId={selectedCareerId}
         onClose={() => setShowCareerModal(false)}
       />
     );
   }
 
   return (
-    <View
-      key={remountKey}
-      style={[styles.container, { backgroundColor: theme.background }]}
-    >
-      <Text style={[styles.title, { color: theme.text }]}>
+    <View key={remountKey} style={themedStyles.container}>
+      <Text
+        style={[themedStyles.heading, { position: "absolute", top: "10%" }]}
+      >
         St. Olavs hospital
       </Text>
-      <View style={styles.row}>
+      <View
+        style={[BaseStyles.rowCenter, { position: "absolute", top: "15%" }]}
+      >
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={[styles.favourite, { color: theme.text }]}>
-          {t("favoriteCareer")}r
-        </Text>
+        <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
       </View>
       <View style={styles.imageWrapper}>
         <Image
@@ -115,45 +117,32 @@ export default function Index() {
           style={styles.image}
         />
       </View>
-      <Text style={[styles.name, { color: theme.text }]}>{t("hello")},</Text>
-      <Text style={[styles.welcomeMessage, { color: theme.text }]}>
+      <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>
+        {t("hello")},
+      </Text>
+      <Text style={[themedStyles.subheading]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
 
       <Pressable
-        style={[
-          styles.button,
-          !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
-        ]}
+        style={[themedStyles.button, !isReady && styles.buttonDisabled]}
         onPress={handleRegisterDevice}
         disabled={!isReady}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
+        <Text style={themedStyles.buttonText}>
           {/* {t("takeTest")} */} register device (TEMP)
         </Text>
       </Pressable>
 
       <Pressable
-        style={[
-          styles.button,
-          !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
-        ]}
+        style={[themedStyles.button, !isReady && styles.buttonDisabled]}
         onPress={() => setShowJoinClass(true)}
         disabled={!isReady}
       >
-        <Text style={[styles.buttonText, { color: theme.buttontext }]}>
-          {t("joinClass")}
-        </Text>
+        <Text style={themedStyles.buttonText}>{t("joinClass")}</Text>
       </Pressable>
-
       <Pressable
-        style={[
-          styles.buttonRound,
-          !isReady && styles.buttonDisabled,
-          { backgroundColor: theme.button },
-        ]}
+        style={[themedStyles.buttonRound, !isReady && styles.buttonDisabled]}
         onPress={handleQRPress}
         disabled={!isReady}
       >
@@ -168,67 +157,16 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 80,
-    alignItems: "center",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 15,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    letterSpacing: 2.5,
-    marginBottom: 15,
-  },
-  favourite: {
-    fontSize: 18,
-    marginLeft: 10,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
   imageWrapper: {
-    marginTop: 20,
+    marginTop: 5,
+    marginBottom: 20,
     borderRadius: 100,
   },
   image: {
     width: 200,
     height: 200,
   },
-  name: {
-    fontSize: 25,
-    marginTop: 20,
-    textAlign: "center",
-  },
-  welcomeMessage: {
-    fontSize: 25,
-    marginTop: 10,
-    textAlign: "center",
-    paddingHorizontal: 40,
-    fontWeight: "600",
-  },
-  button: {
-    marginTop: 30,
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 8,
-    width: "80%",
-    alignItems: "center",
-  },
-  buttonRound: {
-    marginTop: 30,
-    backgroundColor: Colors.brand.purple || Colors.brand.green,
-    padding: 15,
-    borderRadius: 50,
-  },
   buttonDisabled: {
     backgroundColor: Colors.brand.gray,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: "bold",
   },
 });
