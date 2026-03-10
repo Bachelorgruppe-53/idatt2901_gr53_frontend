@@ -1,14 +1,13 @@
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useState } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import Careers from "@/src/components/careers/unlockedCareers";
 import Achievements from "@/src/components/unlockedAchievements";
-import Careers from "@/src/components/unlockedCareers";
-import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { BaseStyles } from "@/src/constants/Styles";
-
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 
 /**
  * This screen allows users to toggle between viewing unlocked careers and achievements.
