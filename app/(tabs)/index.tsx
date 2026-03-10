@@ -166,24 +166,6 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
   },
-  name: {
-    fontSize: 25,
-    marginTop: 20,
-  },
-  button: {
-    marginTop: 30,
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 8,
-    width: "80%",
-    alignItems: "center",
-  },
-  buttonRound: {
-    marginTop: 30,
-    backgroundColor: Colors.brand.purple || Colors.brand.green,
-    padding: 15,
-    borderRadius: 50,
-  },
   buttonDisabled: {
     backgroundColor: Colors.brand.gray,
   },
