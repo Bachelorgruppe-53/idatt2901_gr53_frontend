@@ -11,15 +11,16 @@ export interface MapLocation {
   color?: string;
 }
 
-export interface PoiDto {
+export interface MapDto {
   title: string;
   lat: number;
   lon: number;
-  description: string;
   place: string;
-  points: number;
   color: number;
-  area: string;
+}
+
+interface StringRequest {
+  name: string;
 }
 
 const COLOR_BY_CODE: Record<number, string> = {
@@ -38,26 +39,7 @@ const COLOR_BY_CODE: Record<number, string> = {
 const mapPoiColorToBrandColor = (colorCode: number): string =>
   COLOR_BY_CODE[colorCode] ?? Colors.brand.darkBlue;
 
-// Static fallback locations
-const FALLBACK_LOCATIONS: MapLocation[] = [
-  {
-    id: "1",
-    latitude: 63.420128,
-    longitude: 10.387826,
-    title: "Sykepleier",
-    place: "Scann stolpen i 2. etasje for å låse opp yrket",
-  },
-  {
-    id: "2",
-    latitude: 63.421,
-    longitude: 10.387826,
-    title: "Lege",
-    place: "Scann stolpen ved heisen i 4. etasje for å låse opp yrket",
-    color: "purple",
-  },
-];
-
-const poiDtoToMapLocation = (poi: PoiDto, index: number): MapLocation => ({
+const mapDtoToMapLocation = (poi: MapDto, index: number): MapLocation => ({
   id: String(index),
   latitude: poi.lat,
   longitude: poi.lon,
@@ -77,21 +59,52 @@ const fetchPoiWithUserId = async (url: string, userId: string) => {
   });
 };
 
-export const fetchLocations = async (): Promise<MapLocation[]> => {
+const fetchPoiByAreaWithUserId = async (
+  url: string,
+  userId: string,
+  areaName: string,
+) => {
+  const body: StringRequest = { name: areaName };
+
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-User-ID": userId,
+    },
+    body: JSON.stringify(body),
+  });
+};
+
+export const fetchLocations = async (
+  areaName: string | null = null,
+): Promise<MapLocation[]> => {
   try {
     const baseUrl = getApiBaseUrl().replace(/\/$/, "");
-    const url = `${baseUrl}/poi/all`;
-
     let userId = await ensureUserId();
-    let response = await fetchPoiWithUserId(url, userId);
+    let response: Response;
 
-    // Self-heal if stored ID is stale/invalid
+    if (areaName === null) {
+      const url = `${baseUrl}/poi/all`;
+      response = await fetchPoiWithUserId(url, userId);
+    } else {
+      const url = `${baseUrl}/poi/area`;
+      response = await fetchPoiByAreaWithUserId(url, userId, areaName);
+    }
+
     if (!response.ok) {
       const errorText = await response.text();
 
       if (response.status === 400 && errorText.includes("Invalid UUID format")) {
         userId = await registerDevice();
-        response = await fetchPoiWithUserId(url, userId);
+        if (areaName === null) {
+          const url = `${baseUrl}/poi/all`;
+          response = await fetchPoiWithUserId(url, userId);
+        } else {
+          const url = `${baseUrl}/poi/area`;
+          response = await fetchPoiByAreaWithUserId(url, userId, areaName);
+        }
       } else {
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
@@ -105,12 +118,12 @@ export const fetchLocations = async (): Promise<MapLocation[]> => {
     const data = await response.json();
     const poiArray = Array.isArray(data) ? data : data.body || data.data || [];
 
-    if (!Array.isArray(poiArray)) return FALLBACK_LOCATIONS;
-    return poiArray.map(poiDtoToMapLocation);
+    if (!Array.isArray(poiArray)) return [];
+    return poiArray.map(mapDtoToMapLocation);
   } catch (error) {
     console.error("Failed to fetch POI locations:", error);
-    return FALLBACK_LOCATIONS;
+    return [];
   }
 };
 
-export const locations = FALLBACK_LOCATIONS;
+export const locations: MapLocation[] = [];
