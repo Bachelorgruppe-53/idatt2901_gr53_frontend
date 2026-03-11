@@ -53,6 +53,8 @@ interface PoiDto {
   id: number;
   title: string;
   description: string;
+  points: number;
+  color: number;
 }
 
 interface Props {
@@ -112,7 +114,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
         const userId = await ensureUserId();
         const baseUrl = getApiBaseUrl().replace(/\/$/, "");
 
-        const res = await fetch(`${baseUrl}/poi/career`, {
+        const res = await fetch(`${baseUrl}/career/career`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -195,6 +197,19 @@ export default function AboutCareer({ careerId, onClose }: Props) {
             {data?.title || t("unknownTitle")}
           </Text>
         </View>
+
+        {typeof data?.points === "number" && (
+            <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
+              <MaterialIcons
+                name="stars"
+                size={16}
+                color={Colors.brand.darkYellow}
+              />
+              <Text style={themedStyles.semiboldText}>
+                {data.points} {t("points")}
+              </Text>
+            </View>
+          )}
 
         <Text style={[themedStyles.text, BaseStyles.m16]}>
           {data?.description || t("noDescription")}

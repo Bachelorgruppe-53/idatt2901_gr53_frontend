@@ -179,7 +179,7 @@ export function useCareerQuiz({
         chosenOptionIds: answers.flatMap((a) => a.chosenOptionIds),
       };
 
-      const res = await fetch(`${baseUrl}/poi/claim`, {
+      const res = await fetch(`${baseUrl}/career/claim`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

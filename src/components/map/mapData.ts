@@ -86,10 +86,10 @@ export const fetchLocations = async (
     let response: Response;
 
     if (areaName === null) {
-      const url = `${baseUrl}/poi/all`;
+      const url = `${baseUrl}/career/all`;
       response = await fetchPoiWithUserId(url, userId);
     } else {
-      const url = `${baseUrl}/poi/area`;
+      const url = `${baseUrl}/career/area`;
       response = await fetchPoiByAreaWithUserId(url, userId, areaName);
     }
 
@@ -99,10 +99,10 @@ export const fetchLocations = async (
       if (response.status === 400 && errorText.includes("Invalid UUID format")) {
         userId = await registerDevice();
         if (areaName === null) {
-          const url = `${baseUrl}/poi/all`;
+          const url = `${baseUrl}/career/all`;
           response = await fetchPoiWithUserId(url, userId);
         } else {
-          const url = `${baseUrl}/poi/area`;
+          const url = `${baseUrl}/career/area`;
           response = await fetchPoiByAreaWithUserId(url, userId, areaName);
         }
       } else {
