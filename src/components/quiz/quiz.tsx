@@ -1,112 +1,87 @@
 import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-type QuizItem = {
-  question: string;
-  options: string[];
-  correctIndex?: number;
+export type QuizOptionItem = {
+  id: number;
+  text: string;
 };
 
-type QuizProps = {
+export type QuizItem = {
+  questionId: number;
+  question: string;
+  options: QuizOptionItem[];
+};
+
+export type QuizProps = {
   questions?: QuizItem[];
-  onAnswer: (questionIndex: number, selectedIndex: number) => void;
+  onAnswer: (questionId: number, chosenOptionIds: number[]) => void;
   onComplete?: () => void;
   isLoading?: boolean;
 };
 
-const defaultQuestions: QuizItem[] = [
-  {
-    question: "Hva gjør en sykepleier?",
-    options: ["Tar vare på pasienter", "Lager mat", "Kjører ambulanse"],
-    correctIndex: 0,
-  },
-  {
-    question: "Hvilken utdanning trenger man for å bli sykepleier?",
-    options: ["Bachelorgrad", "Mastergrad", "Doktorgrad"],
-    correctIndex: 0,
-  },
-  {
-    question: "Hvor mange sykepleiere jobber på St. Olavs hospital?",
-    options: ["500", "1000", "1500"],
-    correctIndex: 1,
-  },
-];
-
 export default function Quiz({
-  questions,
+  questions = [],
   onAnswer,
   onComplete,
   isLoading = false,
 }: QuizProps) {
   const theme = useThemeColor();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const items =
-    questions && questions.length > 0 ? questions : defaultQuestions;
+  useEffect(() => {
+    setCurrentQuestionIndex(0);
+  }, [questions]);
 
-  if (!items || items.length === 0) return null;
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}>
+        <Text style={[styles.loadingText, { color: theme.placeholder }]}>Laster quiz...</Text>
+      </View>
+    );
+  }
 
-  const current = items[currentQuestionIndex];
+  if (!questions.length) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}>
+        <Text style={[styles.loadingText, { color: theme.placeholder }]}>Ingen spørsmål tilgjengelig.</Text>
+      </View>
+    );
+  }
+
+  const current = questions[currentQuestionIndex];
   const optionLabels = ["A", "B", "C", "D", "E", "F"];
 
-  const handleSelect = (index: number) => {
-    if (isLoading) return;
-
-    setSelectedIndex(index);
-    onAnswer(currentQuestionIndex, index);
+  const handleSelect = (optionId: number) => {
+    onAnswer(current.questionId, [optionId]);
 
     const next = currentQuestionIndex + 1;
-    if (next < items.length) {
+    if (next < questions.length) {
       setCurrentQuestionIndex(next);
-      setSelectedIndex(null);
     } else {
-      onComplete && onComplete();
+      onComplete?.();
     }
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: theme.background,
-          borderColor: theme.border,
-        },
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}>
       <View style={styles.headerRow}>
-        <View
-          style={[
-            styles.progressPill,
-            {
-              backgroundColor: theme.backgroundSecondary,
-              borderColor: theme.border,
-            },
-          ]}
-        >
+        <View style={[styles.progressPill, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
           <Text style={[styles.progressText, { color: theme.placeholder }]}>
-            Spørsmal {currentQuestionIndex + 1} av {items.length}
+            Spørsmål {currentQuestionIndex + 1} av {questions.length}
           </Text>
         </View>
-        <Text style={[styles.tapHint, { color: theme.placeholder }]}>
-          Trykk for å svare
-        </Text>
       </View>
 
       <View style={styles.progressDots}>
-        {items.map((_, idx) => (
+        {questions.map((_, idx) => (
           <View
             key={idx}
             style={[
               styles.progressDot,
               {
                 borderColor: theme.border,
-                backgroundColor:
-                  idx <= currentQuestionIndex
-                    ? theme.text
-                    : theme.backgroundSecondary,
+                backgroundColor: idx <= currentQuestionIndex ? theme.text : theme.backgroundSecondary,
               },
             ]}
           />
@@ -114,61 +89,35 @@ export default function Quiz({
       </View>
 
       <View style={styles.questionArea}>
-        <Text
-          numberOfLines={3}
-          ellipsizeMode="tail"
-          style={[styles.questionText, { color: theme.text }]}
-        >
+        <Text numberOfLines={3} ellipsizeMode="tail" style={[styles.questionText, { color: theme.text }]}>
           {current.question}
         </Text>
       </View>
 
       {current.options.map((opt, idx) => (
         <Pressable
-          key={idx}
-          onPress={() => handleSelect(idx)}
-          disabled={isLoading}
+          key={opt.id}
+          onPress={() => handleSelect(opt.id)}
           style={({ pressed }) => [
             styles.option,
             {
               backgroundColor: theme.backgroundSecondary,
               borderColor: theme.border,
-              opacity: pressed || isLoading ? 0.8 : 1,
-            },
-            selectedIndex === idx && {
-              backgroundColor: theme.background,
-              borderColor: theme.text,
-              borderWidth: 2,
+              opacity: pressed ? 0.8 : 1,
             },
             pressed && styles.optionPressed,
           ]}
         >
           <View style={styles.optionContent}>
-            <View
-              style={[
-                styles.optionLabel,
-                {
-                  borderColor: theme.border,
-                  backgroundColor: theme.background,
-                },
-              ]}
-            >
+            <View style={[styles.optionLabel, { borderColor: theme.border, backgroundColor: theme.background }]}>
               <Text style={[styles.optionLabelText, { color: theme.text }]}>
                 {optionLabels[idx] ?? `${idx + 1}`}
               </Text>
             </View>
-            <Text style={[styles.optionText, { color: theme.text }]}>
-              {opt}
-            </Text>
+            <Text style={[styles.optionText, { color: theme.text }]}>{opt.text}</Text>
           </View>
         </Pressable>
       ))}
-
-      {isLoading ? (
-        <Text style={[styles.loadingText, { color: theme.placeholder }]}>
-          Laster...
-        </Text>
-      ) : null}
     </View>
   );
 }
