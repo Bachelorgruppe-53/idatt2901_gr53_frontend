@@ -18,7 +18,12 @@ import QuizModal from "../quiz/quizModal";
 import { useCareerQuiz } from "../../hooks/useQuiz";
 import { Colors } from "@/src/constants/Colors";
 
-// ...existing code...
+/**
+ * AboutCareer component that displays information about a career point of interest (POI) and includes a quiz to unlock points. It handles fetching career data, displaying it, and managing the quiz state and interactions.
+ * 
+ * @param {Props} props - The props for the AboutCareer component, including careerId and onClose callback.
+ * @returns {JSX.Element} The rendered AboutCareer component.
+ */
 
 interface QuizOptionDto {
   id: number;

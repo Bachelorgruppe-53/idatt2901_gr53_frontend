@@ -2,6 +2,18 @@ import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+/**
+ * Quiz component that renders a series of questions with multiple choice answers.
+ * Props:
+ * - questions: Array of quiz items, each containing a question and its options.
+ * - onAnswer: Callback function called when an answer is selected, with the question ID and chosen option IDs.
+ * - onComplete: Optional callback function called when all questions have been answered.
+ * - isLoading: Optional boolean to indicate if the quiz data is still loading.
+ * 
+ * @param {QuizProps} props - The props for the Quiz component.
+ * @returns {JSX.Element} The rendered Quiz component.
+ */
+
 export type QuizOptionItem = {
   id: number;
   text: string;

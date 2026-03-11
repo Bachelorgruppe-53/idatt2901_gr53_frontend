@@ -6,6 +6,13 @@ import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import Quiz, { type QuizItem } from "./quiz";
 
+/**
+ * QuizModal component that displays a modal with a quiz. It accepts props for visibility, title, quiz questions, loading state, answer handling, completion handling, and closing the modal.
+ * 
+ * @param {QuizModalProps} props - The props for the QuizModal component.
+ * @returns {JSX.Element} The rendered QuizModal component.
+ */
+
 interface QuizModalProps {
   visible: boolean;
   title?: string;

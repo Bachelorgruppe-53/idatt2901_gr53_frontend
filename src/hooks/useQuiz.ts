@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { QuizItem } from "../components/quiz/quiz";
 
+/**
+ * Custom hook for managing the state and logic of a career quiz. It handles fetching quiz questions, tracking answers, managing quiz completion, and submitting claims based on quiz results.
+ * 
+ * @param {UseCareerQuizParams} params - The parameters for the useCareerQuiz hook, including careerId and onClaimSuccess callback.
+ * @returns An object containing quiz state and handler functions for use in components.
+ */
 
 interface QuizOptionDto {
   id: number;
