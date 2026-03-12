@@ -1,4 +1,5 @@
-import { registerDevice } from "@/services/authService";
+import { registerDevice, ensureUserId } from "@/services/authService";
+import { getApiBaseUrl } from "@/services/apiConfig";
 import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
@@ -6,12 +7,14 @@ import { BaseStyles } from "@/src/constants/Styles";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { AppState, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
+import { useFocusEffect } from "expo-router";
+
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -21,6 +24,13 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
  * @returns JSX.Element
  */
 
+type UserSummary = {
+  nickname: string;
+  points: number;
+  className: string;
+  schoolName: string;
+  classCode: string;
+};
 
 export default function Index() {
   const theme = useThemeColor();
@@ -32,6 +42,7 @@ export default function Index() {
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
   const [name, setName] = useState<string>("");
   const [remountKey, setRemountKey] = useState(0);
+  const [points, setPoints] = useState<number>(0);
 
   const { t } = useTranslation("home");
 
@@ -44,16 +55,84 @@ export default function Index() {
     }
   };
 
+  const loadPoints = useCallback(async () => {
+    try {
+      const userId = await ensureUserId();
+      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/user/summary`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "X-User-ID": userId,
+        },
+      });
+
+      const raw = await res.text();
+      console.log("Raw response from /user/summary:", raw);
+
+      if (!res.ok) {
+        console.warn("Failed /user/summary:", res.status, raw);
+        return;
+      }
+
+      // Backend can return plain text
+      if (raw.startsWith("This user")) {
+        console.log("[points] user has no class relation, setting points=0");
+        return;
+      }
+
+      let json: UserSummary;
+      try {
+        json = JSON.parse(raw) as UserSummary;
+      } catch {
+        console.warn("Invalid JSON from /user/summary:", raw);
+        return;
+      }
+
+      const parsedPoints = Number(json.points) || 0;
+      console.log("[points] parsed JSON:", json);
+      console.log("[points] parsed points:", parsedPoints);
+
+      setPoints(parsedPoints);
+
+      if (json.nickname) {
+        setName(json.nickname);
+      }
+    } catch (error) {
+      console.error("Failed to load points:", error);
+    }
+  }, []);
+
   // Load nickname from storage on mount
   useEffect(() => {
     console.log("Index component mounted, loading nickname...");
     void loadNickname();
-  }, []);
+    void loadPoints();
+  }, [loadPoints]);
+
+  // Auto-refresh whenever this tab/screen becomes focused
+  useFocusEffect(
+    useCallback(() => {
+      void loadPoints();
+    }, [loadPoints]),
+  );
+
+  // Auto-refresh when app returns to foreground
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state === "active") {
+        void loadPoints();
+      }
+    });
+
+    return () => sub.remove();
+  }, [loadPoints]);
 
   const handleRegisterDevice = async () => {
     try {
       await registerDevice();
       await loadNickname();
+      await loadPoints();
       setRemountKey((prev) => prev + 1);
     } catch (error) {
       console.error("Failed to register device:", error);
@@ -93,7 +172,10 @@ export default function Index() {
     return (
       <AboutCareer
         careerId={selectedCareerId}
-        onClose={() => setShowCareerModal(false)}
+        onClose={() => {
+          setShowCareerModal(false);
+          void loadPoints(); // refresh after possible claim
+        }}
       />
     );
   }
@@ -110,6 +192,12 @@ export default function Index() {
       >
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
         <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
+      </View>
+      <View style={[BaseStyles.rowCenter, { marginTop: 8, marginBottom: 14 }]}>
+        <MaterialIcons name="stars" size={18} color={Colors.brand.darkYellow} />
+        <Text style={[themedStyles.text, { marginLeft: 6 }]}>
+          {points} {t("points", "poeng")}
+        </Text>
       </View>
       <View style={styles.imageWrapper}>
         <Image
