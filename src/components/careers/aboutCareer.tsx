@@ -25,30 +25,6 @@ import { Colors } from "@/src/constants/Colors";
  * @returns {JSX.Element} The rendered AboutCareer component.
  */
 
-interface QuizOptionDto {
-  id: number;
-  optionText: string;
-}
-
-interface QuestionDto {
-  id: number;
-  questionText: string;
-  type: string;
-  options: QuizOptionDto[];
-}
-
-interface QuestionAnswerDto {
-  questionId: number;
-  chosenOptionIds: number[];
-}
-
-interface ClaimRequest {
-  poiId: number;
-  quizId: number;
-  responseTime: number;
-  chosenOptionIds: number[];
-}
-
 interface PoiDto {
   id: number;
   title: string;
