@@ -10,7 +10,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.brahimage.appBacheloroppgave",
-      "icon": "./assets/images/icon/sjuk.icon"
+      "icon": "./assets/images/icon/sjuk.icon",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

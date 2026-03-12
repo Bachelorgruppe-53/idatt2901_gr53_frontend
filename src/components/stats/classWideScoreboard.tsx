@@ -32,6 +32,15 @@ export default function ClassScoreboard() {
   const [currentNickname, setCurrentNickname] = useState<string>("");
   const themedStyles = useThemedStyles();
 
+  const getBackendErrorMessage = (data: unknown): string => {
+    if (typeof data === "string") return data;
+    if (data && typeof data === "object" && "error" in data) {
+      const value = (data as { error?: unknown }).error;
+      if (typeof value === "string") return value;
+    }
+    return "";
+  };
+
   useEffect(() => {
     // Fetch user summary to obtain class code and current nickname.
     const getSummary = async (): Promise<UserSummary | null> => {
@@ -58,7 +67,14 @@ export default function ClassScoreboard() {
         return summary;
       } catch (err) {
         if (isAxiosError(err)) {
-          if (err.response?.status === 401) {
+          const backendMessage = getBackendErrorMessage(err.response?.data);
+
+          if (
+            err.response?.status === 400 &&
+            backendMessage.includes("not related to a class")
+          ) {
+            setError("You need to join a class");
+          } else if (err.response?.status === 401) {
             setError("User not found");
           } else if (err.response?.status === 403) {
             setError("User is not registered to a school");

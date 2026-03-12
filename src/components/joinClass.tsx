@@ -57,7 +57,7 @@ export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
     try {
       const userId = await ensureUserId();
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
-      const response = await axios.post(
+      const response = await axios.put(
         `${baseUrl}/user/join`,
         { code: classCode },
         { headers: { "X-User-ID": userId } },
