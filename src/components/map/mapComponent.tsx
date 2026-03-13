@@ -1,3 +1,9 @@
+import { AreaSelector } from "@/src/components/map/areaDropdown";
+import { fetchLocations, MapLocation } from "@/src/components/map/mapData";
+import { MapMarker } from "@/src/components/map/MapMarker";
+import { QRScanner } from "@/src/components/QRScanner";
+import { Colors } from "@/src/constants/Colors";
+import { useTheme } from "@/src/context/ThemeContext";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -9,15 +15,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import MapView, {
-  PROVIDER_GOOGLE
-} from "react-native-maps";
-import { Colors } from "../../constants/Colors";
-import { useTheme } from "../../context/ThemeContext";
-import { QRScanner } from "../QRScanner";
-import { fetchLocations, MapLocation } from "./mapData";
-import { MapMarker } from "./MapMarker";
-import { AreaSelector } from "./areaDropdown";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 /**
  * This component displays a map with markers and allows users to scan QR codes to unlock careers.
@@ -41,8 +39,7 @@ const AREAS = [
   { id: "all", name: "Alle områder", value: null },
   { id: "st-olavs", label: "St. Olavs Hospital", value: "St. Olavs hospital" },
   { id: "roros", label: "Røros", value: "Røros" },
-
-]
+];
 
 export const MapComponent = ({
   style,
@@ -55,7 +52,9 @@ export const MapComponent = ({
 
   const [locations, setLocations] = useState<MapLocation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedArea, setSelectedArea] = useState<string | null>("St. Olavs hospital");
+  const [selectedArea, setSelectedArea] = useState<string | null>(
+    "St. Olavs hospital",
+  );
   const [isMapReady, setIsMapReady] = useState(false);
   const mapRef = useRef<MapView>(null);
 
@@ -132,7 +131,6 @@ export const MapComponent = ({
 
   const selectedAreaLabel =
     AREAS.find((a) => a.value === selectedArea)?.label || "Select Area";
-
 
   if (isScanning) {
     return <QRScanner onScan={handleScan} onClose={stopScanning} />;
