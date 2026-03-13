@@ -4,6 +4,8 @@ const TOKEN_KEY = "admin_auth_token";
 const REFRESH_TOKEN_KEY = "admin_refresh_token";
 const USER_ID_KEY = "user_id";
 const NICKNAME_KEY = "user_nickname";
+const LANGUAGE_KEY = "app_language";
+const THEME_MODE_KEY = "app_theme_mode";
 
 /**
  * Store authentication token securely
@@ -125,6 +127,56 @@ export const deleteNickname = async (): Promise<void> => {
   } catch (error) {
     console.error("Error deleting nickname:", error);
     throw error;
+  }
+};
+
+/**
+ * Store selected app language securely.
+ */
+export const saveLanguagePreference = async (
+  languageCode: string,
+): Promise<void> => {
+  try {
+    await SecureStore.setItemAsync(LANGUAGE_KEY, languageCode);
+  } catch (error) {
+    console.error("Error saving language preference:", error);
+    throw error;
+  }
+};
+
+/**
+ * Retrieve selected app language.
+ */
+export const getLanguagePreference = async (): Promise<string | null> => {
+  try {
+    return await SecureStore.getItemAsync(LANGUAGE_KEY);
+  } catch (error) {
+    console.error("Error retrieving language preference:", error);
+    return null;
+  }
+};
+
+/**
+ * Store selected app theme mode securely.
+ */
+export const saveThemePreference = async (themeMode: string): Promise<void> => {
+  try {
+    await SecureStore.setItemAsync(THEME_MODE_KEY, themeMode);
+  } catch (error) {
+    console.error("Error saving theme preference:", error);
+    throw error;
+  }
+};
+
+/**
+ * Retrieve selected app theme mode.
+ */
+export const getThemePreference = async (): Promise<string | null> => {
+  try {
+    return await SecureStore.getItemAsync(THEME_MODE_KEY);
+  } catch (error) {
+    console.error("Error retrieving theme preference:", error);
+    return null;
   }
 };
 

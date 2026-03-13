@@ -1,3 +1,4 @@
+import { getLanguagePreference } from "@/services/utils/secureStorage";
 import * as Localization from "expo-localization";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
@@ -90,11 +91,32 @@ i18n.use(initReactI18next).init({
   },
   lng: getSupportedLanguage(deviceLanguage),
   fallbackLng: "en-US",
-  ns: ["common", "auth", "navbar", "settings", "home", "aboutCareer", "stats", "class"],
+  ns: [
+    "common",
+    "auth",
+    "navbar",
+    "settings",
+    "home",
+    "aboutCareer",
+    "stats",
+    "class",
+  ],
   defaultNS: "common",
   interpolation: {
     escapeValue: false,
   },
 });
+
+void (async () => {
+  const savedLanguage = await getLanguagePreference();
+  if (!savedLanguage) {
+    return;
+  }
+
+  const supportedLanguage = getSupportedLanguage(savedLanguage);
+  if (i18n.language !== supportedLanguage) {
+    await i18n.changeLanguage(supportedLanguage);
+  }
+})();
 
 export default i18n;

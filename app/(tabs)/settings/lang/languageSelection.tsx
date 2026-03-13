@@ -1,12 +1,20 @@
-import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { saveLanguagePreference } from "@/services/utils/secureStorage";
+import { BaseStyles } from "@/src/constants/Styles";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View, Platform } from "react-native";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import CountryFlag from "react-native-country-flag";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BaseStyles } from "@/src/constants/Styles";
 
 // Custom flag component that supports both ISO codes and custom SVG
 const FlagDisplay = ({
@@ -50,6 +58,7 @@ export default function LanguageSelectionScreen() {
 
   const handleLanguageChange = async (languageCode: string) => {
     await i18n.changeLanguage(languageCode);
+    await saveLanguagePreference(languageCode);
   };
 
   return (
@@ -70,9 +79,7 @@ export default function LanguageSelectionScreen() {
         }}
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Text style={themedStyles.heading}>
-          {t("changeLanguage")}
-        </Text>
+        <Text style={themedStyles.heading}>{t("changeLanguage")}</Text>
         <View style={BaseStyles.gap16}>
           {languages.map((lang) => {
             const isSelected = i18n.language === lang.code;
