@@ -1,10 +1,8 @@
-import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import EntityPlaceholder from "./entityPlaceholder";
+import EntityPlaceholder from "@/src/components/stats/entityPlaceholder";
 import { BaseStyles } from "@/src/constants/Styles";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
-import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { Colors } from "@/src/constants/Colors";
+import { useTranslation } from "react-i18next";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 type ScoreboardProps = {
   entities: string[];
@@ -33,7 +31,6 @@ export default function Scoreboard(props: ScoreboardProps) {
   const maxScore = Math.max(...props.scores, userPoints, 1);
   const placeholderCount = 12;
   const themedStyles = useThemedStyles();
-  const theme = useThemeColor();
 
   // Pair entities with scores and sort descending for ranking.
   const ranked = props.entities
@@ -131,7 +128,8 @@ export default function Scoreboard(props: ScoreboardProps) {
                     <View
                       key={`${entry.entity}-${rank}`}
                       style={[
-                        BaseStyles.rowCenter, BaseStyles.gap16,
+                        BaseStyles.rowCenter,
+                        BaseStyles.gap16,
                         isHighlighted && styles.rowHighlighted,
                       ]}
                     >
@@ -145,7 +143,12 @@ export default function Scoreboard(props: ScoreboardProps) {
                       </View>
 
                       <View style={BaseStyles.flex}>
-                        <View style={[BaseStyles.rowCenter, { justifyContent: "space-between" }]}>
+                        <View
+                          style={[
+                            BaseStyles.rowCenter,
+                            { justifyContent: "space-between" },
+                          ]}
+                        >
                           <Text
                             style={themedStyles.semiboldText}
                             numberOfLines={1}
@@ -154,7 +157,9 @@ export default function Scoreboard(props: ScoreboardProps) {
                             {entry.entity}
                           </Text>
 
-                          <Text style={themedStyles.semiboldText}>{entry.score}p</Text>
+                          <Text style={themedStyles.semiboldText}>
+                            {entry.score}p
+                          </Text>
                         </View>
 
                         <View style={styles.barTrack}>
@@ -238,6 +243,7 @@ const styles = StyleSheet.create({
   },
 
   barTrack: {
+    marginTop: 6,
     height: 8,
     borderRadius: 999,
     backgroundColor: "#D6D6D6",

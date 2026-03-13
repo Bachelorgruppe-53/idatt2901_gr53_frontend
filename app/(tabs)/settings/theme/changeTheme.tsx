@@ -1,11 +1,11 @@
-import { useTheme } from "@/src/context/ThemeContext";
-import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { BaseStyles } from "@/src/constants/Styles";
+import { useTheme } from "@/src/context/ThemeContext";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View, Platform } from "react-native";
+import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ChangeThemeScreen() {
@@ -44,9 +44,7 @@ export default function ChangeThemeScreen() {
         }}
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Text style={themedStyles.heading}>
-          {t("changeTheme")}
-        </Text>
+        <Text style={themedStyles.heading}>{t("changeTheme")}</Text>
 
         <View style={BaseStyles.gap16}>
           {options.map((option) => {

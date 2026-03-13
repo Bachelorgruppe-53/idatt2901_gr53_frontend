@@ -12,11 +12,11 @@ import {
   UserSummary,
 } from "@/services/types/summary";
 import Scoreboard from "@/src/components/stats/genericScoreboard";
+import { BaseStyles } from "@/src/constants/Styles";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { BaseStyles } from "../../constants/Styles";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { Text, View } from "react-native";
 
 /**
  * Class-wide scoreboard that lists all members of the user's class.
