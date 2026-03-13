@@ -43,7 +43,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setThemeMode = useCallback((mode: ThemeMode) => {
     setThemeModeState(mode);
-    void saveThemePreference(mode);
+    void saveThemePreference(mode).catch((error) => {
+      console.error("Failed to save theme preference:", error);
+    });
   }, []);
 
   const isDarkMode = useMemo(() => {
