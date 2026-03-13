@@ -56,7 +56,7 @@ const getSupportedLanguage = (deviceLang: string): string => {
 };
 
 // Configure i18n
-i18n.use(initReactI18next).init({
+const i18nInitPromise = i18n.use(initReactI18next).init({
   resources: {
     "en-US": {
       common: enCommon,
@@ -108,6 +108,7 @@ i18n.use(initReactI18next).init({
 });
 
 void (async () => {
+  await i18nInitPromise;
   const savedLanguage = await getLanguagePreference();
   if (!savedLanguage) {
     return;
