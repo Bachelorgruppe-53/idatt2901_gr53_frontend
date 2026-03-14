@@ -24,6 +24,37 @@ import { BaseStyles } from "../../constants/Styles";
  *
  * @returns JSX.Element
  */
+const getBackendErrorMessage = (data: unknown): string => {
+  if (typeof data === "string") return data;
+  if (data && typeof data === "object" && "error" in data) {
+    const value = (data as { error?: unknown }).error;
+    if (typeof value === "string") return value;
+  }
+  return "";
+};
+
+const normalizeMembers = (
+  payload: unknown,
+): Array<{ nickname: string; points: number }> => {
+  if (Array.isArray(payload)) return payload as Array<{ nickname: string; points: number }>;
+
+  if (payload && typeof payload === "object") {
+    const p = payload as Record<string, unknown>;
+    const list = p.list as Record<string, unknown> | undefined;
+    const data = p.data as Record<string, unknown> | undefined;
+
+    const candidates = [list?.content, p.content, p.members, data?.content, data?.members];
+
+    for (const candidate of candidates) {
+      if (Array.isArray(candidate)) {
+        return candidate as Array<{ nickname: string; points: number }>;
+      }
+    }
+  }
+
+  return [];
+};
+
 export default function ClassScoreboard() {
   const [entities, setEntities] = useState<string[]>([]);
   const [scores, setScores] = useState<number[]>([]);
@@ -34,37 +65,6 @@ export default function ClassScoreboard() {
   const [className, setClassName] = useState<string>("");
   const themedStyles = useThemedStyles();
   const inFlightRef = useRef(false);
-
-  const getBackendErrorMessage = (data: unknown): string => {
-    if (typeof data === "string") return data;
-    if (data && typeof data === "object" && "error" in data) {
-      const value = (data as { error?: unknown }).error;
-      if (typeof value === "string") return value;
-    }
-    return "";
-  };
-
-  const normalizeMembers = (
-    payload: unknown,
-  ): Array<{ nickname: string; points: number }> => {
-    if (Array.isArray(payload)) return payload as Array<{ nickname: string; points: number }>;
-
-    if (payload && typeof payload === "object") {
-      const p = payload as Record<string, unknown>;
-      const list = p.list as Record<string, unknown> | undefined;
-      const data = p.data as Record<string, unknown> | undefined;
-
-      const candidates = [list?.content, p.content, p.members, data?.content, data?.members];
-
-      for (const candidate of candidates) {
-        if (Array.isArray(candidate)) {
-          return candidate as Array<{ nickname: string; points: number }>;
-        }
-      }
-    }
-
-    return [];
-  };
 
   const getSummary = useCallback(async (userId: string): Promise<UserSummary | null> => {
     const baseUrl = getApiBaseUrl().replace(/\/$/, "");
