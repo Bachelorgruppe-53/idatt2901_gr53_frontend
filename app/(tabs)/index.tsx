@@ -7,7 +7,7 @@ import { BaseStyles } from "@/src/constants/Styles";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AppState, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
@@ -55,29 +55,64 @@ export default function Index() {
     }
   };
 
-  const loadPoints = useCallback(async () => {
-    try {
-      const userId = await ensureUserId();
-      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
-      const res = await fetch(`${baseUrl}/user/summary`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "X-User-ID": userId,
-        },
-      });
+  const pointsRequestIdRef = useRef(0);
 
-      const raw = await res.text();
-      console.log("Raw response from /user/summary:", raw);
+  const loadPoints = useCallback(async () => {
+    const requestId = ++pointsRequestIdRef.current;
+
+    const applyPoints = (nextPoints: number) => {
+      if (requestId !== pointsRequestIdRef.current) return;
+      setPoints(nextPoints);
+    };
+
+    const parseBackendError = (raw: string): string => {
+      try {
+        const parsed = JSON.parse(raw) as { error?: string; message?: string };
+        return (parsed.error ?? parsed.message ?? raw).toLowerCase();
+      } catch {
+        return raw.toLowerCase();
+      }
+    };
+    try {
+      let userId = await ensureUserId();
+      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+      const url = `${baseUrl}/user/summary`;
+
+      const requestSummary = async (id: string) => {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "X-User-ID": id,
+          },
+        });
+        const raw = await res.text();
+        console.log("[points] status:", res.status, "ok:", res.ok);
+        console.log("[points] raw response:", raw);
+        return { res, raw };
+      };
+
+      let { res, raw } = await requestSummary(userId);
+
+      if (!res.ok && res.status === 400 && raw.includes("Invalid UUID format")) {
+        userId = await registerDevice();
+        ({ res, raw } = await requestSummary(userId));
+      }
 
       if (!res.ok) {
+        const backendMsg = parseBackendError(raw);
+
+        if (backendMsg.includes("not related to a class")) {
+          applyPoints(0);
+          return;
+        }
+
         console.warn("Failed /user/summary:", res.status, raw);
         return;
       }
 
-      // Backend can return plain text
       if (raw.startsWith("This user")) {
-        console.log("[points] user has no class relation, setting points=0");
+        applyPoints(0);
         return;
       }
 
@@ -89,11 +124,7 @@ export default function Index() {
         return;
       }
 
-      const parsedPoints = Number(json.points) || 0;
-      console.log("[points] parsed JSON:", json);
-      console.log("[points] parsed points:", parsedPoints);
-
-      setPoints(parsedPoints);
+      applyPoints(Number(json.points) || 0);
 
       if (json.nickname) {
         setName(json.nickname);
@@ -114,6 +145,12 @@ export default function Index() {
   useFocusEffect(
     useCallback(() => {
       void loadPoints();
+
+      const interval = setInterval(() => {
+        void loadPoints();
+      }, 15000);
+
+      return () => clearInterval(interval);
     }, [loadPoints]),
   );
 
@@ -163,9 +200,15 @@ export default function Index() {
   if (isScanning) {
     return <QRScanner onScan={handleScan} onClose={stopScanning} />;
   }
-
   if (showJoinClass) {
-    return <JoinClassModal onClose={() => setShowJoinClass(false)} />;
+    return (
+      <JoinClassModal
+        onClose={() => setShowJoinClass(false)}
+        onJoined={() => {
+          void loadPoints();
+        }}
+      />
+    );
   }
 
   if (showCareerModal && selectedCareerId) {
