@@ -133,7 +133,7 @@ export default function Index() {
     } catch (error) {
       console.error("Failed to load points:", error);
     }
-  }, []);
+  }, [ensureUserId, getApiBaseUrl, registerDevice, setPoints, pointsRequestIdRef]);
 
   // Load nickname from storage on mount
   useEffect(() => {
