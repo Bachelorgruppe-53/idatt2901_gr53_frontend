@@ -149,7 +149,7 @@ export default function ClassScoreboard() {
       setIsLoading(false);
       inFlightRef.current = false;
     }
-  }, [entities.length, getClassMembers, getSummary]);
+  }, [entities.length, getClassMembers, getSummary, ensureUserId, normalizeMembers]);
 
   useFocusEffect(
     useCallback(() => {
