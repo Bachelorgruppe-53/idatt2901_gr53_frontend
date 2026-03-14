@@ -57,6 +57,7 @@ export default function Index() {
 
   const pointsRequestIdRef = useRef(0);
 
+  // Function to load points from backend and handle various edge cases and errors robustly
   const loadPoints = useCallback(async () => {
     const requestId = ++pointsRequestIdRef.current;
 
