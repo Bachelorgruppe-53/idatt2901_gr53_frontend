@@ -16,6 +16,7 @@
       }
     },
     "android": {
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -26,7 +27,7 @@
       "package": "com.brahimage.appBacheloroppgave",
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBlSlDg5z7HwcBcO9MtO1iVWKQKuBKAMjg"
+          "apiKey": "AIzaSyA_J7CnbJU8evAK1RP0iSHh5RqaTXSappE"
         }
       }
     },

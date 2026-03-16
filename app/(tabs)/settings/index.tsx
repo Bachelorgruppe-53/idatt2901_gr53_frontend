@@ -1,9 +1,9 @@
 import { Separator } from "@/src/components/Separator";
 import SettingsButton from "@/src/components/settingsButton";
-import { useAuth } from "@/src/context/AuthContext";
-import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { BaseStyles } from "@/src/constants/Styles";
+import { useAuth } from "@/src/context/AuthContext";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { Image } from "expo-image";
 import { useTranslation } from "react-i18next";
 import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -32,7 +32,6 @@ export default function SettingsScreen() {
         paddingTop: Platform.OS === "android" ? insets.top + 20 : 20,
       }}
       contentInsetAdjustmentBehavior="automatic"
-      
     >
       <View style={themedStyles.container}>
         <View style={themedStyles.settingsSection}>
@@ -48,13 +47,32 @@ export default function SettingsScreen() {
               {t("aboutUs")}
             </Text>
           </View>
-          <Text style={[themedStyles.text, BaseStyles.textCenter, { marginBottom: 20 }]}>
+          <Text
+            style={[
+              themedStyles.text,
+              BaseStyles.textCenter,
+              { marginBottom: 20 },
+            ]}
+          >
             {t("aboutUsContent")}
           </Text>
         </View>
+        <Separator />
+        {/* TODO: need to add a route here */}
+        <SettingsButton
+          route="/settings/feedback/feedbackForm"
+          iconName="feedback"
+          labelKey="feedback"
+        />
+        <Separator />
         <View style={themedStyles.settingsSection}>
-          <Text style={[themedStyles.subheading, { marginVertical: 10, textAlign: "left" }]}>
-              {t("preferences")}
+          <Text
+            style={[
+              themedStyles.subheading,
+              { marginVertical: 10, textAlign: "left" },
+            ]}
+          >
+            {t("preferences")}
           </Text>
         </View>
         <Separator />
@@ -106,14 +124,6 @@ export default function SettingsScreen() {
           iconName="privacy-tip"
           labelKey="privacyPolicy"
         />
-        <Separator />
-        {/* TODO: need to add a route here */}
-        <SettingsButton
-          route="/settings/feedback/feedbackForm"
-          iconName="feedback"
-          labelKey="feedback"
-        />
-        <Separator />
       </View>
     </ScrollView>
   );

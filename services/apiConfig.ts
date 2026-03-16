@@ -2,7 +2,7 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 const DEFAULT_BACKEND_PORT = "8080";
-const DEFAULT_BACKEND_HOST = "10.22.25.241";
+const DEFAULT_BACKEND_HOST = "10.22.107.87";
 
 const trimTrailingSlash = (value: string): string => value.replace(/\/$/, "");
 
@@ -36,7 +36,7 @@ export const getApiBaseUrl = (): string => {
   }
 
   if (Platform.OS === "android") {
-    return `http://10.0.2.2:${DEFAULT_BACKEND_PORT}`;
+    return `http://${DEFAULT_BACKEND_HOST}:${DEFAULT_BACKEND_PORT}`;
   }
 
   const expoHost = getHostFromExpoConfig();
