@@ -17,5 +17,6 @@
     "stats",
     "api",
     "quiz"
-  ]
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic"
 }

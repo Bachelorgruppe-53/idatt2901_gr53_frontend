@@ -12,7 +12,6 @@ import {
   UserSummary,
 } from "@/services/types/summary";
 import Scoreboard from "@/src/components/stats/genericScoreboard";
-
 import { BaseStyles } from "@/src/constants/Styles";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import axios, { isAxiosError } from "axios";
