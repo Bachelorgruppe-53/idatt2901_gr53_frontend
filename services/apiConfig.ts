@@ -33,16 +33,18 @@ export const getApiBaseUrl = (): string => {
   }
 
   if (!__DEV__) {
-    return "";
-  }
-
-  if (Platform.OS === "android") {
     return `http://${DEFAULT_BACKEND_HOST}:${DEFAULT_BACKEND_PORT}`;
   }
 
+  // Expo injects the dev machine's IP into hostUri at startup — use it when available.
   const expoHost = getHostFromExpoConfig();
   if (expoHost) {
     return `http://${expoHost}:${DEFAULT_BACKEND_PORT}`;
+  }
+
+  // Android emulator routes host machine traffic through 10.0.2.2.
+  if (Platform.OS === "android") {
+    return `http://10.0.2.2:${DEFAULT_BACKEND_PORT}`;
   }
 
   return `http://${DEFAULT_BACKEND_HOST}:${DEFAULT_BACKEND_PORT}`;

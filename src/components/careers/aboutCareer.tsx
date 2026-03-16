@@ -1,5 +1,11 @@
-import { ensureUserId } from "@/services/authService";
 import { getApiBaseUrl } from "@/services/apiConfig";
+import { ensureUserId } from "@/services/authService";
+import QuizModal from "@/src/components/quiz/quizModal";
+import { Colors } from "@/src/constants/Colors";
+import { BaseStyles } from "@/src/constants/Styles";
+import { useCareerQuiz } from "@/src/hooks/useQuiz";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,16 +17,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BaseStyles } from "../../constants/Styles";
-import { useThemedStyles } from "../../hooks/useStyleSheet";
-import { useThemeColor } from "../../hooks/useThemeColor";
-import QuizModal from "../quiz/quizModal";
-import { useCareerQuiz } from "../../hooks/useQuiz";
-import { Colors } from "@/src/constants/Colors";
 
 /**
  * AboutCareer component that displays information about a career point of interest (POI) and includes a quiz to unlock points. It handles fetching career data, displaying it, and managing the quiz state and interactions.
- * 
+ *
  * @param {Props} props - The props for the AboutCareer component, including careerId and onClose callback.
  * @returns {JSX.Element} The rendered AboutCareer component.
  */
@@ -47,7 +47,6 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
-
 
   const handleClaimSuccess = () => {
     setShowSuccessBanner(true);
@@ -132,7 +131,6 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   return (
     <SafeAreaView style={themedStyles.container}>
       <ScrollView contentContainerStyle={themedStyles.content}>
-
         {showSuccessBanner && (
           <View
             style={{
@@ -169,23 +167,25 @@ export default function AboutCareer({ careerId, onClose }: Props) {
         )}
 
         <View style={BaseStyles.mb16}>
-          <Text style={[themedStyles.heading, BaseStyles.rowCenter, BaseStyles.p8]}>
+          <Text
+            style={[themedStyles.heading, BaseStyles.rowCenter, BaseStyles.p8]}
+          >
             {data?.title || t("unknownTitle")}
           </Text>
         </View>
 
         {typeof data?.points === "number" && (
-            <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
-              <MaterialIcons
-                name="stars"
-                size={16}
-                color={Colors.brand.darkYellow}
-              />
-              <Text style={themedStyles.semiboldText}>
-                {data.points} {t("points")}
-              </Text>
-            </View>
-          )}
+          <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
+            <MaterialIcons
+              name="stars"
+              size={16}
+              color={Colors.brand.darkYellow}
+            />
+            <Text style={themedStyles.semiboldText}>
+              {data.points} {t("points")}
+            </Text>
+          </View>
+        )}
 
         <Text style={[themedStyles.text, BaseStyles.m16]}>
           {data?.description || t("noDescription")}

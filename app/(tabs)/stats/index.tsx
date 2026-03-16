@@ -1,13 +1,13 @@
 import CityScoreboard from "@/src/components/stats/cityWideScoreboard";
 import ClassScoreboard from "@/src/components/stats/classWideScoreboard";
 import SchoolScoreboard from "@/src/components/stats/schoolWideScoreboard";
-import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { BaseStyles } from "@/src/constants/Styles";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function StatsScreen() {
@@ -18,9 +18,7 @@ export default function StatsScreen() {
 
   return (
     <View style={BaseStyles.flex}>
-      <SafeAreaView
-        style={themedStyles.backgroundFlex}
-      >
+      <SafeAreaView style={themedStyles.backgroundFlex}>
         <View style={BaseStyles.flex}>
           {selectedIndex === 0 ? (
             <ClassScoreboard />

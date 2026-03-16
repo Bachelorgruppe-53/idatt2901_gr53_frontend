@@ -1,5 +1,5 @@
-import { registerDevice, ensureUserId } from "@/services/authService";
 import { getApiBaseUrl } from "@/services/apiConfig";
+import { ensureUserId, registerDevice } from "@/services/authService";
 import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
@@ -7,14 +7,20 @@ import { BaseStyles } from "@/src/constants/Styles";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useEffect, useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { AppState, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  AppState,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
-import { useFocusEffect } from "expo-router";
-
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -55,29 +61,65 @@ export default function Index() {
     }
   };
 
-  const loadPoints = useCallback(async () => {
-    try {
-      const userId = await ensureUserId();
-      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
-      const res = await fetch(`${baseUrl}/user/summary`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "X-User-ID": userId,
-        },
-      });
+  const pointsRequestIdRef = useRef(0);
 
-      const raw = await res.text();
-      console.log("Raw response from /user/summary:", raw);
+  // Function to load points from backend and handle various edge cases and errors robustly
+  const loadPoints = useCallback(async () => {
+    const requestId = ++pointsRequestIdRef.current;
+
+    const applyPoints = (nextPoints: number) => {
+      if (requestId !== pointsRequestIdRef.current) return;
+      setPoints(nextPoints);
+    };
+
+    const parseBackendError = (raw: string): string => {
+      try {
+        const parsed = JSON.parse(raw) as { error?: string; message?: string };
+        return (parsed.error ?? parsed.message ?? raw).toLowerCase();
+      } catch {
+        return raw.toLowerCase();
+      }
+    };
+    try {
+      let userId = await ensureUserId();
+      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+      const url = `${baseUrl}/user/summary`;
+
+      const requestSummary = async (id: string) => {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "X-User-ID": id,
+          },
+        });
+        const raw = await res.text();
+        console.log("[points] status:", res.status, "ok:", res.ok);
+        console.log("[points] raw response:", raw);
+        return { res, raw };
+      };
+
+      let { res, raw } = await requestSummary(userId);
+
+      if (!res.ok && res.status === 400 && raw.includes("Invalid UUID format")) {
+        userId = await registerDevice();
+        ({ res, raw } = await requestSummary(userId));
+      }
 
       if (!res.ok) {
+        const backendMsg = parseBackendError(raw);
+
+        if (backendMsg.includes("not related to a class")) {
+          applyPoints(0);
+          return;
+        }
+
         console.warn("Failed /user/summary:", res.status, raw);
         return;
       }
 
-      // Backend can return plain text
       if (raw.startsWith("This user")) {
-        console.log("[points] user has no class relation, setting points=0");
+        applyPoints(0);
         return;
       }
 
@@ -89,11 +131,7 @@ export default function Index() {
         return;
       }
 
-      const parsedPoints = Number(json.points) || 0;
-      console.log("[points] parsed JSON:", json);
-      console.log("[points] parsed points:", parsedPoints);
-
-      setPoints(parsedPoints);
+      applyPoints(Number(json.points) || 0);
 
       if (json.nickname) {
         setName(json.nickname);
@@ -101,7 +139,7 @@ export default function Index() {
     } catch (error) {
       console.error("Failed to load points:", error);
     }
-  }, []);
+  }, [ensureUserId, getApiBaseUrl, registerDevice, setPoints, pointsRequestIdRef]);
 
   // Load nickname from storage on mount
   useEffect(() => {
@@ -114,6 +152,12 @@ export default function Index() {
   useFocusEffect(
     useCallback(() => {
       void loadPoints();
+
+      const interval = setInterval(() => {
+        void loadPoints();
+      }, 15000);
+
+      return () => clearInterval(interval);
     }, [loadPoints]),
   );
 
@@ -143,7 +187,7 @@ export default function Index() {
   const handleScan = (data: string) => {
     stopScanning();
     const scannedId = parseInt(data.trim(), 10);
-    
+
     if (isNaN(scannedId) || scannedId <= 0) {
       alert(t("invalidQR", "Invalid QR code"));
       return;
@@ -163,9 +207,15 @@ export default function Index() {
   if (isScanning) {
     return <QRScanner onScan={handleScan} onClose={stopScanning} />;
   }
-
   if (showJoinClass) {
-    return <JoinClassModal onClose={() => setShowJoinClass(false)} />;
+    return (
+      <JoinClassModal
+        onClose={() => setShowJoinClass(false)}
+        onJoined={() => {
+          void loadPoints();
+        }}
+      />
+    );
   }
 
   if (showCareerModal && selectedCareerId) {
@@ -208,7 +258,7 @@ export default function Index() {
       <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>
         {t("hello")},
       </Text>
-      <Text style={[themedStyles.subheading]}>
+      <Text style={[themedStyles.subheading, { marginBottom: 20 }]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
 

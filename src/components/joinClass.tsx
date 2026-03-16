@@ -18,9 +18,10 @@ import { useTranslation } from "react-i18next";
 
 interface JoinClassModalProps {
   onClose: () => void;
+  onJoined?: () => void;
 }
 
-export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
+export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
   const [classCode, setClassCode] = useState("");
   const [error, setError] = useState("");
 
@@ -65,6 +66,7 @@ export const JoinClassModal = ({ onClose }: JoinClassModalProps) => {
 
       console.log("Successfully joined class:", response.data);
       alert(t("joinedClassSuccess"));
+      onJoined?.();
       onClose();
     } catch (error) {
       if (isAxiosError(error)) {

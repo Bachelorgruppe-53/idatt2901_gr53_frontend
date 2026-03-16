@@ -1,8 +1,14 @@
+import {
+  getThemePreference,
+  saveThemePreference,
+} from "@/services/utils/secureStorage";
 import React, {
   createContext,
+  useCallback,
   useContext,
+  useEffect,
   useMemo,
-  useState
+  useState,
 } from "react";
 import { useColorScheme } from "react-native";
 
@@ -18,7 +24,29 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
-  const [themeMode, setThemeMode] = useState<ThemeMode>("system");
+  const [themeMode, setThemeModeState] = useState<ThemeMode>("system");
+
+  useEffect(() => {
+    const loadThemePreference = async () => {
+      const savedThemeMode = await getThemePreference();
+      if (
+        savedThemeMode === "system" ||
+        savedThemeMode === "light" ||
+        savedThemeMode === "dark"
+      ) {
+        setThemeModeState(savedThemeMode);
+      }
+    };
+
+    void loadThemePreference();
+  }, []);
+
+  const setThemeMode = useCallback((mode: ThemeMode) => {
+    setThemeModeState(mode);
+    void saveThemePreference(mode).catch((error) => {
+      console.error("Failed to save theme preference:", error);
+    });
+  }, []);
 
   const isDarkMode = useMemo(() => {
     if (themeMode === "system") return systemColorScheme === "dark";
