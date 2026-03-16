@@ -7,7 +7,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 To start the app, in your terminal run:
 
 ```bash
-npm run start
+npx expo start
 ```
 
 In the output, you'll find options to open the app in:
