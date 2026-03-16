@@ -1,5 +1,5 @@
-import { registerDevice, ensureUserId } from "@/services/authService";
 import { getApiBaseUrl } from "@/services/apiConfig";
+import { ensureUserId, registerDevice } from "@/services/authService";
 import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
@@ -7,14 +7,20 @@ import { BaseStyles } from "@/src/constants/Styles";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { AppState, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  AppState,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
-import { useFocusEffect } from "expo-router";
-
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -181,7 +187,7 @@ export default function Index() {
   const handleScan = (data: string) => {
     stopScanning();
     const scannedId = parseInt(data.trim(), 10);
-    
+
     if (isNaN(scannedId) || scannedId <= 0) {
       alert(t("invalidQR", "Invalid QR code"));
       return;
@@ -252,7 +258,7 @@ export default function Index() {
       <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>
         {t("hello")},
       </Text>
-      <Text style={[themedStyles.subheading]}>
+      <Text style={[themedStyles.subheading, { marginBottom: 20 }]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
 

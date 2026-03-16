@@ -360,17 +360,16 @@ export const createThemedStyles = (
     segmentedControl: {
       height: 45,
       overflow: "hidden",
-      marginBottom: Platform.OS === "ios" ? 70 : 10,
+      marginBottom: Platform.OS === "ios" ? 20 : 10,
       borderRadius: Platform.OS === "ios" ? 20 : 8,
-      backgroundColor: theme.backgroundSecondary,
     },
     activeSegmentText: {
-      fontSize: 16,
+      // fontSize: 16,
       fontWeight: "bold",
       color: theme.buttontext,
     },
     segmentText: {
-      fontSize: 16,
+      // fontSize: 16,
       color: theme.text,
     },
     segmentedView: {
