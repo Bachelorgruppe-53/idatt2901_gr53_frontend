@@ -29,6 +29,8 @@ export const Colors = {
     buttontext: palette.white,
     placeholder: "#6C6C6C",
     border: "#535353",
+    barTrack: "#D6D6D6",
+    barFill: "#3c3c3c",
   },
   dark: {
     text: palette.white,
@@ -40,5 +42,7 @@ export const Colors = {
     buttontext: palette.black,
     placeholder: "#AFAFAF",
     border: "#8a8988",
+    barTrack: "#3c3c3c",
+    barFill: "#D6D6D6",
   },
 };
