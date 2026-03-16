@@ -112,7 +112,7 @@ export default function Scoreboard(props: ScoreboardProps) {
             <Text style={[styles.userChipLabel, themedStyles.text]}>
               {t(props.pointsLabel ?? "yourPoints")}
             </Text>
-            <Text style={styles.userChipValue}>{userPoints}p</Text>
+            <Text style={themedStyles.pointValueText}>{userPoints}p</Text>
           </View>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
