@@ -2,7 +2,7 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 const DEFAULT_BACKEND_PORT = "8080";
-const DEFAULT_BACKEND_HOST = "10.22.107.87";
+const DEFAULT_BACKEND_HOST = "10.22.24.64";
 
 const trimTrailingSlash = (value: string): string => value.replace(/\/$/, "");
 
@@ -10,6 +10,7 @@ const getHostFromExpoConfig = (): string | null => {
   const hostUri = Constants.expoConfig?.hostUri;
   if (!hostUri) {
     return null;
+    2;
   }
 
   const host = hostUri.split(":")[0];
