@@ -14,6 +14,7 @@ type ScoreboardProps = {
   points?: number;
   pointsLabel?: string;
   highlightedEntity?: string;
+  titleOverride?: string;
 };
 
 /**
@@ -26,7 +27,9 @@ type ScoreboardProps = {
  * @param props.points Points to show in the header chip (defaults to 250).
  * @param props.pointsLabel i18n key for the chip label.
  * @param props.highlightedEntity Entity name to visually emphasize.
+ * @param props.titleOverride Override the default title.
  */
+
 export default function Scoreboard(props: ScoreboardProps) {
   const { t } = useTranslation("stats");
   const userPoints = props.points ?? 250;
@@ -34,6 +37,8 @@ export default function Scoreboard(props: ScoreboardProps) {
   const placeholderCount = 12;
   const themedStyles = useThemedStyles();
   const theme = useThemeColor();
+
+  const title = props.titleOverride ?? t(props.scoreboardType);
 
   // Pair entities with scores and sort descending for ranking.
   const ranked = props.entities
@@ -98,7 +103,7 @@ export default function Scoreboard(props: ScoreboardProps) {
       <View style={styles.card}>
         <View style={styles.header}>
           <View style={BaseStyles.flex}>
-            <Text style={themedStyles.heading}>{t(props.scoreboardType)}</Text>
+            <Text style={themedStyles.heading}>{title}</Text>
             <Text style={themedStyles.placeholderText}>
               {t("scoreboardSubtitle", "Toppliste")}
             </Text>
