@@ -1,11 +1,15 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import {
-  GET_COUNTY_PATH,
-  GetCountyRequest,
-  GetCountyResponse,
+  GET_COUNTY_CLASSES_PATH,
+  GetCountyClassesResponse,
   UserIdHeader,
 } from "@/services/types/county";
+import {
+  GET_SUMMARY_PATH,
+  GetSummaryResponse,
+  UserSummary,
+} from "@/services/types/summary";
 import Scoreboard from "@/src/components/stats/genericScoreboard";
 import { BaseStyles } from "@/src/constants/Styles";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
@@ -28,20 +32,19 @@ const getBackendErrorMessage = (data: unknown): string => {
 export default function CityScoreboard() {
   const [entities, setEntities] = useState<string[]>([]);
   const [scores, setScores] = useState<number[]>([]);
+  const [classPoints, setClassPoints] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const themedStyles = useThemedStyles();
   const inFlightRef = useRef(false);
 
-  const getCountySchools = useCallback(
-    async (name: string, userId: string): Promise<GetCountyResponse> => {
-      const requestBody: GetCountyRequest = { name };
+  const getCountyClasses = useCallback(
+    async (userId: string): Promise<GetCountyClassesResponse> => {
       const headers: UserIdHeader = { "X-User-ID": userId };
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
 
-      const response = await axios.post<GetCountyResponse>(
-        `${baseUrl}${GET_COUNTY_PATH}`,
-        requestBody,
+      const response = await axios.get<GetCountyClassesResponse>(
+        `${baseUrl}${GET_COUNTY_CLASSES_PATH}`,
         { headers },
       );
 
@@ -50,7 +53,22 @@ export default function CityScoreboard() {
     [],
   );
 
-  const loadCountySchools = useCallback(async () => {
+  const getSummary = useCallback(
+    async (userId: string): Promise<UserSummary> => {
+      const headers: UserIdHeader = { "X-User-ID": userId };
+      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+
+      const response = await axios.get<GetSummaryResponse>(
+        `${baseUrl}${GET_SUMMARY_PATH}`,
+        { headers },
+      );
+
+      return response.data;
+    },
+    [],
+  );
+
+  const loadCountyClasses = useCallback(async () => {
     if (inFlightRef.current) return;
     inFlightRef.current = true;
 
@@ -59,12 +77,24 @@ export default function CityScoreboard() {
       setIsLoading((prev) => (entities.length === 0 ? true : prev));
 
       const userId = await ensureUserId();
-      const response = await getCountySchools(DEFAULT_COUNTY_NAME, userId);
+      const [response, summary] = await Promise.all([
+        getCountyClasses(userId),
+        getSummary(userId),
+      ]);
 
-      const schools = Array.isArray(response.content) ? response.content : [];
+      const classes = Array.isArray(response.content) ? response.content : [];
 
-      setEntities(schools.map((school) => school.className));
-      setScores(schools.map((school) => school.points));
+      setEntities(
+        classes.map((item) => `${item.className} ${item.schoolName}`),
+      );
+      setScores(classes.map((item) => item.points));
+
+      const ownClass = classes.find(
+        (item) =>
+          item.className === summary.className &&
+          item.schoolName === summary.schoolName,
+      );
+      setClassPoints(ownClass?.points ?? 0);
     } catch (err) {
       if (isAxiosError(err)) {
         const backendMessage = getBackendErrorMessage(err.response?.data);
@@ -72,23 +102,23 @@ export default function CityScoreboard() {
       } else {
         setError("Failed to load county scoreboard");
       }
-      console.error("Failed to load county scoreboard:", err);
+      console.error("Failed to load county classes:", err);
     } finally {
       setIsLoading(false);
       inFlightRef.current = false;
     }
-  }, [entities.length, getCountySchools]);
+  }, [entities.length, getCountyClasses, getSummary]);
 
   useFocusEffect(
     useCallback(() => {
-      void loadCountySchools();
+      void loadCountyClasses();
 
       const intervalId = setInterval(() => {
-        void loadCountySchools();
+        void loadCountyClasses();
       }, 10000);
 
       return () => clearInterval(intervalId);
-    }, [loadCountySchools]),
+    }, [loadCountyClasses]),
   );
 
   if (error) {
@@ -106,7 +136,7 @@ export default function CityScoreboard() {
         scores={scores}
         scoreboardType="cityScoreboard"
         pointsLabel="classPoints"
-        points={0}
+        points={classPoints}
         isLoading={isLoading}
         titleOverride={DEFAULT_COUNTY_NAME}
       />

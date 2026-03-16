@@ -24,3 +24,16 @@ export type GetCountyResponse = {
 };
 
 export const GET_COUNTY_PATH = "/class/county";
+
+export type CountyClassSummary = {
+  className: string;
+  schoolName: string;
+  points: number;
+};
+
+export type GetCountyClassesResponse = {
+  content: CountyClassSummary[];
+  page: CountyPage;
+};
+
+export const GET_COUNTY_CLASSES_PATH = "/class/all";
