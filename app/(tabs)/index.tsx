@@ -1,6 +1,7 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId, registerDevice } from "@/services/authService";
 import { getNickname } from "@/services/utils/secureStorage";
+import type { UserSummary } from "@/services/types/summary";
 import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
 import { BaseStyles } from "@/src/constants/Styles";
@@ -21,6 +22,11 @@ import {
 import { QRScanner } from "../../src/components/QRScanner";
 import { Colors } from "../../src/constants/Colors";
 import { useThemeColor } from "../../src/hooks/useThemeColor";
+import {
+  GET_SCHOOL_CLASSES_PATH,
+  type GetSchoolClassesResponse,
+  type SchoolClassSummary,
+} from "@/services/types/schoolClass";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -29,14 +35,6 @@ import { useThemeColor } from "../../src/hooks/useThemeColor";
  *
  * @returns JSX.Element
  */
-
-type UserSummary = {
-  nickname: string;
-  points: number;
-  className: string;
-  schoolName: string;
-  classCode: string;
-};
 
 export default function Index() {
   const theme = useThemeColor();
@@ -49,6 +47,8 @@ export default function Index() {
   const [name, setName] = useState<string>("");
   const [remountKey, setRemountKey] = useState(0);
   const [points, setPoints] = useState<number>(0);
+  const [summary, setSummary] = useState<UserSummary | null>(null);
+  const [classPoints, setClassPoints] = useState<number | null>(null);
 
   const { t } = useTranslation("home");
 
@@ -72,6 +72,23 @@ export default function Index() {
       setPoints(nextPoints);
     };
 
+    const applySummary = (nextSummary: UserSummary | null) => {
+      if (requestId !== pointsRequestIdRef.current) return;
+      setSummary(nextSummary);
+    };
+
+    const applyClassPoints = (nextClassPoints: number | null) => {
+      if (requestId !== pointsRequestIdRef.current) return;
+      setClassPoints(nextClassPoints);
+    };
+
+    const normalizeSchoolClasses = (
+      payload: GetSchoolClassesResponse,
+    ): SchoolClassSummary[] => {
+      if (Array.isArray(payload)) return payload;
+      return payload.content ?? [];
+    };
+
     const parseBackendError = (raw: string): string => {
       try {
         const parsed = JSON.parse(raw) as { error?: string; message?: string };
@@ -80,6 +97,7 @@ export default function Index() {
         return raw.toLowerCase();
       }
     };
+
     try {
       let userId = await ensureUserId();
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
@@ -94,8 +112,6 @@ export default function Index() {
           },
         });
         const raw = await res.text();
-        console.log("[points] status:", res.status, "ok:", res.ok);
-        console.log("[points] raw response:", raw);
         return { res, raw };
       };
 
@@ -111,6 +127,8 @@ export default function Index() {
 
         if (backendMsg.includes("not related to a class")) {
           applyPoints(0);
+          applySummary(null);
+          applyClassPoints(null);
           return;
         }
 
@@ -120,6 +138,8 @@ export default function Index() {
 
       if (raw.startsWith("This user")) {
         applyPoints(0);
+        applySummary(null);
+        applyClassPoints(null);
         return;
       }
 
@@ -132,10 +152,45 @@ export default function Index() {
       }
 
       applyPoints(Number(json.points) || 0);
+      applySummary(json);
 
       if (json.nickname) {
         setName(json.nickname);
       }
+
+      if (!json.classCode) {
+        applyClassPoints(null);
+        return;
+      }
+
+      // Fetch class leaderboard points for the user's class
+      const schoolClassesRes = await fetch(`${baseUrl}${GET_SCHOOL_CLASSES_PATH}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-User-ID": userId,
+        },
+        body: JSON.stringify({ name: json.schoolName }),
+      });
+
+      if (!schoolClassesRes.ok) {
+        const schoolClassesRaw = await schoolClassesRes.text();
+        console.warn("Failed /class/school:", schoolClassesRes.status, schoolClassesRaw);
+        applyClassPoints(null);
+        return;
+      }
+
+      const schoolClassesJson =
+        (await schoolClassesRes.json()) as GetSchoolClassesResponse;
+      const classes = normalizeSchoolClasses(schoolClassesJson);
+
+      const currentClass = classes.find(
+        (c) => c.className.trim().toLowerCase() === json.className.trim().toLowerCase(),
+      );
+
+      applyClassPoints(currentClass?.points ?? 0);
+
     } catch (error) {
       console.error("Failed to load points:", error);
     }
@@ -232,53 +287,90 @@ export default function Index() {
 
   return (
     <View key={remountKey} style={themedStyles.container}>
-      <Text
-        style={[themedStyles.heading, { position: "absolute", top: "10%" }]}
-      >
-        St. Olavs hospital
-      </Text>
-      <View
-        style={[BaseStyles.rowCenter, { position: "absolute", top: "15%" }]}
-      >
-        <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
-      </View>
-      <View style={[BaseStyles.rowCenter, { marginTop: 8, marginBottom: 14 }]}>
-        <MaterialIcons name="stars" size={18} color={Colors.brand.darkYellow} />
-        <Text style={[themedStyles.text, { marginLeft: 6 }]}>
-          {points} {t("points", "poeng")}
-        </Text>
-      </View>
-      <View style={styles.imageWrapper}>
-        <Image
-          source={require("../../assets/images/profile/1.png")}
-          style={styles.image}
-        />
-      </View>
       <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>
         {t("hello")},
       </Text>
       <Text style={[themedStyles.subheading, { marginBottom: 20 }]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
-
-      <Pressable
-        style={[themedStyles.button, !isReady && styles.buttonDisabled]}
-        onPress={handleRegisterDevice}
-        disabled={!isReady}
+      <View
+        style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.mb16]}
       >
-        <Text style={themedStyles.buttonText}>
-          {/* {t("takeTest")} */} register device (TEMP)
+        <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
+        <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
+      </View>
+      <View style={[BaseStyles.rowCenter, BaseStyles.my16]}>
+        <View style={[styles.card, {backgroundColor: Colors.brand.paleblue}]}>
+          <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
+            Deg:
+          </Text>
+          {summary?.classCode ? (
+          <Text style={[themedStyles.boldText, BaseStyles.textXxxl, BaseStyles.px16]}>
+          {points} p
+          </Text>
+          ) : (
+          <Text style={[BaseStyles.textBase, BaseStyles.px16]}>
+            Bli med i en klasse for å samle poeng!
+          </Text>
+          )}
+        </View>
+        <View style={[styles.card, {backgroundColor: Colors.brand.lightGreen}]}>
+          <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
+            Klassen:
+          </Text>
+          {summary?.classCode ? (
+          <Text style={[themedStyles.boldText, BaseStyles.textXxxl, BaseStyles.px16]}>
+          {classPoints} p
+          </Text>
+          ) : (
+          <Text style={[BaseStyles.textBase, BaseStyles.px16]}>
+            Bli med i en klasse for å samle poeng!
+          </Text>
+          )}
+        </View>
+      </View>
+
+      <Text>
+        Du har funnet 5 yrker!
+      </Text>
+
+
+      {/* Class info / Join class */}
+      {summary?.classCode ? (
+        <View style={[BaseStyles.rowCenter, BaseStyles.gap16, BaseStyles.m16]}>
+          <MaterialIcons name="school" size={35} color={Colors.brand.purple} />
+          <Text style={themedStyles.heading}>
+            {summary.className ?? "Klasse"} - {summary.schoolName ?? "Skole"}
+          </Text>
+        </View>
+      ) : (
+        <Pressable
+          style={[themedStyles.button, !isReady && styles.buttonDisabled]}
+          onPress={() => setShowJoinClass(true)}
+          disabled={!isReady}
+        >
+          <Text style={themedStyles.buttonText}>{t("joinClass")}</Text>
+        </Pressable>
+      )}
+
+
+      <View
+        style={[styles.contestCard, BaseStyles.center, ]}
+      >
+        <Text style={[themedStyles.text, BaseStyles.p8]}>
+          Konkurranseperiode:
         </Text>
-      </Pressable>
+        <Text style={[themedStyles.subheading, BaseStyles.p8]}>
+          dato - dato
+        </Text>
+        <Text style={[themedStyles.text, BaseStyles.p8]}>
+          Klassequizen starter om:
+        </Text>
+        <Text style={[themedStyles.heading, BaseStyles.p8]}>
+          14 dager
+        </Text>
+      </View>
 
-      <Pressable
-        style={[themedStyles.button, !isReady && styles.buttonDisabled]}
-        onPress={() => setShowJoinClass(true)}
-        disabled={!isReady}
-      >
-        <Text style={themedStyles.buttonText}>{t("joinClass")}</Text>
-      </Pressable>
       <Pressable
         style={[themedStyles.buttonRound, !isReady && styles.buttonDisabled]}
         onPress={handleQRPress}
@@ -306,5 +398,21 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     backgroundColor: Colors.brand.gray,
+  },
+  card: {
+    width: '35%',
+    height: '100%',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: Colors.brand.gray,
+    margin: 10,
+  },
+  contestCard: {
+    width: '80%',
+    borderRadius: 8,
+    borderWidth: 2,
+    backgroundColor: Colors.brand.white,
+    borderColor: Colors.brand.gray,
+    margin: 10,
   },
 });
