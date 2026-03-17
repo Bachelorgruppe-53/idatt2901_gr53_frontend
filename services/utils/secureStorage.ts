@@ -99,6 +99,7 @@ export const deleteUserId = async (): Promise<void> => {
  */
 export const saveNickname = async (nickname: string): Promise<void> => {
   try {
+    console.log("Saving nickname:", nickname);
     await SecureStore.setItemAsync(NICKNAME_KEY, nickname);
   } catch (error) {
     console.error("Error saving nickname:", error);
