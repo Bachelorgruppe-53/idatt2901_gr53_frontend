@@ -2,7 +2,7 @@ import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import axios, { isAxiosError } from "axios";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from "react-native";
 import { Colors } from "../constants/Colors";
 import { useThemeColor } from "../hooks/useThemeColor";
 import { useThemedStyles } from "../hooks/useStyleSheet";
@@ -91,36 +91,42 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
   };
 
   return (
-    <View style={themedStyles.modalBackdrop}>
-      <View style={[BaseStyles.center, BaseStyles.w80]}>
-        <View style={[themedStyles.modalCard, BaseStyles.gap8]}>
-          <Text style={themedStyles.modalTitle}>{t("joinClass")}</Text>
-          <Text style={themedStyles.text}>{t("enterClassCode")}</Text>
-          <TextInput
-            style={themedStyles.input}
-            placeholder={t("classCode")}
-            placeholderTextColor={theme.placeholder}
-            value={classCode}
-            onChangeText={(text) => {
-              setClassCode(text);
-              setError(""); // Clear error when user types
-            }}
-          />
-          {error ? <Text style={themedStyles.errorText}>{error}</Text> : null}
-          <Pressable
-            style={themedStyles.smallButton}
-            onPress={validateAndSubmit}
-          >
-            <Text style={themedStyles.buttonText}>{t("join")}</Text>
-          </Pressable>
-          <Pressable
-            style={[themedStyles.smallButton, { backgroundColor: Colors.brand.red }]}
-            onPress={onClose}
-          >
-            <Text style={themedStyles.buttonText}>{t("close")}</Text>
-          </Pressable>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    >
+      <View style={themedStyles.modalBackdrop}>
+        <View style={[BaseStyles.center, BaseStyles.w80]}>
+          <View style={[themedStyles.modalCard, BaseStyles.gap8]}>
+            <Text style={themedStyles.modalTitle}>{t("joinClass")}</Text>
+            <Text style={themedStyles.text}>{t("enterClassCode")}</Text>
+            <TextInput
+              style={themedStyles.input}
+              placeholder={t("classCode")}
+              placeholderTextColor={theme.placeholder}
+              value={classCode}
+              onChangeText={(text) => {
+                setClassCode(text);
+                setError(""); // Clear error when user types
+              }}
+            />
+            {error ? <Text style={themedStyles.errorText}>{error}</Text> : null}
+            <Pressable
+              style={themedStyles.smallButton}
+              onPress={validateAndSubmit}
+            >
+              <Text style={themedStyles.buttonText}>{t("join")}</Text>
+            </Pressable>
+            <Pressable
+              style={[themedStyles.smallButton, { backgroundColor: Colors.brand.red }]}
+              onPress={onClose}
+            >
+              <Text style={themedStyles.buttonText}>{t("close")}</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
