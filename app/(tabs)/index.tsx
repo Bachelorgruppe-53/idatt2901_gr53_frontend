@@ -303,29 +303,29 @@ export default function Index() {
       <View style={[BaseStyles.rowCenter, BaseStyles.my16]}>
         <View style={[styles.card, {borderColor: Colors.brand.lightBlue}]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
-            Deg:
+            {t("you")}:
           </Text>
           {summary?.classCode ? (
           <Text style={[themedStyles.boldText, BaseStyles.textXxxl, BaseStyles.px16]}>
           {points} p
           </Text>
           ) : (
-          <Text style={[BaseStyles.textBase, BaseStyles.px16]}>
-            Bli med i en klasse for å samle poeng!
+          <Text style={[themedStyles.text, BaseStyles.px16]}>
+            {t("noClassPoints")}
           </Text>
           )}
         </View>
         <View style={[styles.card, {borderColor: Colors.brand.lightBlue}]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
-            Klassen:
+            {t("class")}:
           </Text>
           {summary?.classCode ? (
           <Text style={[themedStyles.boldText, BaseStyles.textXxxl, BaseStyles.px16]}>
           {classPoints} p
           </Text>
           ) : (
-          <Text style={[BaseStyles.textBase, BaseStyles.px16]}>
-            Bli med i en klasse for å samle poeng!
+          <Text style={[themedStyles.text, BaseStyles.px16]}>
+            {t("noClassPoints")}
           </Text>
           )}
         </View>
@@ -333,7 +333,7 @@ export default function Index() {
 
       {/* TODO: koble opp mot backend */}
       <Text style={themedStyles.text}>
-        Du har funnet 5 yrker!
+        {t("findCareers", { count: 5 })}
       </Text>
 
 
@@ -342,7 +342,7 @@ export default function Index() {
         <View style={[BaseStyles.rowCenter, BaseStyles.gap16, BaseStyles.m16]}>
           <MaterialIcons name="school" size={35} color={Colors.brand.purple} />
           <Text style={themedStyles.heading}>
-            {summary.className ?? "Klasse"} - {summary.schoolName ?? "Skole"}
+            {summary.className ?? t("class")} - {summary.schoolName ?? t("school")}
           </Text>
         </View>
       ) : (
@@ -360,7 +360,7 @@ export default function Index() {
         style={[styles.contestCard, BaseStyles.center, {borderColor: Colors.brand.lightBlue}]}
       >
         <Text style={[themedStyles.text, BaseStyles.p8]}>
-          Konkurranseperiode:
+          {t("contestPeriod")}:
         </Text>
         <Pressable
           onPress={() => setShowContestInfo(true)}
@@ -375,7 +375,7 @@ export default function Index() {
           15.august - 30.september
         </Text>
         <Text style={[themedStyles.text, BaseStyles.p8]}>
-          Klassequizen starter om:
+          {t("classQuizStartsIn")}:
         </Text>
         <Text style={[themedStyles.heading, BaseStyles.p8]}>
           14 dager
@@ -403,7 +403,7 @@ export default function Index() {
               style={themedStyles.smallButton}
               onPress={() => setShowContestInfo(false)}
             >
-              <Text style={themedStyles.buttonText}>Lukk</Text>
+              <Text style={themedStyles.buttonText}>{t("closeButton")}</Text>
             </Pressable>
           </Pressable>
         </Pressable>
