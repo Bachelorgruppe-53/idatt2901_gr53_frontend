@@ -140,11 +140,12 @@ export const MapComponent = ({
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       {
-        title: "Lokasjonstillatelse",
-        message: "Vi bruker lokasjon for aa vise deg paa kartet.",
-        buttonNeutral: "Spors senere",
-        buttonNegative: "Avbryt",
-        buttonPositive: "OK",
+        title: "Location Permission",
+        message:
+          "We need your location in order to display it on the map, it is not saved or used for any other purpose.",
+        buttonNeutral: "Ask again later",
+        buttonNegative: "Cancel",
+        buttonPositive: "Accept",
       },
     );
 
