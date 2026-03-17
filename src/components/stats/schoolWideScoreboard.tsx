@@ -13,12 +13,11 @@ import {
   UserSummary,
 } from "@/services/types/summary";
 import Scoreboard from "@/src/components/stats/genericScoreboard";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { BaseStyles } from "../../constants/Styles";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
-import { ThemeContext } from "@react-navigation/native";
 
 /**
  * School-wide scoreboard that lists all classes in the user's school.
@@ -32,6 +31,7 @@ export default function SchoolScoreboard() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userClass, setUserClass] = useState<string | null>(null);
+  const [schoolName, setSchoolName] = useState<string | null>(null);
   const themedStyles = useThemedStyles();
 
   const getBackendErrorMessage = (data: unknown): string => {
@@ -60,6 +60,7 @@ export default function SchoolScoreboard() {
 
         const summary = response.data;
         setUserClass(summary.className);
+        setSchoolName(summary.schoolName);
         if (!summary.schoolName) {
           setError("User is not registered to a school");
           return null;
@@ -205,6 +206,7 @@ export default function SchoolScoreboard() {
         points={points}
         isLoading={isLoading}
         highlightedEntity={userClass ?? undefined}
+        titleOverride={schoolName ?? undefined}
       />
     </View>
   );
