@@ -8,7 +8,7 @@ import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   AppState,
@@ -46,9 +46,10 @@ export default function Index() {
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [showCareerModal, setShowCareerModal] = useState(false);
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
-  const [name, setName] = useState<string>("");
+  const [nickname, setNickname] = useState<string>("");
   const [remountKey, setRemountKey] = useState(0);
   const [points, setPoints] = useState<number>(0);
+  const [isInClass, setIsInClass] = useState(false);
 
   const { t } = useTranslation("home");
 
@@ -57,7 +58,7 @@ export default function Index() {
     const cached = await getNickname();
     console.log("Nickname loaded:", cached);
     if (cached) {
-      setName(cached);
+      setNickname(cached);
     }
   };
 
@@ -65,6 +66,9 @@ export default function Index() {
 
   // Function to load points from backend and handle various edge cases and errors robustly
   const loadPoints = useCallback(async () => {
+    // Skip if user hasn't joined a class yet
+    if (!isInClass) return;
+
     const requestId = ++pointsRequestIdRef.current;
 
     const applyPoints = (nextPoints: number) => {
@@ -101,7 +105,11 @@ export default function Index() {
 
       let { res, raw } = await requestSummary(userId);
 
-      if (!res.ok && res.status === 400 && raw.includes("Invalid UUID format")) {
+      if (
+        !res.ok &&
+        res.status === 400 &&
+        raw.includes("Invalid UUID format")
+      ) {
         userId = await registerDevice();
         ({ res, raw } = await requestSummary(userId));
       }
@@ -110,7 +118,7 @@ export default function Index() {
         const backendMsg = parseBackendError(raw);
 
         if (backendMsg.includes("not related to a class")) {
-          applyPoints(0);
+          setIsInClass(false);
           return;
         }
 
@@ -132,14 +140,11 @@ export default function Index() {
       }
 
       applyPoints(Number(json.points) || 0);
-
-      if (json.nickname) {
-        setName(json.nickname);
-      }
+      setIsInClass(true);
     } catch (error) {
       console.error("Failed to load points:", error);
     }
-  }, [ensureUserId, getApiBaseUrl, registerDevice, setPoints, pointsRequestIdRef]);
+  }, [isInClass, setPoints, pointsRequestIdRef]);
 
   // Load nickname from storage on mount
   useEffect(() => {
@@ -212,6 +217,7 @@ export default function Index() {
       <JoinClassModal
         onClose={() => setShowJoinClass(false)}
         onJoined={() => {
+          setIsInClass(true);
           void loadPoints();
         }}
       />
@@ -259,7 +265,7 @@ export default function Index() {
         {t("hello")},
       </Text>
       <Text style={[themedStyles.subheading, { marginBottom: 20 }]}>
-        {name ? name : t("welcomeMessage")}!
+        {nickname ? nickname : t("welcomeMessage")}!
       </Text>
 
       <Pressable
