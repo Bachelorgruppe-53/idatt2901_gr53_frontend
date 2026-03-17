@@ -13,7 +13,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   AppState,
-  Image,
+  Modal,
   Pressable,
   StyleSheet,
   Text,
@@ -49,6 +49,7 @@ export default function Index() {
   const [points, setPoints] = useState<number>(0);
   const [summary, setSummary] = useState<UserSummary | null>(null);
   const [classPoints, setClassPoints] = useState<number | null>(null);
+  const [showContestInfo, setShowContestInfo] = useState(false);
 
   const { t } = useTranslation("home");
 
@@ -300,7 +301,7 @@ export default function Index() {
         <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
       </View>
       <View style={[BaseStyles.rowCenter, BaseStyles.my16]}>
-        <View style={[styles.card, {backgroundColor: Colors.brand.paleblue}]}>
+        <View style={[styles.card, {borderColor: Colors.brand.lightBlue}]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
             Deg:
           </Text>
@@ -314,7 +315,7 @@ export default function Index() {
           </Text>
           )}
         </View>
-        <View style={[styles.card, {backgroundColor: Colors.brand.lightGreen}]}>
+        <View style={[styles.card, {borderColor: Colors.brand.lightBlue}]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
             Klassen:
           </Text>
@@ -330,7 +331,8 @@ export default function Index() {
         </View>
       </View>
 
-      <Text>
+      {/* TODO: koble opp mot backend */}
+      <Text style={themedStyles.text}>
         Du har funnet 5 yrker!
       </Text>
 
@@ -355,13 +357,22 @@ export default function Index() {
 
 
       <View
-        style={[styles.contestCard, BaseStyles.center, ]}
+        style={[styles.contestCard, BaseStyles.center, {borderColor: Colors.brand.lightBlue}]}
       >
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           Konkurranseperiode:
         </Text>
+        <Pressable
+          onPress={() => setShowContestInfo(true)}
+          style={[BaseStyles.p8, {position: "absolute", top: 0, right: 10}]}
+          accessibilityRole="button"
+          accessibilityLabel="Mer informasjon om konkurransen"
+        >
+          <MaterialIcons name="info-outline" size={20} color={theme.border} />
+        </Pressable>
+
         <Text style={[themedStyles.subheading, BaseStyles.p8]}>
-          dato - dato
+          15.august - 30.september
         </Text>
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           Klassequizen starter om:
@@ -369,7 +380,38 @@ export default function Index() {
         <Text style={[themedStyles.heading, BaseStyles.p8]}>
           14 dager
         </Text>
+
+      <Modal
+        visible={showContestInfo}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowContestInfo(false)}
+      >
+        <Pressable
+          style={themedStyles.modalBackdrop}
+          onPress={() => setShowContestInfo(false)}
+        >
+          <Pressable style={themedStyles.modalCard} onPress={() => {}}>
+            <Text style={[themedStyles.subheading, BaseStyles.mb16]}>
+              Om konkurransen
+            </Text>
+            <Text style={[themedStyles.text, BaseStyles.mb16]}>
+              Her kan du se perioden for konkurransen og når klassequizen starter.
+              Samle poeng ved å fullføre aktiviteter og bidra til klassens totalscore.
+            </Text>
+            <Pressable
+              style={themedStyles.smallButton}
+              onPress={() => setShowContestInfo(false)}
+            >
+              <Text style={themedStyles.buttonText}>Lukk</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
       </View>
+
+
 
       <Pressable
         style={[themedStyles.buttonRound, !isReady && styles.buttonDisabled]}
@@ -404,15 +446,12 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: Colors.brand.gray,
     margin: 10,
   },
   contestCard: {
     width: '80%',
     borderRadius: 8,
     borderWidth: 2,
-    backgroundColor: Colors.brand.white,
-    borderColor: Colors.brand.gray,
     margin: 10,
   },
 });
