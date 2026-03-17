@@ -6,15 +6,18 @@ import { Colors } from "@/src/constants/Colors";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { FontAwesome6 } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
+  PermissionsAndroid,
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
 } from "react-native";
+import Geolocation from "react-native-geolocation-service";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 /**
@@ -49,6 +52,13 @@ export const MapComponent = ({
   const { isDarkMode } = useTheme();
   const themedStyles = useThemedStyles();
   const { isScanning, startScanning, stopScanning } = useQRScanner();
+  const controlBackgroundColor = isDarkMode
+    ? "rgba(28,28,30,0.92)"
+    : "rgba(255,255,255,0.92)";
+  const controlIconColor = isDarkMode ? "#F2F2F7" : Colors.brand.darkBlue;
+  const loadingBackgroundColor = isDarkMode
+    ? "rgba(28,28,30,0.9)"
+    : "rgba(255,255,255,0.9)";
 
   const [locations, setLocations] = useState<MapLocation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +66,12 @@ export const MapComponent = ({
     "St. Olavs hospital",
   );
   const [isMapReady, setIsMapReady] = useState(false);
+  const [userLocation, setUserLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   const mapRef = useRef<MapView>(null);
+  const watchIdRef = useRef<number | null>(null);
 
   // Load locations from backend on area change
   useEffect(() => {
@@ -116,6 +131,64 @@ export const MapComponent = ({
     return () => clearTimeout(timer);
   }, [isMapReady, locations, fitMapToLocations]);
 
+  const requestLocationPermission = useCallback(async () => {
+    if (Platform.OS === "ios") {
+      const status = await Geolocation.requestAuthorization("whenInUse");
+      return status === "granted";
+    }
+
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: "Location Permission",
+        message:
+          "We need your location in order to display it on the map, it is not saved or used for any other purpose.",
+        buttonNeutral: "Ask again later",
+        buttonNegative: "Cancel",
+        buttonPositive: "Accept",
+      },
+    );
+
+    return granted === PermissionsAndroid.RESULTS.GRANTED;
+  }, []);
+
+  useEffect(() => {
+    const startLocationTracking = async () => {
+      const hasPermission = await requestLocationPermission();
+      if (!hasPermission) return;
+
+      watchIdRef.current = Geolocation.watchPosition(
+        (position) => {
+          const nextLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+
+          setUserLocation(nextLocation);
+        },
+        (error) => {
+          console.log("Geolocation error", error.code, error.message);
+        },
+        {
+          enableHighAccuracy: true,
+          distanceFilter: 10,
+          interval: 5000,
+          fastestInterval: 2000,
+          showLocationDialog: true,
+        },
+      );
+    };
+
+    void startLocationTracking();
+
+    return () => {
+      if (watchIdRef.current !== null) {
+        Geolocation.clearWatch(watchIdRef.current);
+      }
+      Geolocation.stopObserving();
+    };
+  }, [requestLocationPermission]);
+
   const handleZoom = async (zoomIn: boolean) => {
     if (!mapRef.current) return;
 
@@ -129,8 +202,19 @@ export const MapComponent = ({
     mapRef.current.animateCamera(camera, { duration: 300 });
   };
 
-  const selectedAreaLabel =
-    AREAS.find((a) => a.value === selectedArea)?.label || "Select Area";
+  const centerOnUserLocation = useCallback(() => {
+    if (!mapRef.current || !userLocation) return;
+
+    mapRef.current.animateToRegion(
+      {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      },
+      100,
+    );
+  }, [userLocation]);
 
   if (isScanning) {
     return <QRScanner onScan={handleScan} onClose={stopScanning} />;
@@ -150,6 +234,7 @@ export const MapComponent = ({
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
         zoomControlEnabled={Platform.OS === "android"}
         showsCompass={true}
+        showsUserLocation={true}
         style={styles.map}
         userInterfaceStyle={isDarkMode ? "dark" : "light"}
       >
@@ -162,20 +247,58 @@ export const MapComponent = ({
         ))}
       </MapView>
 
-      {/* Custom Zoom-kontroller for iOS */}
-      {Platform.OS === "ios" && (
-        <View style={styles.zoomButtonsContainer}>
-          <Pressable style={styles.zoomButton} onPress={() => handleZoom(true)}>
-            <Text style={styles.zoomText}>+</Text>
-          </Pressable>
-          <Pressable
-            style={styles.zoomButton}
-            onPress={() => handleZoom(false)}
-          >
-            <Text style={styles.zoomText}>−</Text>
-          </Pressable>
+      {isLoading && (
+        <View
+          style={[
+            styles.loadingContainer,
+            { backgroundColor: loadingBackgroundColor },
+          ]}
+        >
+          <ActivityIndicator size="small" color={controlIconColor} />
         </View>
       )}
+
+      <View style={styles.controlsContainer}>
+        <Pressable
+          style={[
+            styles.controlButton,
+            { backgroundColor: controlBackgroundColor },
+          ]}
+          onPress={() => handleZoom(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Zoom in"
+        >
+          <FontAwesome6 name="add" size={20} color={controlIconColor} />
+        </Pressable>
+        <Pressable
+          style={[
+            styles.controlButton,
+            { backgroundColor: controlBackgroundColor },
+          ]}
+          onPress={() => handleZoom(false)}
+          accessibilityRole="button"
+          accessibilityLabel="Zoom out"
+        >
+          <FontAwesome6 name="minus" size={20} color={controlIconColor} />
+        </Pressable>
+        <Pressable
+          style={[
+            styles.controlButton,
+            { backgroundColor: controlBackgroundColor },
+            !userLocation ? styles.controlButtonDisabled : null,
+          ]}
+          onPress={centerOnUserLocation}
+          disabled={!userLocation}
+          accessibilityRole="button"
+          accessibilityLabel="Center on my location"
+        >
+          <FontAwesome6
+            name={userLocation ? "location-arrow" : "location-arrow"}
+            size={20}
+            color={controlIconColor}
+          />
+        </Pressable>
+      </View>
     </View>
   );
 };
@@ -188,14 +311,22 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
   },
-  zoomButtonsContainer: {
+  loadingContainer: {
+    position: "absolute",
+    top: 70,
+    right: 15,
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  controlsContainer: {
     position: "absolute",
     bottom: 100,
+
     right: 15,
     gap: 10,
   },
-  zoomButton: {
-    backgroundColor: "white",
+  controlButton: {
     width: 45,
     height: 45,
     borderRadius: 22.5,
@@ -207,9 +338,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  zoomText: {
-    fontSize: 28,
-    color: Colors.brand.darkBlue,
-    marginTop: -3, // Finjustering for sentrering av "+"
+  controlButtonDisabled: {
+    opacity: 0.45,
   },
 });
