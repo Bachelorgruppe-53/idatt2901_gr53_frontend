@@ -1,4 +1,3 @@
-import React from "react";
 import { StyleSheet, Text, Image, Pressable, ImageSourcePropType } from "react-native";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
 import { BaseStyles } from "../../constants/Styles";
