@@ -22,5 +22,7 @@
   "helpSupport": "Hjelp og støtte",
   "generateClassCode": "Generer klassekode",
   "submitFeedback": "Send inn tilbakemelding",
-  "adminDashboard": "Admin Oversikt"
+  "adminDashboard": "Admin Oversikt",
+  "leaveClass": "Forlat klasse",
+  "class": "Klasse"
 }

@@ -125,7 +125,7 @@ export default function SettingsScreen() {
         <Separator />
         <View style={themedStyles.settingsSection}>
           <Text style={[themedStyles.subheading, { marginVertical: 10 }]}>
-            {t("class", "Class")}
+            {t("class")}
           </Text>
         </View>
         <Separator />
