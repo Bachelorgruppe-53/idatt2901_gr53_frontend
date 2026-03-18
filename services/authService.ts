@@ -1,6 +1,7 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import {
   clearTokens,
+  deleteNickname,
   getToken,
   getUserId,
   saveNickname,
@@ -9,7 +10,6 @@ import {
 } from "@/services/utils/secureStorage";
 import axios, { isAxiosError } from "axios";
 import { router } from "expo-router";
-import { Platform } from "react-native";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -75,7 +75,7 @@ const extractNicknameFromResponse = (data: unknown): string | null => {
   }
 
   const record = data as Record<string, unknown>;
-  const nickname = record.nickname;
+  const nickname = record.nickname ?? record.name;
   if (typeof nickname !== "string") {
     return null;
   }
@@ -156,6 +156,8 @@ export const registerDevice = async (): Promise<string> => {
 
   try {
     const response = await tempApi.get("/user/register");
+    console.log("[registerDevice] response.data:", response.data);
+    console.log("[registerDevice] response.data type:", typeof response.data);
 
     const userIdFromHeaders =
       readUserUuid(response.headers["x-user-id"]) ??
@@ -171,8 +173,14 @@ export const registerDevice = async (): Promise<string> => {
 
     await saveUserId(userId);
 
+    // Always clear the old nickname — new device = new identity
+    await deleteNickname();
+
     const nickname = extractNicknameFromResponse(response.data);
-    if (nickname) {
+    console.log("[registerDevice] extracted nickname:", nickname);
+    console.log("[registerDevice] extracted nickname type:", typeof nickname);
+
+    if (nickname && typeof nickname === "string") {
       await saveNickname(nickname);
       console.log("Nickname saved from registration:", nickname);
     }

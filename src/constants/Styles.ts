@@ -326,6 +326,11 @@ export const createThemedStyles = (
       marginTop: Spacing.sm,
       textAlign: "center",
     },
+    pointValueText: {
+      fontSize: 16,
+      fontWeight: FontWeight.semibold,
+      color: theme.text,
+    },
 
     // inputs
     input: {

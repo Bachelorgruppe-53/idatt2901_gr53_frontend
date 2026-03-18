@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   barFill: {
     height: "100%",
-    width: "45%",
+    width: "100%",
     borderRadius: 999,
   },
 });

@@ -1,6 +1,7 @@
 import EntityPlaceholder from "@/src/components/stats/entityPlaceholder";
 import { BaseStyles } from "@/src/constants/Styles";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -34,6 +35,7 @@ export default function Scoreboard(props: ScoreboardProps) {
   const maxScore = Math.max(...props.scores, userPoints, 1);
   const placeholderCount = 12;
   const themedStyles = useThemedStyles();
+  const theme = useThemeColor();
 
   const title = props.titleOverride ?? t(props.scoreboardType);
 
@@ -110,7 +112,7 @@ export default function Scoreboard(props: ScoreboardProps) {
             <Text style={[styles.userChipLabel, themedStyles.text]}>
               {t(props.pointsLabel ?? "yourPoints")}
             </Text>
-            <Text style={styles.userChipValue}>{userPoints}p</Text>
+            <Text style={themedStyles.pointValueText}>{userPoints}p</Text>
           </View>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -124,7 +126,7 @@ export default function Scoreboard(props: ScoreboardProps) {
                   // Width is relative to the max score to keep bars proportional.
                   const barWidth = `${Math.round(
                     (entry.score / maxScore) * 100,
-                  )}%`;
+                  )}%` as `${number}%`;
                   const isHighlighted =
                     props.highlightedEntity &&
                     entry.entity === props.highlightedEntity;
@@ -167,8 +169,21 @@ export default function Scoreboard(props: ScoreboardProps) {
                           </Text>
                         </View>
 
-                        <View style={styles.barTrack}>
-                          <View style={styles.barFill} />
+                        <View
+                          style={[
+                            styles.barTrack,
+                            { backgroundColor: theme.barTrack },
+                          ]}
+                        >
+                          <View
+                            style={[
+                              styles.barFill,
+                              {
+                                width: barWidth,
+                                backgroundColor: theme.barFill,
+                              },
+                            ]}
+                          />
                         </View>
                       </View>
                     </View>
@@ -235,7 +250,6 @@ const styles = StyleSheet.create({
   entity: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#212121",
     flex: 1,
     marginRight: 8,
   },
@@ -251,13 +265,11 @@ const styles = StyleSheet.create({
     marginTop: 6,
     height: 8,
     borderRadius: 999,
-    backgroundColor: "#D6D6D6",
     overflow: "hidden",
   },
 
   barFill: {
     height: "100%",
     borderRadius: 999,
-    backgroundColor: "#3c3c3c",
   },
 });
