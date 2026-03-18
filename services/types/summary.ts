@@ -10,6 +10,7 @@ export type UserSummary = {
   className: string;
   schoolName: string;
   classCode: string;
+  // claimedCareers?: number; // Optional field for future use
 };
 
 export type SummaryUnauthorizedError = {
