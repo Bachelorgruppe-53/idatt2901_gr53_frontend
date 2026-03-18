@@ -22,35 +22,36 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
   }
 
   return (
-    <View style={StyleSheet.absoluteFill}>
+    <View style={styles.container}>
       <CameraView
         style={StyleSheet.absoluteFill}
         onBarcodeScanned={handleBarcodeScanned}
-      >
-        {/* Et enkelt sikte i midten */}
-        <View style={styles.overlay}>
-          <View style={styles.unfocusedContainer}></View>
-          <View style={styles.middleContainer}>
-            <View style={styles.unfocusedContainer}></View>
-            <View style={styles.focusedContainer}></View>
-            <View style={styles.unfocusedContainer}></View>
-          </View>
-          <View style={styles.unfocusedContainer}></View>
-        </View>
+      />
 
-        <Pressable style={themedStyles.closeButton} onPress={onClose}>
-          <MaterialIcons name="close" size={30} color="white" />
-        </Pressable>
-    
-      </CameraView>
+      {/* Overlay must be outside CameraView */}
+      <View style={styles.overlay} pointerEvents="none">
+        <View style={styles.unfocusedContainer} />
+        <View style={styles.middleContainer}>
+          <View style={styles.unfocusedContainer} />
+          <View style={styles.focusedContainer} />
+          <View style={styles.unfocusedContainer} />
+        </View>
+        <View style={styles.unfocusedContainer} />
+      </View>
+
+      <Pressable style={themedStyles.closeButton} onPress={onClose}>
+        <MaterialIcons name="close" size={30} color="white" />
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFill,
+  },
   overlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: Colors.brand.black + '20', 
     justifyContent: 'center' 
   },
   middleContainer: {
