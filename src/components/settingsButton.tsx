@@ -2,6 +2,7 @@ import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { useThemedStyles } from "../hooks/useStyleSheet";
 import { BaseStyles } from "../constants/Styles";
 import { MaterialIcons } from "@expo/vector-icons";
+// No MaterialIconsProps export; define iconName type below.
 import { Href, router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text } from "react-native";
@@ -13,14 +14,16 @@ import { Pressable, StyleSheet, Text } from "react-native";
  * @returns JSX.Element
  */
 
-type SettingsButtonProps = {
-  route: Href;
+interface SettingsButtonProps {
+  route?: string;
+  onPress?: () => void;
   iconName: keyof typeof MaterialIcons.glyphMap;
   labelKey: string;
-};
+}
 
 export default function SettingsButton({
   route,
+  onPress,
   iconName,
   labelKey,
 }: SettingsButtonProps) {
@@ -28,13 +31,19 @@ export default function SettingsButton({
   const themedStyles = useThemedStyles();
   
   const { t } = useTranslation("settings");
-
-  const handleSettingsPress = () => {
-    router.push(route);
+  const handlePress = () => {
+    if (onPress) {
+      onPress();
+    } else if (route) {
+      router.push(route as never);
+    }
   };
 
   return (
-    <Pressable onPress={handleSettingsPress} style={styles.button}>
+    <Pressable
+      style={styles.button}
+      onPress={handlePress}
+    >
       <MaterialIcons name={iconName} size={24} color={theme.text} />
       <Text style={[themedStyles.boldText, BaseStyles.mx16]}>
         {t(labelKey)}

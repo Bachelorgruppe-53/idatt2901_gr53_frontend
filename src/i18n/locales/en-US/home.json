@@ -4,5 +4,12 @@
   "joinClass": "Join a class",
   "invalidQR": "Invalid QR code. Please try again.",
   "cameraDenied": "Camera access denied. Please grant permission in settings.",
-  "hello": "Hello"
+  "hello": "Hello",
+  "you": "You",
+  "class": "Class",
+  "contestPeriod": "Contest Period",
+  "classQuizStartsIn": "Class Quiz Starts In",
+  "findCareers": "You have found {{count}} careers!",
+  "noClassPoints": "Join a class to earn points!",
+  "closeButton": "Close"
 }

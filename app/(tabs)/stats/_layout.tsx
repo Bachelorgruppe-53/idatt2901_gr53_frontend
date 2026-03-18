@@ -6,15 +6,6 @@ export default function StatsLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="detail"
-        options={{
-          headerBackTitle: t("stats"),
-          headerTransparent: true,
-          headerBackButtonDisplayMode: "minimal",
-          headerTitle: "",
-        }}
-      />
     </Stack>
   );
 }

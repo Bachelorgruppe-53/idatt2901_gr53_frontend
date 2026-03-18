@@ -8,6 +8,7 @@ import { Image } from "expo-image";
 import { useTranslation } from "react-i18next";
 import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLeaveClass } from "@/src/hooks/useLeaveClass";
 
 /**
  * This page allows the user to change settings such as theme mode and language.
@@ -23,6 +24,7 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
 
   const { isAuthenticated } = useAuth();
+  const { leaveClass } = useLeaveClass();
 
   return (
     <ScrollView
@@ -39,10 +41,6 @@ export default function SettingsScreen() {
             {t("settings")}
           </Text> */}
           <View style={styles.imageWrapper}>
-            <Image
-              source={require("@/assets/images/about.png")}
-              style={styles.image}
-            />
             <Text style={[themedStyles.heading, { marginTop: 20 }]}>
               {t("aboutUs")}
             </Text>
@@ -124,6 +122,19 @@ export default function SettingsScreen() {
           iconName="privacy-tip"
           labelKey="privacyPolicy"
         />
+        <Separator />
+        <View style={themedStyles.settingsSection}>
+          <Text style={[themedStyles.subheading, { marginVertical: 10 }]}>
+            {t("class")}
+          </Text>
+        </View>
+        <Separator />
+        <SettingsButton
+          onPress={leaveClass}
+          iconName="exit-to-app"
+          labelKey="leaveClass"
+        />
+        <Separator />
       </View>
     </ScrollView>
   );

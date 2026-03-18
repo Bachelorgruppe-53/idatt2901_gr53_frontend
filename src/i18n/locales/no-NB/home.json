@@ -4,5 +4,12 @@
   "joinClass": "Bli med i en klasse",
   "invalidQR": "Ugyldig QR-kode. Prøv igjen.",
   "cameraDenied": "Kamera-tilgang nektet. Vennligst gi tillatelse i innstillingene.",
-  "hello": "Hei"
+  "hello": "Hei",
+  "you": "Deg",
+  "class": "Klassen",
+  "contestPeriod": "Konkurranseperiode",
+  "classQuizStartsIn": "Klassequizen starter om",
+  "findCareers": "Du har funnet {{count}} yrker!",
+  "noClassPoints": "Bli med i en klasse for å samle poeng!",
+  "closeButton": "Lukk"
 }
