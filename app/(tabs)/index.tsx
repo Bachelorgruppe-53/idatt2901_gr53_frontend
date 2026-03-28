@@ -1,6 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
+import { registerDevice } from "@/services/authService";
 import {
   Image,
   Modal,
@@ -22,6 +23,7 @@ import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useHomeData } from "@/src/hooks/useHomeData";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useTranslation } from "react-i18next";
+import { getNickname } from "@/services/utils/secureStorage";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -55,6 +57,23 @@ export default function Index() {
     stopScanning();
     // TODO: Handle QR scan logic
   };
+
+  const loadNickname = async () => {
+    console.log("Loading nickname from secure storage...");
+    const cached = await getNickname();
+    console.log("Nickname loaded:", cached);
+  };
+
+  const handleRegisterDevice = async () => {
+  try {
+    await registerDevice();
+    await loadNickname();
+    setRemountKey((prev) => prev + 1);
+  } catch (error) {
+    console.error("Failed to register device:", error);
+    alert(t("registerFailed", "Failed to register device"));
+  }
+};
 
   const handleQRPress = async () => {
     startScanning();
@@ -142,6 +161,18 @@ export default function Index() {
       <Text style={themedStyles.text}>
         {t("findCareers", { count: 5 })}
       </Text>
+
+      <Pressable
+        style={[
+          themedStyles.button,
+        ]}
+        onPress={handleRegisterDevice}
+      >
+        <Text style={themedStyles.buttonText}>
+          {/* {t("takeTest")} */} register device (TEMP)
+        </Text>
+      </Pressable>
+
 
 
       {/* Class info / Join class */}
