@@ -32,23 +32,36 @@ type ScoreboardProps = {
 export default function Scoreboard(props: ScoreboardProps) {
   const { t } = useTranslation("stats");
   const userPoints = props.points ?? 250;
-  const maxScore = Math.max(...props.scores, userPoints, 1);
   const placeholderCount = 12;
   const themedStyles = useThemedStyles();
   const theme = useThemeColor();
 
+  const safeEntities = Array.isArray(props.entities) ? props.entities : [];
+  const safeScores = Array.isArray(props.scores) ? props.scores : [];
+  const maxScore = Math.max(...safeScores, userPoints, 1);
+
   const title = props.titleOverride ?? t(props.scoreboardType);
 
   // Pair entities with scores and sort descending for ranking.
-  const ranked = props.entities
-    .map((entity, index) => ({
-      entity,
-      score: props.scores[index] ?? 0,
-    }))
+  const ranked = safeEntities
+    .map((entity, index) => {
+      const safeEntity =
+        typeof entity === "string" && entity.trim().length > 0
+          ? entity
+          : t("unknownPlayer", "Unknown");
+      const rawScore = safeScores[index];
+      const safeScore = typeof rawScore === "number" && Number.isFinite(rawScore) ? rawScore : 0;
+
+      return {
+        entity: safeEntity,
+        score: safeScore,
+      };
+    })
     .sort((a, b) => b.score - a.score);
 
   // Deterministic color from entity name for rank badge.
   const getEntityBadgeStyle = (entity: string) => {
+    const safeEntity = (entity && entity.length > 0 ? entity : "unknown").toString();
     let hash = 0;
 
     for (let index = 0; index < entity.length; index++) {
