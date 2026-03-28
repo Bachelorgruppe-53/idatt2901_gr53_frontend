@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getLanguageCode } from "@/services/language/languageCode";
 
 /**
  * AboutCareer component that displays information about a career point of interest (POI) and includes a quiz to unlock points. It handles fetching career data, displaying it, and managing the quiz state and interactions.
@@ -41,7 +42,7 @@ interface Props {
 export default function AboutCareer({ careerId, onClose }: Props) {
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();
-  const { t } = useTranslation("aboutCareer");
+  const { t, i18n } = useTranslation("aboutCareer");
 
   const [data, setData] = useState<PoiDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -88,8 +89,11 @@ export default function AboutCareer({ careerId, onClose }: Props) {
       try {
         const userId = await ensureUserId();
         const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+        const languageCode = getLanguageCode(
+          i18n.resolvedLanguage ?? i18n.language,
+        );
 
-        const res = await fetch(`${baseUrl}/career/career`, {
+        const res = await fetch(`${baseUrl}/career/info/${encodeURIComponent(languageCode)}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -118,7 +122,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
     };
 
     void load();
-  }, [careerId, t]);
+  }, [careerId, i18n.language, i18n.resolvedLanguage, t]);
 
   if (loading) {
     return (

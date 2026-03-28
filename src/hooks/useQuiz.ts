@@ -3,6 +3,8 @@ import { getApiBaseUrl } from "@/services/apiConfig";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { QuizItem } from "../components/quiz/quiz";
+import { getLanguageCode } from "@/services/language/languageCode";
+import i18n from "../i18n/config";
 
 /**
  * Custom hook for managing the state and logic of a career quiz. It handles fetching quiz questions, tracking answers, managing quiz completion, and submitting claims based on quiz results.
@@ -21,6 +23,14 @@ interface QuestionDto {
   questionText: string;
   type: string;
   options: QuizOptionDto[];
+  quizId: number;
+  quiz?: {id?: number};
+}
+
+interface QuizResponseDto {
+  id?: number;
+  quizId: number;
+  questions?: QuestionDto[];
 }
 
 interface QuestionAnswerDto {
@@ -55,6 +65,7 @@ export function useCareerQuiz({
   const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
   const [shouldAutoClaim, setShouldAutoClaim] = useState(false);
   const [quizErrorMsg, setQuizErrorMsg] = useState<string | null>(null);
+  const [quizId, setQuizId] = useState<number | null>(null);
 
   const toFriendlyClaimError = (status: number, rawError: string): string => {
     let extractedMessage = "";
@@ -98,8 +109,28 @@ export function useCareerQuiz({
     return t("quizClaimFailed", `Innsending feilet (Status: ${status})`);
   };
 
+  const extractQuizId = (payload: unknown, questions: QuestionDto[]): number | null => {
+    if (payload && typeof payload === "object") {
+      const p = payload as QuizResponseDto;
+      if (typeof p.quizId === "number") return p.quizId;
+      if (typeof p.id === "number") return p.id;
+    }
+
+    const fromQuestion = questions.find(
+      (q) => typeof q.quizId === "number" || typeof q.quiz?.id === "number",
+    );
+
+    if (typeof fromQuestion?.quizId === "number") return fromQuestion.quizId;
+    if (typeof fromQuestion?.quiz?.id === "number") return fromQuestion.quiz.id;
+
+    return null;
+  };
+
   const fetchQuiz = async () => {
-    if (careerId === null) return;
+    if (careerId === null) {
+      console.log("No career ID provided, skipping quiz fetch.");
+      return;
+    }
 
     setQuizLoading(true);
     setQuizErrorMsg(null);
@@ -107,8 +138,14 @@ export function useCareerQuiz({
     try {
       const userId = await ensureUserId();
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+      const languageCode = getLanguageCode(
+        i18n.resolvedLanguage ?? i18n.language,
+      ).toLowerCase();
 
-      const res = await fetch(`${baseUrl}/quiz/quiz`, {
+      const url = `${baseUrl}/quiz/quiz/${encodeURIComponent(languageCode)}`;
+      console.log("fetchQuiz start", { careerId, languageCode, url });
+
+      const res = await fetch(`${baseUrl}/quiz/quiz/${encodeURIComponent(languageCode)}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -118,12 +155,18 @@ export function useCareerQuiz({
         body: JSON.stringify({ id: careerId }),
       });
 
-      if (!res.ok) {
-        throw new Error(`Quiz error: ${res.status}`);
-      }
+      console.log("fetchQuiz response", { status: res.status, ok: res.ok });
 
-      const json = (await res.json()) as QuestionDto[];
-      const mapped: QuizItem[] = json.map((q) => ({
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.log("fetchQuiz failed", { status: res.status, errorText });
+        throw new Error(`Quiz error: ${res.status}`);
+    }
+
+    const payload = await res.json();
+    const list = Array.isArray(payload) ? payload : payload?.questions ?? [];
+
+    const mapped: QuizItem[] = list.map((q: QuestionDto) => ({
         questionId: q.id,
         question: q.questionText,
         options: q.options.map((o) => ({
@@ -132,7 +175,10 @@ export function useCareerQuiz({
         })),
       }));
 
+      console.log("fetchQuiz mapped questions", { mapped });
+
       setQuizQuestions(mapped);
+      setQuizId(extractQuizId(payload, list));
       setAnswers([]);
       setQuizCompleted(false);
       setShouldAutoClaim(false);
@@ -174,7 +220,7 @@ export function useCareerQuiz({
 
       const claimBody: ClaimRequest = {
         poiId: careerId,
-        quizId: 1,
+        quizId: careerId,
         responseTime,
         chosenOptionIds: answers.flatMap((a) => a.chosenOptionIds),
       };
@@ -194,6 +240,7 @@ export function useCareerQuiz({
         const friendly = toFriendlyClaimError(res.status, errorText);
         setQuizErrorMsg(friendly);
         setQuizCompleted(false);
+        console.log("Claim failed", { status: res.status, errorText, friendly });
         return;
       }
 
