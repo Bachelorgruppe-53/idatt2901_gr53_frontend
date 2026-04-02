@@ -219,6 +219,7 @@ export const createThemedStyles = (
       color: theme.buttontext,
       fontSize: Typography.base,
       fontWeight: FontWeight.medium,
+      alignContent: "center",
     },
     buttonRound: {
       backgroundColor: theme.button,

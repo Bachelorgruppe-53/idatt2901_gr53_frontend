@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
+import { getLanguageCode } from "@/services/language/languageCode";
 import QuizModal from "@/src/components/quiz/quizModal";
 import { Colors } from "@/src/constants/Colors";
 import { BaseStyles } from "@/src/constants/Styles";
@@ -17,7 +18,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getLanguageCode } from "@/services/language/languageCode";
 
 /**
  * AboutCareer component that displays information about a career point of interest (POI) and includes a quiz to unlock points. It handles fetching career data, displaying it, and managing the quiz state and interactions.
@@ -93,15 +93,18 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           i18n.resolvedLanguage ?? i18n.language,
         );
 
-        const res = await fetch(`${baseUrl}/career/info/${encodeURIComponent(languageCode)}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "X-User-ID": userId,
+        const res = await fetch(
+          `${baseUrl}/career/info/${encodeURIComponent(languageCode)}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "X-User-ID": userId,
+            },
+            body: JSON.stringify({ id: careerId }),
           },
-          body: JSON.stringify({ id: careerId }),
-        });
+        );
 
         if (!res.ok) {
           throw new Error(`Server error: ${res.status}`);
@@ -205,10 +208,13 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           onClose={() => setShowQuiz(false)}
         />
 
-        <View style={BaseStyles.p16}>
+        <View style={[BaseStyles.p16, BaseStyles.alignCenter]}>
           {!quizCompleted ? (
-            <Pressable style={themedStyles.button} onPress={fetchQuiz}>
-              <Text style={themedStyles.buttonText}>
+            <Pressable
+              style={[themedStyles.button, BaseStyles.center]}
+              onPress={fetchQuiz}
+            >
+              <Text style={[themedStyles.buttonText]}>
                 {t("startQuiz", "Ta quiz for å låse opp")}
               </Text>
             </Pressable>
@@ -217,10 +223,11 @@ export default function AboutCareer({ careerId, onClose }: Props) {
               style={[
                 themedStyles.button,
                 { opacity: 0.7, flexDirection: "row" },
+                BaseStyles.center,
               ]}
             >
               <ActivityIndicator color="#FFFFFF" size="small" />
-              <Text style={[themedStyles.buttonText, { marginLeft: 10 }]}>
+              <Text style={[themedStyles.buttonText]}>
                 {t("submitting", "Sender svar...")}
               </Text>
             </View>
