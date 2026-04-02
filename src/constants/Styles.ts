@@ -368,6 +368,7 @@ export const createThemedStyles = (
       overflow: "hidden",
       marginBottom: Platform.OS === "ios" ? 20 : 10,
       borderRadius: Platform.OS === "ios" ? 20 : 8,
+      backgroundColor: theme.backgroundSecondary,
     },
     activeSegmentText: {
       // fontSize: 16,
