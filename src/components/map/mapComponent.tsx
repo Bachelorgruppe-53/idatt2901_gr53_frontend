@@ -6,6 +6,7 @@ import { Colors } from "@/src/constants/Colors";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useTranslation } from "react-i18next";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -52,6 +53,8 @@ export const MapComponent = ({
   const { isDarkMode } = useTheme();
   const themedStyles = useThemedStyles();
   const { isScanning, startScanning, stopScanning } = useQRScanner();
+  const { i18n } = useTranslation();
+
   const controlBackgroundColor = isDarkMode
     ? "rgba(28,28,30,0.92)"
     : "rgba(255,255,255,0.92)";
@@ -77,13 +80,14 @@ export const MapComponent = ({
   useEffect(() => {
     const loadLocations = async () => {
       setIsLoading(true);
-      const fetchedLocations = await fetchLocations(selectedArea);
+      const language = i18n.resolvedLanguage ?? i18n.language;
+      const fetchedLocations = await fetchLocations(selectedArea, language);
       setLocations(fetchedLocations);
       setIsLoading(false);
     };
 
     void loadLocations();
-  }, [selectedArea]);
+  }, [selectedArea, i18n.language, i18n.resolvedLanguage]);
 
   const handleScan = useCallback(
     (data: string) => {

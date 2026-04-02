@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId, registerDevice } from "@/services/authService";
+import { getLanguageCode } from "@/services/language/languageCode";
 import { Colors } from "@/src/constants/Colors";
 
 export interface MapLocation {
@@ -59,6 +60,7 @@ const fetchPoiWithUserId = async (url: string, userId: string) => {
   });
 };
 
+
 const fetchPoiByAreaWithUserId = async (
   url: string,
   userId: string,
@@ -77,19 +79,30 @@ const fetchPoiByAreaWithUserId = async (
   });
 };
 
+const buildPoiUrl = (
+  baseUrl: string,
+  areaName: string | null,
+  languageCode: string,
+): string => {
+  const path = areaName === null ? "/poi/all" : "/poi/area";
+  return `${baseUrl}${path}/${encodeURIComponent(languageCode)}`;
+};
+
 export const fetchLocations = async (
   areaName: string | null = null,
+  selectedLanguage?: string,
 ): Promise<MapLocation[]> => {
   try {
     const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+    const languageCode = getLanguageCode(selectedLanguage);
+
     let userId = await ensureUserId();
     let response: Response;
+    const url = buildPoiUrl(baseUrl, areaName, languageCode);
 
     if (areaName === null) {
-      const url = `${baseUrl}/poi/all`;
       response = await fetchPoiWithUserId(url, userId);
     } else {
-      const url = `${baseUrl}/poi/area`;
       response = await fetchPoiByAreaWithUserId(url, userId, areaName);
     }
 
@@ -101,11 +114,10 @@ export const fetchLocations = async (
         errorText.includes("Invalid UUID format")
       ) {
         userId = await registerDevice();
+
         if (areaName === null) {
-          const url = `${baseUrl}/poi/all`;
           response = await fetchPoiWithUserId(url, userId);
         } else {
-          const url = `${baseUrl}/poi/area`;
           response = await fetchPoiByAreaWithUserId(url, userId, areaName);
         }
       } else {
