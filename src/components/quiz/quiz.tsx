@@ -9,20 +9,40 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
  * - onAnswer: Callback function called when an answer is selected, with the question ID and chosen option IDs.
  * - onComplete: Optional callback function called when all questions have been answered.
  * - isLoading: Optional boolean to indicate if the quiz data is still loading.
- * 
+ *
  * @param {QuizProps} props - The props for the Quiz component.
  * @returns {JSX.Element} The rendered Quiz component.
  */
 
-export type QuizOptionItem = {
+export type QuizOptionDto = {
   id: number;
-  text: string;
+  optionText: string;
+};
+
+export type QuizQuestionType = "MULTIPLE_CHOICE" | "TRUE_FALSE" | string;
+
+export type QuizQuestionDto = {
+  id: number;
+  questionText: string;
+  type: QuizQuestionType;
+  options: QuizOptionDto[];
+};
+
+export type QuizResponseDto = {
+  quizId: number;
+  maxPoints: number;
+  timeLimit: number;
+  questions: QuizQuestionDto[];
 };
 
 export type QuizItem = {
   questionId: number;
   question: string;
-  options: QuizOptionItem[];
+  type: QuizQuestionType;
+  options: {
+    id: number;
+    text: string;
+  }[];
 };
 
 export type QuizProps = {
@@ -47,16 +67,30 @@ export default function Quiz({
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}>
-        <Text style={[styles.loadingText, { color: theme.placeholder }]}>Laster quiz...</Text>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.background, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.loadingText, { color: theme.placeholder }]}>
+          Laster quiz...
+        </Text>
       </View>
     );
   }
 
   if (!questions.length) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}>
-        <Text style={[styles.loadingText, { color: theme.placeholder }]}>Ingen spørsmål tilgjengelig.</Text>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.background, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.loadingText, { color: theme.placeholder }]}>
+          Ingen spørsmål tilgjengelig.
+        </Text>
       </View>
     );
   }
@@ -76,9 +110,22 @@ export default function Quiz({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background, borderColor: theme.border }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: theme.background, borderColor: theme.border },
+      ]}
+    >
       <View style={styles.headerRow}>
-        <View style={[styles.progressPill, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
+        <View
+          style={[
+            styles.progressPill,
+            {
+              backgroundColor: theme.backgroundSecondary,
+              borderColor: theme.border,
+            },
+          ]}
+        >
           <Text style={[styles.progressText, { color: theme.placeholder }]}>
             Spørsmål {currentQuestionIndex + 1} av {questions.length}
           </Text>
@@ -86,14 +133,17 @@ export default function Quiz({
       </View>
 
       <View style={styles.progressDots}>
-        {questions.map((_, idx) => (
+        {questions.map((_: QuizItem, idx: number) => (
           <View
             key={idx}
             style={[
               styles.progressDot,
               {
                 borderColor: theme.border,
-                backgroundColor: idx <= currentQuestionIndex ? theme.text : theme.backgroundSecondary,
+                backgroundColor:
+                  idx <= currentQuestionIndex
+                    ? theme.text
+                    : theme.backgroundSecondary,
               },
             ]}
           />
@@ -101,12 +151,16 @@ export default function Quiz({
       </View>
 
       <View style={styles.questionArea}>
-        <Text numberOfLines={3} ellipsizeMode="tail" style={[styles.questionText, { color: theme.text }]}>
+        <Text
+          numberOfLines={3}
+          ellipsizeMode="tail"
+          style={[styles.questionText, { color: theme.text }]}
+        >
           {current.question}
         </Text>
       </View>
 
-      {current.options.map((opt, idx) => (
+      {current.options.map((opt: QuizItem["options"][number], idx: number) => (
         <Pressable
           key={opt.id}
           onPress={() => handleSelect(opt.id)}
@@ -121,12 +175,22 @@ export default function Quiz({
           ]}
         >
           <View style={styles.optionContent}>
-            <View style={[styles.optionLabel, { borderColor: theme.border, backgroundColor: theme.background }]}>
+            <View
+              style={[
+                styles.optionLabel,
+                {
+                  borderColor: theme.border,
+                  backgroundColor: theme.background,
+                },
+              ]}
+            >
               <Text style={[styles.optionLabelText, { color: theme.text }]}>
                 {optionLabels[idx] ?? `${idx + 1}`}
               </Text>
             </View>
-            <Text style={[styles.optionText, { color: theme.text }]}>{opt.text}</Text>
+            <Text style={[styles.optionText, { color: theme.text }]}>
+              {opt.text}
+            </Text>
           </View>
         </Pressable>
       ))}
