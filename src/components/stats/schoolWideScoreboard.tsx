@@ -1,16 +1,20 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import {
-  GET_SCHOOL_CLASSES_PATH,
-  GetSchoolClassesRequest,
-  GetSchoolClassesResponse,
-  SchoolClassSummary,
-  UserIdHeader,
+    GET_CLASS_INFO_PATH,
+    GetClassInfoResponse,
+} from "@/services/types/class";
+import {
+    GET_SCHOOL_CLASSES_PATH,
+    GetSchoolClassesRequest,
+    GetSchoolClassesResponse,
+    SchoolClassSummary,
+    UserIdHeader,
 } from "@/services/types/schoolClass";
 import {
-  GET_SUMMARY_PATH,
-  GetSummaryResponse,
-  UserSummary,
+    GET_SUMMARY_PATH,
+    GetSummaryResponse,
+    UserSummary,
 } from "@/services/types/summary";
 import Scoreboard from "@/src/components/stats/genericScoreboard";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
@@ -33,6 +37,56 @@ export default function SchoolScoreboard() {
   const [userClass, setUserClass] = useState<string | null>(null);
   const [schoolName, setSchoolName] = useState<string | null>(null);
   const themedStyles = useThemedStyles();
+
+  const normalizeSchoolClasses = (payload: unknown): SchoolClassSummary[] => {
+    const extractList = (value: unknown): unknown[] => {
+      if (Array.isArray(value)) return value;
+      if (!value || typeof value !== "object") return [];
+
+      const objectValue = value as Record<string, unknown>;
+      const candidates = [
+        objectValue.content,
+        objectValue.list,
+        (objectValue.list as Record<string, unknown> | undefined)?.content,
+        objectValue.data,
+        (objectValue.data as Record<string, unknown> | undefined)?.content,
+      ];
+
+      for (const candidate of candidates) {
+        if (Array.isArray(candidate)) {
+          return candidate;
+        }
+      }
+
+      return [];
+    };
+
+    const rawItems = extractList(payload);
+
+    return rawItems
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+
+        const row = item as Record<string, unknown>;
+        const classNameCandidate = row.className ?? row.name;
+        const pointsCandidate = row.points ?? row.score;
+
+        const className =
+          typeof classNameCandidate === "string"
+            ? classNameCandidate.trim()
+            : "";
+        const points =
+          typeof pointsCandidate === "number" &&
+          Number.isFinite(pointsCandidate)
+            ? pointsCandidate
+            : 0;
+
+        if (!className) return null;
+
+        return { className, points };
+      })
+      .filter((item): item is SchoolClassSummary => item !== null);
+  };
 
   const getBackendErrorMessage = (data: unknown): string => {
     if (typeof data === "string") return data;
@@ -92,25 +146,6 @@ export default function SchoolScoreboard() {
       }
     };
 
-    // Normalize responses that may come as paged or raw arrays.
-    const normalizeSchoolClasses = (
-      response: GetSchoolClassesResponse,
-    ): SchoolClassSummary[] | null => {
-      if (Array.isArray(response)) {
-        return response;
-      }
-
-      if (
-        response &&
-        typeof response === "object" &&
-        Array.isArray(response.content)
-      ) {
-        return response.content;
-      }
-
-      return null;
-    };
-
     // Fetch all classes for a given school name.
     const getSchoolClasses = async (
       name: string,
@@ -134,6 +169,22 @@ export default function SchoolScoreboard() {
       return response.data;
     };
 
+    const getClassInfo = async (
+      userId: string,
+      classCode: string,
+    ): Promise<GetClassInfoResponse> => {
+      const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+      const headers: UserIdHeader = { "X-User-ID": userId };
+
+      const response = await axios.post<GetClassInfoResponse>(
+        `${baseUrl}${GET_CLASS_INFO_PATH}`,
+        { code: classCode },
+        { headers },
+      );
+
+      return response.data;
+    };
+
     // Load school classes and map them into the scoreboard.
     const loadSchoolClasses = async () => {
       try {
@@ -146,6 +197,7 @@ export default function SchoolScoreboard() {
           return;
         }
 
+        const userId = await ensureUserId();
         const classesResponse = await getSchoolClasses(summary.schoolName);
         const classes = normalizeSchoolClasses(classesResponse);
 
@@ -153,15 +205,6 @@ export default function SchoolScoreboard() {
         if (typeof classesResponse === "string") {
           setError(classesResponse);
           console.warn("Authorization issue:", classesResponse);
-          return;
-        }
-
-        if (!classes) {
-          console.error(
-            "Expected array or paged response, got:",
-            classesResponse,
-          );
-          setError("Unexpected response format from server");
           return;
         }
 
@@ -173,10 +216,17 @@ export default function SchoolScoreboard() {
         setEntities(classes.map((item) => item.className));
         setScores(classes.map((item) => item.points));
 
-        const highlightedClass = classes.find(
-          (item) => item.className === summary.className,
-        );
-        setPoints(highlightedClass?.points ?? 0);
+        try {
+          const classInfo = await getClassInfo(userId, summary.classCode);
+          setPoints(classInfo.points ?? 0);
+        } catch {
+          const normalizedUserClass = summary.className?.trim().toLowerCase();
+          const highlightedClass = classes.find(
+            (item) =>
+              item.className.trim().toLowerCase() === normalizedUserClass,
+          );
+          setPoints(highlightedClass?.points ?? 0);
+        }
       } catch (error) {
         console.error("Failed to load school classes:", error);
         setError("Failed to load school classes");
