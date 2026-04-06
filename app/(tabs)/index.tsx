@@ -262,8 +262,9 @@ export default function Index() {
         </View>
       </View>
 
-      {/* TODO: koble opp mot backend */}
-      <Text style={themedStyles.text}>{t("findCareers", { count: 5 })}</Text>
+      <Text style={themedStyles.text}>
+        {t("findCareers", { count: summary?.numberOfClaims ?? 0 })}
+      </Text>
 
       <Pressable style={[themedStyles.button]} onPress={handleRegisterDevice}>
         <Text style={themedStyles.buttonText}>{t("registerDeviceTemp")}</Text>
