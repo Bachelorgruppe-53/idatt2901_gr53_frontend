@@ -30,4 +30,11 @@ export type GetClassResponse = {
   list: PagedSchoolClassesResponse;
 };
 
+export type GetClassInfoResponse = {
+  className: string;
+  schoolName: string;
+  points: number;
+};
+
 export const GET_CLASS_PATH = "/class/class";
+export const GET_CLASS_INFO_PATH = "/class/info";

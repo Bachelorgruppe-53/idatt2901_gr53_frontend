@@ -1,29 +1,25 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
 import { registerDevice } from "@/services/authService";
-import {
-  Image,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getNickname } from "@/services/utils/secureStorage";
+import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
 import { QRScanner } from "@/src/components/QRScanner";
-import AboutCareer from "@/src/components/careers/aboutCareer";
 import { Colors } from "@/src/constants/Colors";
 import { BaseStyles } from "@/src/constants/Styles";
-import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useHomeData } from "@/src/hooks/useHomeData";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getNickname } from "@/services/utils/secureStorage";
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -65,27 +61,22 @@ export default function Index() {
   };
 
   const handleRegisterDevice = async () => {
-  try {
-    await registerDevice();
-    await loadNickname();
-    setRemountKey((prev) => prev + 1);
-  } catch (error) {
-    console.error("Failed to register device:", error);
-    alert(t("registerFailed", "Failed to register device"));
-  }
-};
+    try {
+      await registerDevice();
+      await loadNickname();
+      setRemountKey((prev) => prev + 1);
+    } catch (error) {
+      console.error("Failed to register device:", error);
+      alert(t("registerFailed", "Failed to register device"));
+    }
+  };
 
   const handleQRPress = async () => {
     startScanning();
   };
 
   if (isScanning) {
-    return (
-      <QRScanner
-        onScan={handleScan}
-        onClose={stopScanning}
-      />
-    );
+    return <QRScanner onScan={handleScan} onClose={stopScanning} />;
   }
 
   if (showJoinClass) {
@@ -120,67 +111,69 @@ export default function Index() {
       <Text style={[themedStyles.subheading, { marginBottom: 20 }]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
-      <View
-        style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.mb16]}
-      >
+      <View style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.mb16]}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
         <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
       </View>
       <View style={[BaseStyles.rowCenter, BaseStyles.my16]}>
-        <View style={[styles.card, {borderColor: Colors.brand.lightBlue}]}>
+        <View style={[styles.card, { borderColor: Colors.brand.lightBlue }]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
             {t("you")}:
           </Text>
           {summary?.classCode ? (
-          <Text style={[themedStyles.boldText, BaseStyles.textXxxl, BaseStyles.px16]}>
-          {points} p
-          </Text>
+            <Text
+              style={[
+                themedStyles.boldText,
+                BaseStyles.textXxxl,
+                BaseStyles.px16,
+              ]}
+            >
+              {points} p
+            </Text>
           ) : (
-          <Text style={[themedStyles.text, BaseStyles.px16]}>
-            {t("noClassPoints")}
-          </Text>
+            <Text style={[themedStyles.text, BaseStyles.px16]}>
+              {t("noClassPoints")}
+            </Text>
           )}
         </View>
-        <View style={[styles.card, {borderColor: Colors.brand.lightBlue}]}>
+        <View style={[styles.card, { borderColor: Colors.brand.lightBlue }]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
             {t("class")}:
           </Text>
-          {summary?.classCode ? (
-          <Text style={[themedStyles.boldText, BaseStyles.textXxxl, BaseStyles.px16]}>
-          {classPoints ?? 0} p
-          </Text>
+          {classPoints !== null ? (
+            <Text
+              style={[
+                themedStyles.boldText,
+                BaseStyles.textXxxl,
+                BaseStyles.px16,
+              ]}
+            >
+              {classPoints ?? 0} p
+            </Text>
           ) : (
-          <Text style={[themedStyles.text, BaseStyles.px16]}>
-            {t("noClassPoints")}
-          </Text>
+            <Text style={[themedStyles.text, BaseStyles.px16]}>
+              {t("noClassPoints")}
+            </Text>
           )}
         </View>
       </View>
 
       {/* TODO: koble opp mot backend */}
-      <Text style={themedStyles.text}>
-        {t("findCareers", { count: 5 })}
-      </Text>
+      <Text style={themedStyles.text}>{t("findCareers", { count: 5 })}</Text>
 
-      <Pressable
-        style={[
-          themedStyles.button,
-        ]}
-        onPress={handleRegisterDevice}
-      >
+      <Pressable style={[themedStyles.button]} onPress={handleRegisterDevice}>
         <Text style={themedStyles.buttonText}>
           {/* {t("takeTest")} */} register device (TEMP)
         </Text>
       </Pressable>
-
-
 
       {/* Class info / Join class */}
       {summary?.classCode ? (
         <View style={[BaseStyles.rowCenter, BaseStyles.gap16, BaseStyles.m16]}>
           <MaterialIcons name="school" size={35} color={Colors.brand.purple} />
           <Text style={themedStyles.heading}>
-            {summary.className ?? t("class")} - {summary.schoolName ?? t("school")}
+            {summary.className ?? t("class")} -{" "}
+            {summary.schoolName ?? t("school")}
           </Text>
         </View>
       ) : (
@@ -192,16 +185,19 @@ export default function Index() {
         </Pressable>
       )}
 
-
       <View
-        style={[styles.contestCard, BaseStyles.center, {borderColor: Colors.brand.lightBlue}]}
+        style={[
+          styles.contestCard,
+          BaseStyles.center,
+          { borderColor: Colors.brand.lightBlue },
+        ]}
       >
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           {t("contestPeriod")}:
         </Text>
         <Pressable
           onPress={() => setShowContestInfo(true)}
-          style={[BaseStyles.p8, {position: "absolute", top: 0, right: 10}]}
+          style={[BaseStyles.p8, { position: "absolute", top: 0, right: 10 }]}
           accessibilityRole="button"
           accessibilityLabel="Mer informasjon om konkurransen"
         >
@@ -214,43 +210,39 @@ export default function Index() {
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           {t("classQuizStartsIn")}:
         </Text>
-        <Text style={[themedStyles.heading, BaseStyles.p8]}>
-          14 dager
-        </Text>
+        <Text style={[themedStyles.heading, BaseStyles.p8]}>14 dager</Text>
 
-      <Modal
-        visible={showContestInfo}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowContestInfo(false)}
-      >
-        <Pressable
-          style={themedStyles.modalBackdrop}
-          onPress={() => setShowContestInfo(false)}
+        <Modal
+          visible={showContestInfo}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowContestInfo(false)}
         >
-          <Pressable style={themedStyles.modalCard} onPress={() => {}}>
-            <Text style={[themedStyles.subheading, BaseStyles.mb16]}>
-              Om konkurransen
-            </Text>
-            <Text style={[themedStyles.text, BaseStyles.mb16]}>
-              Her kan du se perioden for konkurransen og når klassequizen starter.
-              Samle poeng ved å fullføre aktiviteter og bidra til klassens totalscore.
-            </Text>
-            <Pressable
-              style={themedStyles.smallButton}
-              onPress={() => setShowContestInfo(false)}
-            >
-              <Text style={themedStyles.buttonText}>{t("closeButton")}</Text>
+          <Pressable
+            style={themedStyles.modalBackdrop}
+            onPress={() => setShowContestInfo(false)}
+          >
+            <Pressable style={themedStyles.modalCard} onPress={() => {}}>
+              <Text style={[themedStyles.subheading, BaseStyles.mb16]}>
+                Om konkurransen
+              </Text>
+              <Text style={[themedStyles.text, BaseStyles.mb16]}>
+                Her kan du se perioden for konkurransen og når klassequizen
+                starter. Samle poeng ved å fullføre aktiviteter og bidra til
+                klassens totalscore.
+              </Text>
+              <Pressable
+                style={themedStyles.smallButton}
+                onPress={() => setShowContestInfo(false)}
+              >
+                <Text style={themedStyles.buttonText}>{t("closeButton")}</Text>
+              </Pressable>
             </Pressable>
           </Pressable>
-        </Pressable>
-      </Modal>
+        </Modal>
       </View>
 
-      <Pressable
-        style={themedStyles.buttonRound}
-        onPress={handleQRPress}
-      >
+      <Pressable style={themedStyles.buttonRound} onPress={handleQRPress}>
         <MaterialIcons
           name="qr-code-scanner"
           size={35}
@@ -263,14 +255,14 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   card: {
-    width: '35%',
-    height: '100%',
+    width: "35%",
+    height: "100%",
     borderRadius: 8,
     borderWidth: 2,
     margin: 10,
   },
   contestCard: {
-    width: '80%',
+    width: "80%",
     borderRadius: 8,
     borderWidth: 2,
     margin: 10,

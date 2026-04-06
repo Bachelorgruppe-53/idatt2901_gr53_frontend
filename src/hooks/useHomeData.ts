@@ -9,7 +9,7 @@ import { AppState } from "react-native";
  * Custom hook to load and manage home screen data, including user summary and points.
  * Handles data fetching on app focus and at regular intervals, with safeguards against
  * race conditions. Also listens for app state changes to refresh data when the app becomes active.
- * 
+ *
  * @returns An object containing the user's name, points, summary, class points, and a reload function to manually refresh the data.
  */
 
@@ -34,7 +34,7 @@ export function useHomeData() {
     if (requestId !== requestIdRef.current) return;
     setSummary(data.summary);
     setPoints(data.points);
-    //setClassPoints(data.classPoints);
+    setClassPoints(data.classPoints);
     if (data.nickname) setName(data.nickname);
   }, []);
 
