@@ -3,6 +3,8 @@
     "unknownTitle": "Unknown Career",
     "noDescription": "No description available for this career.",
     "points": "Points",
+    "maxPoints": "Max Points",
+    "timeLimit": "Time",
     "closeButton": "Close",
     "claimButton": "Claim"
 }

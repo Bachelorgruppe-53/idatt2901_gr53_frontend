@@ -7,7 +7,7 @@ import type {
   QuizQuestionDto,
   QuizResponseDto,
 } from "@/src/components/quiz/quiz";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/config";
 
@@ -35,6 +35,12 @@ interface UseCareerQuizParams {
   onClaimSuccess: () => void;
 }
 
+interface QuizMetadata {
+  quizId: number | null;
+  maxPoints: number | null;
+  timeLimit: number | null;
+}
+
 export function useCareerQuiz({
   careerId,
   onClaimSuccess,
@@ -51,6 +57,8 @@ export function useCareerQuiz({
   const [shouldAutoClaim, setShouldAutoClaim] = useState(false);
   const [quizErrorMsg, setQuizErrorMsg] = useState<string | null>(null);
   const [quizId, setQuizId] = useState<number | null>(null);
+  const [quizMaxPoints, setQuizMaxPoints] = useState<number | null>(null);
+  const [quizTimeLimit, setQuizTimeLimit] = useState<number | null>(null);
   const isFetchingQuizRef = useRef(false);
 
   const toFriendlyClaimError = (status: number, rawError: string): string => {
@@ -107,19 +115,36 @@ export function useCareerQuiz({
     return null;
   };
 
-  const fetchQuiz = async () => {
+  const extractQuizMetadata = (payload: unknown): QuizMetadata => {
+    if (!payload || typeof payload !== "object") {
+      return {
+        quizId: null,
+        maxPoints: null,
+        timeLimit: null,
+      };
+    }
+
+    const response = payload as Partial<QuizResponseDto>;
+
+    return {
+      quizId: extractQuizId(payload),
+      maxPoints:
+        typeof response.maxPoints === "number" ? response.maxPoints : null,
+      timeLimit:
+        typeof response.timeLimit === "number" ? response.timeLimit : null,
+    };
+  };
+
+  const fetchQuizPayload = useCallback(async () => {
     if (careerId === null) {
-      console.log("No career ID provided, skipping quiz fetch.");
-      return;
+      return null;
     }
 
     if (isFetchingQuizRef.current) {
-      console.log("fetchQuiz skipped: request already in progress");
-      return;
+      return null;
     }
 
     isFetchingQuizRef.current = true;
-
     setQuizLoading(true);
     setQuizErrorMsg(null);
 
@@ -129,9 +154,6 @@ export function useCareerQuiz({
       const languageCode = getLanguageCode(
         i18n.resolvedLanguage ?? i18n.language,
       ).toLowerCase();
-
-      const url = `${baseUrl}/quiz/quiz/${encodeURIComponent(languageCode)}`;
-      console.log("fetchQuiz start", { careerId, languageCode, url });
 
       const res = await fetch(
         `${baseUrl}/quiz/quiz/${encodeURIComponent(languageCode)}`,
@@ -147,15 +169,37 @@ export function useCareerQuiz({
         },
       );
 
-      console.log("fetchQuiz response", { status: res.status, ok: res.ok });
-
       if (!res.ok) {
         const errorText = await res.text();
-        console.log("fetchQuiz failed", { status: res.status, errorText });
         throw new Error(`Quiz error: ${res.status}`);
       }
 
-      const payload = await res.json();
+      return (await res.json()) as unknown;
+    } finally {
+      setQuizLoading(false);
+      isFetchingQuizRef.current = false;
+    }
+  }, [careerId, i18n.language, i18n.resolvedLanguage]);
+
+  const fetchQuizPreview = useCallback(async () => {
+    try {
+      const payload = await fetchQuizPayload();
+      if (!payload) return;
+
+      const metadata = extractQuizMetadata(payload);
+      setQuizId(metadata.quizId);
+      setQuizMaxPoints(metadata.maxPoints);
+      setQuizTimeLimit(metadata.timeLimit);
+    } catch {
+      // Keep the career view usable even if the preview fetch fails.
+    }
+  }, [fetchQuizPayload]);
+
+  const fetchQuiz = useCallback(async () => {
+    try {
+      const payload = await fetchQuizPayload();
+      if (!payload) return;
+
       const response = payload as Partial<QuizResponseDto>;
       const list: QuizQuestionDto[] = Array.isArray(payload)
         ? (payload as QuizQuestionDto[])
@@ -167,55 +211,46 @@ export function useCareerQuiz({
         type: q.type,
         options: q.options.map((o: QuizOptionDto) => ({
           id: o.id,
-          text: o.optionText
+          text: o.optionText,
         })),
       }));
 
-      console.log("fetchQuiz mapped questions", { mapped });
-
-      const resolvedQuizId = extractQuizId(payload);
+      const metadata = extractQuizMetadata(payload);
 
       setQuizQuestions(mapped);
-      setQuizId(resolvedQuizId);
+      setQuizId(metadata.quizId);
+      setQuizMaxPoints(metadata.maxPoints);
+      setQuizTimeLimit(metadata.timeLimit);
       setAnswers([]);
       setQuizCompleted(false);
       setShouldAutoClaim(false);
       setQuizStartedAt(Date.now());
       setShowQuiz(true);
-
-      if (resolvedQuizId === null) {
-        console.log("fetchQuiz could not resolve quizId from response", {
-          careerId,
-          payloadType: Array.isArray(payload) ? "array" : typeof payload,
-        });
-      }
     } catch {
       setQuizErrorMsg(t("quizLoadFailed", "Kunne ikke laste quiz."));
     } finally {
       setQuizLoading(false);
       isFetchingQuizRef.current = false;
     }
-  };
+  }, [careerId, fetchQuizPayload, t]);
 
-  const handleAnswer = (questionId: number, chosenOptionIds: number[]) => {
-    setAnswers((prev) => {
-      const rest = prev.filter((a) => a.questionId !== questionId);
-      return [...rest, { questionId, chosenOptionIds }];
-    });
-  };
+  const handleAnswer = useCallback(
+    (questionId: number, chosenOptionIds: number[]) => {
+      setAnswers((prev) => {
+        const rest = prev.filter((a) => a.questionId !== questionId);
+        return [...rest, { questionId, chosenOptionIds }];
+      });
+    },
+    [],
+  );
 
-  const handleQuizComplete = () => {
-    console.log("quiz complete", {
-      answersCount: answers.length,
-      questionsCount: quizQuestions.length,
-      quizId,
-    });
+  const handleQuizComplete = useCallback(() => {
     setQuizCompleted(true);
     setShowQuiz(false);
     setShouldAutoClaim(true);
-  };
+  }, []);
 
-  const handleClaim = async () => {
+  const handleClaim = useCallback(async () => {
     if (careerId === null || answers.length === 0) return;
 
     setShouldAutoClaim(false);
@@ -249,12 +284,6 @@ export function useCareerQuiz({
         chosenOptionIds: answers.flatMap((a) => a.chosenOptionIds),
       };
 
-      console.log("claim start", {
-        careerId,
-        quizId: resolvedQuizId,
-        answersCount: answers.length,
-      });
-
       const claimCareer = async (resolvedUserId: string) => {
         return fetch(`${baseUrl}/career/claim`, {
           method: "PUT",
@@ -269,8 +298,6 @@ export function useCareerQuiz({
       };
 
       let res = await claimCareer(userId);
-
-      console.log("claim response", { status: res.status, ok: res.ok });
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -313,7 +340,7 @@ export function useCareerQuiz({
     } finally {
       setIsSubmittingClaim(false);
     }
-  };
+  }, [answers, careerId, onClaimSuccess, quizId, quizStartedAt, t]);
 
   useEffect(() => {
     if (!shouldAutoClaim) return;
@@ -321,14 +348,29 @@ export function useCareerQuiz({
     if (answers.length < quizQuestions.length) return;
     if (isSubmittingClaim) return;
 
-    console.log("auto-claim triggered", {
-      answersCount: answers.length,
-      questionsCount: quizQuestions.length,
-      quizId,
-    });
-
     void handleClaim();
-  }, [shouldAutoClaim, answers, quizQuestions.length, isSubmittingClaim]);
+  }, [
+    answers,
+    handleClaim,
+    isSubmittingClaim,
+    quizQuestions.length,
+    quizId,
+    shouldAutoClaim,
+  ]);
+
+  useEffect(() => {
+    setShowQuiz(false);
+    setQuizCompleted(false);
+    setQuizLoading(false);
+    setQuizQuestions([]);
+    setAnswers([]);
+    setQuizStartedAt(null);
+    setQuizErrorMsg(null);
+    setQuizId(null);
+    setQuizMaxPoints(null);
+    setQuizTimeLimit(null);
+    setShouldAutoClaim(false);
+  }, [careerId]);
 
   return {
     showQuiz,
@@ -336,8 +378,11 @@ export function useCareerQuiz({
     quizCompleted,
     quizLoading,
     quizQuestions,
+    quizMaxPoints,
+    quizTimeLimit,
     quizErrorMsg,
     isSubmittingClaim,
+    fetchQuizPreview,
     fetchQuiz,
     handleAnswer,
     handleQuizComplete,

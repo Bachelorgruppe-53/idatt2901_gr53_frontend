@@ -59,8 +59,11 @@ export default function AboutCareer({ careerId, onClose }: Props) {
     quizCompleted,
     quizLoading,
     quizQuestions,
+    quizMaxPoints,
+    quizTimeLimit,
     quizErrorMsg,
     isSubmittingClaim,
+    fetchQuizPreview,
     fetchQuiz,
     handleAnswer,
     handleQuizComplete,
@@ -68,6 +71,8 @@ export default function AboutCareer({ careerId, onClose }: Props) {
     careerId,
     onClaimSuccess: handleClaimSuccess,
   });
+
+  const displayedPoints = quizMaxPoints ?? data?.points;
 
   useEffect(() => {
     if (!showSuccessBanner) return;
@@ -78,6 +83,12 @@ export default function AboutCareer({ careerId, onClose }: Props) {
 
     return () => clearTimeout(timer);
   }, [showSuccessBanner, onClose]);
+
+  useEffect(() => {
+    if (careerId === null) return;
+
+    void fetchQuizPreview();
+  }, [careerId, fetchQuizPreview]);
 
   useEffect(() => {
     if (careerId === null) return;
@@ -130,6 +141,9 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   if (loading) {
     return (
       <View style={themedStyles.container}>
+        <Pressable style={themedStyles.closeButton} onPress={onClose}>
+          <MaterialIcons name="close" size={24} color={theme.text} />
+        </Pressable>
         <ActivityIndicator size="large" color={theme.button} />
       </View>
     );
@@ -181,16 +195,32 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           </Text>
         </View>
 
-        {typeof data?.points === "number" && (
+        {(typeof displayedPoints === "number" ||
+          typeof quizTimeLimit === "number") && (
           <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
-            <MaterialIcons
-              name="stars"
-              size={16}
-              color={Colors.brand.darkYellow}
-            />
-            <Text style={themedStyles.semiboldText}>
-              {data.points} {t("points")}
-            </Text>
+            {typeof displayedPoints === "number" && (
+              <>
+                <MaterialIcons
+                  name="stars"
+                  size={16}
+                  color={Colors.brand.darkYellow}
+                />
+                <Text style={themedStyles.semiboldText}>
+                  {t("maxPoints", "poeng")}: {displayedPoints} 
+                </Text>
+              </>
+            )}
+
+            {typeof displayedPoints === "number" &&
+            typeof quizTimeLimit === "number" ? (
+              <Text style={themedStyles.semiboldText}>•</Text>
+            ) : null}
+
+            {typeof quizTimeLimit === "number" && (
+              <Text style={themedStyles.semiboldText}>
+                {t("timeLimit", "Tid")}: {quizTimeLimit}s
+              </Text>
+            )}
           </View>
         )}
 
@@ -203,6 +233,8 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           title={data?.title}
           questions={quizQuestions}
           isLoading={quizLoading}
+          maxPoints={quizMaxPoints}
+          timeLimit={quizTimeLimit}
           onAnswer={handleAnswer}
           onComplete={handleQuizComplete}
           onClose={() => setShowQuiz(false)}

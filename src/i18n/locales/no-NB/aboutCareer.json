@@ -3,6 +3,8 @@
     "unknownTitle": "Ukjent yrke",
     "noDescription": "Ingen beskrivelse tilgjengelig for dette yrket.",
     "points": "Poeng",
+    "maxPoints": "Makspoeng",
+    "timeLimit": "Tid",
     "closeButton": "Lukk",
     "claimButton": "Krev"
 }
