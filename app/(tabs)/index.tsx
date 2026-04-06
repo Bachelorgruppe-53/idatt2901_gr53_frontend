@@ -1,4 +1,8 @@
 import { registerDevice } from "@/services/authService";
+import {
+  loadCompetition,
+  type CompetitionInfo,
+} from "@/services/home/loadCompetition";
 import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
@@ -10,16 +14,12 @@ import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const COMPETITION_DEBUG = __DEV__;
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -33,7 +33,7 @@ export default function Index() {
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation("home");
+  const { t, i18n } = useTranslation("home");
 
   // Data management
   const { name, points, summary, classPoints, reload } = useHomeData();
@@ -47,6 +47,103 @@ export default function Index() {
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
   const [showContestInfo, setShowContestInfo] = useState(false);
   const [remountKey, setRemountKey] = useState(0);
+  const [competition, setCompetition] = useState<CompetitionInfo | null>(null);
+
+  const formatCompetitionDate = useMemo(
+    () =>
+      new Intl.DateTimeFormat(i18n.resolvedLanguage ?? i18n.language ?? "en", {
+        day: "numeric",
+        month: "long",
+      }),
+    [i18n.language, i18n.resolvedLanguage],
+  );
+
+  const parseCompetitionDate = (value: string): Date | null => {
+    const parsed = new Date(value);
+    const isValid = !Number.isNaN(parsed.getTime());
+    if (COMPETITION_DEBUG) {
+      console.log("[home] parseCompetitionDate", {
+        input: value,
+        parsed: isValid ? parsed.toISOString() : null,
+        valid: isValid,
+      });
+    }
+    return isValid ? parsed : null;
+  };
+
+  const competitionTitle = competition?.title ?? t("classCompetition");
+
+  const startDate = competition
+    ? parseCompetitionDate(competition.startTime)
+    : null;
+  const endDate = competition
+    ? parseCompetitionDate(competition.endTime)
+    : null;
+
+  const competitionPeriod =
+    startDate && endDate
+      ? `${formatCompetitionDate.format(startDate)} - ${formatCompetitionDate.format(endDate)}`
+      : "15.august - 30.september buu";
+
+  const classQuizStartsIn = (() => {
+    if (!competition) return "funker ikke";
+
+    if (competition.active) {
+      return t("contestActive", "Pågår nå");
+    }
+
+    if (!startDate) return "-";
+
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const daysUntilStart = Math.max(
+      0,
+      Math.ceil((startDate.getTime() - Date.now()) / msPerDay),
+    );
+
+    return `${daysUntilStart} ${t("days", "dager")}`;
+  })();
+
+  useEffect(() => {
+    if (!COMPETITION_DEBUG) return;
+
+    console.log("[home] competition derived", {
+      competition,
+      competitionTitle: competition?.title,
+      startDate: startDate ? startDate.toISOString() : null,
+      endDate: endDate ? endDate.toISOString() : null,
+      competitionPeriod,
+      classQuizStartsIn,
+    });
+  }, [competition, competitionTitle, startDate, endDate, competitionPeriod, classQuizStartsIn]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const language = i18n.resolvedLanguage ?? i18n.language;
+
+    if (COMPETITION_DEBUG) {
+      console.log("[home] loadCompetition effect start", {
+        language,
+      });
+    }
+
+    const load = async () => {
+      const data = await loadCompetition(language);
+      if (!isMounted) return;
+      if (COMPETITION_DEBUG) {
+        console.log("[home] loadCompetition effect result", data);
+      }
+      setCompetition(data);
+    };
+
+    void load();
+
+    return () => {
+      isMounted = false;
+      if (COMPETITION_DEBUG) {
+        console.log("[home] loadCompetition effect cleanup");
+      }
+    };
+  }, [i18n.language, i18n.resolvedLanguage]);
 
   const handleScan = (data: string) => {
     console.log("Scanned QR code:", data);
@@ -192,6 +289,10 @@ export default function Index() {
           { borderColor: Colors.brand.lightBlue },
         ]}
       >
+        <Text style={[themedStyles.subheading, BaseStyles.p8]}>
+          {competitionTitle}
+        </Text>
+
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           {t("contestPeriod")}:
         </Text>
@@ -205,12 +306,16 @@ export default function Index() {
         </Pressable>
 
         <Text style={[themedStyles.subheading, BaseStyles.p8]}>
-          15.august - 30.september
+          {competitionPeriod}
         </Text>
+       {/* 
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           {t("classQuizStartsIn")}:
         </Text>
-        <Text style={[themedStyles.heading, BaseStyles.p8]}>14 dager</Text>
+        <Text style={[themedStyles.heading, BaseStyles.p8]}>
+          {classQuizStartsIn}
+        </Text> 
+        */} 
 
         <Modal
           visible={showContestInfo}
@@ -224,12 +329,27 @@ export default function Index() {
           >
             <Pressable style={themedStyles.modalCard} onPress={() => {}}>
               <Text style={[themedStyles.subheading, BaseStyles.mb16]}>
-                Om konkurransen
+                {competition?.title ?? "Om konkurransen"}
               </Text>
               <Text style={[themedStyles.text, BaseStyles.mb16]}>
-                Her kan du se perioden for konkurransen og når klassequizen
-                starter. Samle poeng ved å fullføre aktiviteter og bidra til
-                klassens totalscore.
+                {"Her kan du se perioden for konkurransen og når klassequizen starter. Samle poeng ved å fullføre aktiviteter og bidra til klassens totalscore."}
+                {"\n"}
+                {"Den nåværende konkurransen på "}
+                <Text style={themedStyles.boldText}>
+                  {competition?.area ?? "N/A"}
+                </Text>
+                {" varer fra "}
+                <Text style={themedStyles.boldText}>
+                  {startDate ? formatCompetitionDate.format(startDate) : "N/A"}
+                </Text>
+                {" til "}
+                <Text style={themedStyles.boldText}>
+                  {endDate ? formatCompetitionDate.format(endDate) : "N/A"}
+                </Text>
+                {". "}
+                {competition?.active
+                  ? "Konkurransen pågår nå, så det er bare å sette i gang!"
+                  : `Konkurransen starter om ${classQuizStartsIn}, så det er lurt å være klar.`}
               </Text>
               <Pressable
                 style={themedStyles.smallButton}
