@@ -59,7 +59,29 @@ export default function Index() {
   );
 
   const parseCompetitionDate = (value: string): Date | null => {
-    const parsed = new Date(value);
+    const trimmed = value.trim();
+
+    // Backend can return datetimes like "2026-3-30T08:00" which Android
+    // may not parse consistently via Date(string). Parse manually first.
+    const match = trimmed.match(
+      /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{2})(?::(\d{2}))?$/,
+    );
+
+    let parsed: Date;
+    if (match) {
+      const [, y, m, d, hh, mm, ss] = match;
+      parsed = new Date(
+        Number(y),
+        Number(m) - 1,
+        Number(d),
+        Number(hh),
+        Number(mm),
+        ss ? Number(ss) : 0,
+      );
+    } else {
+      parsed = new Date(trimmed);
+    }
+
     const isValid = !Number.isNaN(parsed.getTime());
     if (COMPETITION_DEBUG) {
       console.log("[home] parseCompetitionDate", {
