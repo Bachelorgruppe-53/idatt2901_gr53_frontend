@@ -203,6 +203,9 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 12,
     borderWidth: 1,
+    width: "100%",
+    maxWidth: "100%",
+    minWidth: "100%"
   },
   progressText: {
     fontSize: 12,
@@ -231,9 +234,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   questionArea: {
-    height: 76,
-    justifyContent: "flex-start",
-    marginBottom: 10,
+    minHeight: 60,
+    marginBottom: 16,
   },
   progressDots: {
     flexDirection: "row",
@@ -277,6 +279,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     flex: 1,
+    flexWrap: "wrap",
   },
   loadingText: {
     fontSize: 13,
