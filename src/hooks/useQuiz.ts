@@ -201,9 +201,8 @@ export function useCareerQuiz({
       if (!payload) return;
 
       const response = payload as Partial<QuizResponseDto>;
-      const list: QuizQuestionDto[] = Array.isArray(payload)
-        ? (payload as QuizQuestionDto[])
-        : ((response.questions ?? []) as QuizQuestionDto[]);
+      const list: QuizQuestionDto[] = (response.questions ??
+        []) as QuizQuestionDto[];
 
       const mapped: QuizItem[] = list.map((q: QuizQuestionDto) => ({
         questionId: q.id,
