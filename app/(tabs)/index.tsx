@@ -83,10 +83,10 @@ export default function Index() {
   const competitionPeriod =
     startDate && endDate
       ? `${formatCompetitionDate.format(startDate)} - ${formatCompetitionDate.format(endDate)}`
-      : "15.august - 30.september buu";
+      : t("competitionPeriodFallback");
 
   const classQuizStartsIn = (() => {
-    if (!competition) return "funker ikke";
+    if (!competition) return t("competitionStartsFallback");
 
     if (competition.active) {
       return t("contestActive", "Pågår nå");
@@ -100,7 +100,7 @@ export default function Index() {
       Math.ceil((startDate.getTime() - Date.now()) / msPerDay),
     );
 
-    return `${daysUntilStart} ${t("days", "dager")}`;
+    return `${daysUntilStart} ${t("days")}`;
   })();
 
   useEffect(() => {
@@ -114,7 +114,14 @@ export default function Index() {
       competitionPeriod,
       classQuizStartsIn,
     });
-  }, [competition, competitionTitle, startDate, endDate, competitionPeriod, classQuizStartsIn]);
+  }, [
+    competition,
+    competitionTitle,
+    startDate,
+    endDate,
+    competitionPeriod,
+    classQuizStartsIn,
+  ]);
 
   useEffect(() => {
     let isMounted = true;
@@ -164,7 +171,7 @@ export default function Index() {
       setRemountKey((prev) => prev + 1);
     } catch (error) {
       console.error("Failed to register device:", error);
-      alert(t("registerFailed", "Failed to register device"));
+      alert(t("registerFailed"));
     }
   };
 
@@ -259,9 +266,7 @@ export default function Index() {
       <Text style={themedStyles.text}>{t("findCareers", { count: 5 })}</Text>
 
       <Pressable style={[themedStyles.button]} onPress={handleRegisterDevice}>
-        <Text style={themedStyles.buttonText}>
-          {/* {t("takeTest")} */} register device (TEMP)
-        </Text>
+        <Text style={themedStyles.buttonText}>{t("registerDeviceTemp")}</Text>
       </Pressable>
 
       {/* Class info / Join class */}
@@ -300,7 +305,7 @@ export default function Index() {
           onPress={() => setShowContestInfo(true)}
           style={[BaseStyles.p8, { position: "absolute", top: 0, right: 10 }]}
           accessibilityRole="button"
-          accessibilityLabel="Mer informasjon om konkurransen"
+          accessibilityLabel={t("contestInfoLabel")}
         >
           <MaterialIcons name="info-outline" size={20} color={theme.border} />
         </Pressable>
@@ -308,14 +313,14 @@ export default function Index() {
         <Text style={[themedStyles.subheading, BaseStyles.p8]}>
           {competitionPeriod}
         </Text>
-       {/* 
+        {/* 
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           {t("classQuizStartsIn")}:
         </Text>
         <Text style={[themedStyles.heading, BaseStyles.p8]}>
           {classQuizStartsIn}
         </Text> 
-        */} 
+        */}
 
         <Modal
           visible={showContestInfo}
@@ -329,27 +334,34 @@ export default function Index() {
           >
             <Pressable style={themedStyles.modalCard} onPress={() => {}}>
               <Text style={[themedStyles.subheading, BaseStyles.mb16]}>
-                {competition?.title ?? "Om konkurransen"}
+                {competition?.title ?? t("competitionInfoTitle")}
               </Text>
               <Text style={[themedStyles.text, BaseStyles.mb16]}>
-                {"Her kan du se perioden for konkurransen og når klassequizen starter. Samle poeng ved å fullføre aktiviteter og bidra til klassens totalscore."}
+                {t("competitionInfoGeneric")}
                 {"\n"}
-                {"Den nåværende konkurransen på "}
+                {"\n"}
+                {t("competitionOnArea") + " "}
                 <Text style={themedStyles.boldText}>
-                  {competition?.area ?? "N/A"}
+                  {competition?.area ?? t("notAvailable")}
                 </Text>
-                {" varer fra "}
+                {" " + t("competitionFrom") + " "}
                 <Text style={themedStyles.boldText}>
-                  {startDate ? formatCompetitionDate.format(startDate) : "N/A"}
+                  {startDate
+                    ? formatCompetitionDate.format(startDate)
+                    : t("notAvailable")}
                 </Text>
-                {" til "}
+                {" " + t("competitionTo") + " "}
                 <Text style={themedStyles.boldText}>
-                  {endDate ? formatCompetitionDate.format(endDate) : "N/A"}
+                  {endDate
+                    ? formatCompetitionDate.format(endDate)
+                    : t("notAvailable")}
                 </Text>
                 {". "}
                 {competition?.active
-                  ? "Konkurransen pågår nå, så det er bare å sette i gang!"
-                  : `Konkurransen starter om ${classQuizStartsIn}, så det er lurt å være klar.`}
+                  ? t("competitionActiveMessage")
+                  : t("competitionStartsMessage", {
+                      startsIn: classQuizStartsIn,
+                    })}
               </Text>
               <Pressable
                 style={themedStyles.smallButton}
