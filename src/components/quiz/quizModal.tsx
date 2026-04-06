@@ -3,6 +3,7 @@ import { BaseStyles } from "@/src/constants/Styles";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { Modal, Pressable, ScrollView, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Quiz from "./quiz";
@@ -39,6 +40,7 @@ export default function QuizModal({
 }: QuizModalProps) {
   const themedStyles = useThemedStyles();
   const theme = useThemeColor();
+  const { t } = useTranslation("quiz");
 
   return (
     <Modal
@@ -57,12 +59,14 @@ export default function QuizModal({
             <Text
               style={[BaseStyles.mb16, { color: theme.text, opacity: 0.75 }]}
             >
-              {typeof maxPoints === "number" ? `Maks poeng: ${maxPoints}` : ""}
+              {typeof maxPoints === "number"
+                ? `${t("maxPointsLabel")}: ${maxPoints}`
+                : ""}
               {typeof maxPoints === "number" && typeof timeLimit === "number"
                 ? " • "
                 : ""}
               {typeof timeLimit === "number"
-                ? `Tidsgrense: ${timeLimit} sek`
+                ? `${t("timeLimitLabel")}: ${timeLimit} ${t("secondsUnit")}`
                 : ""}
             </Text>
           )}
