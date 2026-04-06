@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
+import { getLanguageCode } from "@/services/language/languageCode";
 import QuizModal from "@/src/components/quiz/quizModal";
 import { Colors } from "@/src/constants/Colors";
 import { BaseStyles } from "@/src/constants/Styles";
@@ -17,7 +18,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getLanguageCode } from "@/services/language/languageCode";
 
 /**
  * AboutCareer component that displays information about a career point of interest (POI) and includes a quiz to unlock points. It handles fetching career data, displaying it, and managing the quiz state and interactions.
@@ -59,8 +59,11 @@ export default function AboutCareer({ careerId, onClose }: Props) {
     quizCompleted,
     quizLoading,
     quizQuestions,
+    quizMaxPoints,
+    quizTimeLimit,
     quizErrorMsg,
     isSubmittingClaim,
+    fetchQuizPreview,
     fetchQuiz,
     handleAnswer,
     handleQuizComplete,
@@ -68,6 +71,8 @@ export default function AboutCareer({ careerId, onClose }: Props) {
     careerId,
     onClaimSuccess: handleClaimSuccess,
   });
+
+  const displayedPoints = quizMaxPoints ?? data?.points;
 
   useEffect(() => {
     if (!showSuccessBanner) return;
@@ -78,6 +83,12 @@ export default function AboutCareer({ careerId, onClose }: Props) {
 
     return () => clearTimeout(timer);
   }, [showSuccessBanner, onClose]);
+
+  useEffect(() => {
+    if (careerId === null) return;
+
+    void fetchQuizPreview();
+  }, [careerId, fetchQuizPreview]);
 
   useEffect(() => {
     if (careerId === null) return;
@@ -93,15 +104,18 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           i18n.resolvedLanguage ?? i18n.language,
         );
 
-        const res = await fetch(`${baseUrl}/career/info/${encodeURIComponent(languageCode)}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            "X-User-ID": userId,
+        const res = await fetch(
+          `${baseUrl}/career/info/${encodeURIComponent(languageCode)}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "X-User-ID": userId,
+            },
+            body: JSON.stringify({ id: careerId }),
           },
-          body: JSON.stringify({ id: careerId }),
-        });
+        );
 
         if (!res.ok) {
           throw new Error(`Server error: ${res.status}`);
@@ -127,6 +141,9 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   if (loading) {
     return (
       <View style={themedStyles.container}>
+        <Pressable style={themedStyles.closeButton} onPress={onClose}>
+          <MaterialIcons name="close" size={24} color={theme.text} />
+        </Pressable>
         <ActivityIndicator size="large" color={theme.button} />
       </View>
     );
@@ -178,16 +195,32 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           </Text>
         </View>
 
-        {typeof data?.points === "number" && (
+        {(typeof displayedPoints === "number" ||
+          typeof quizTimeLimit === "number") && (
           <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
-            <MaterialIcons
-              name="stars"
-              size={16}
-              color={Colors.brand.darkYellow}
-            />
-            <Text style={themedStyles.semiboldText}>
-              {data.points} {t("points")}
-            </Text>
+            {typeof displayedPoints === "number" && (
+              <>
+                <MaterialIcons
+                  name="stars"
+                  size={16}
+                  color={Colors.brand.darkYellow}
+                />
+                <Text style={themedStyles.semiboldText}>
+                  {t("maxPoints", "poeng")}: {displayedPoints} 
+                </Text>
+              </>
+            )}
+
+            {typeof displayedPoints === "number" &&
+            typeof quizTimeLimit === "number" ? (
+              <Text style={themedStyles.semiboldText}>•</Text>
+            ) : null}
+
+            {typeof quizTimeLimit === "number" && (
+              <Text style={themedStyles.semiboldText}>
+                {t("timeLimit", "Tid")}: {quizTimeLimit}s
+              </Text>
+            )}
           </View>
         )}
 
@@ -200,15 +233,20 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           title={data?.title}
           questions={quizQuestions}
           isLoading={quizLoading}
+          maxPoints={quizMaxPoints}
+          timeLimit={quizTimeLimit}
           onAnswer={handleAnswer}
           onComplete={handleQuizComplete}
           onClose={() => setShowQuiz(false)}
         />
 
-        <View style={BaseStyles.p16}>
+        <View style={[BaseStyles.p16, BaseStyles.alignCenter]}>
           {!quizCompleted ? (
-            <Pressable style={themedStyles.button} onPress={fetchQuiz}>
-              <Text style={themedStyles.buttonText}>
+            <Pressable
+              style={[themedStyles.button, BaseStyles.center]}
+              onPress={fetchQuiz}
+            >
+              <Text style={[themedStyles.buttonText]}>
                 {t("startQuiz", "Ta quiz for å låse opp")}
               </Text>
             </Pressable>
@@ -217,10 +255,11 @@ export default function AboutCareer({ careerId, onClose }: Props) {
               style={[
                 themedStyles.button,
                 { opacity: 0.7, flexDirection: "row" },
+                BaseStyles.center,
               ]}
             >
               <ActivityIndicator color="#FFFFFF" size="small" />
-              <Text style={[themedStyles.buttonText, { marginLeft: 10 }]}>
+              <Text style={[themedStyles.buttonText]}>
                 {t("submitting", "Sender svar...")}
               </Text>
             </View>

@@ -1,12 +1,16 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId, registerDevice } from "@/services/authService";
-import type { GetSchoolClassesResponse, SchoolClassSummary } from "@/services/types/schoolClass";
+import {
+  GET_CLASS_INFO_PATH,
+  type GetClassInfoResponse,
+  type GetClassRequest,
+} from "@/services/types/class";
 import type { UserSummary } from "@/services/types/summary";
 
 /**
  * Loads the home summary data for the user, including their points, class points, and nickname.
  * Handles cases where the user is not associated with a class or when the user ID is invalid. Also includes error handling for unexpected server responses.
- * 
+ *
  * @returns A promise that resolves to an object containing the user's summary, points, class points, and nickname.
  * @throws An error if the server response is not successful or if the response format is invalid.
  */
@@ -18,13 +22,6 @@ export type HomeSummaryResult = {
   nickname: string;
   // claimedCareers?: number; // Optional field for future use
 };
-
-// Todo: Implement classPoints fetching later when backend supports it. For now, it will be returned as null.
-//type ClassInfoDto = {
-//  className: string;
-//  schoolName: string;
-//  points: number | string;
-//};
 
 const parseBackendError = (raw: string): string => {
   try {
@@ -73,50 +70,37 @@ export const loadHomeSummary = async (): Promise<HomeSummaryResult> => {
     console.error("Failed to parse summary response:", raw);
     throw new Error("Invalid server response format");
   }
-    
+
   const points = Number(summary.points) || 0;
 
-//   if (!summary.classCode) {
-//     console.log(" ------------ User is not associated with any class");
-//     return {
-//       summary,
-//       points,
-//       classPoints: null,
-//       nickname: summary.nickname ?? "",
-//     };
-//   }
+  let classPoints: number | null = null;
+  try {
+    const requestBody: GetClassRequest = {
+      code: summary.classCode,
+    };
 
-//   const classRes = await fetch(`${baseUrl}/class/info`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       "X-User-ID": userId,
-//     },
-//     body: JSON.stringify({ code: summary.classCode }),
-//   });
+    const classInfoRes = await fetch(`${baseUrl}${GET_CLASS_INFO_PATH}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "X-User-ID": userId,
+      },
+      body: JSON.stringify(requestBody),
+    });
 
-//   console.log(" ------------ Fetching class info for class code:", summary.classCode);
-  
-//   if (!classRes.ok) {
-//     console.log(" ------------ Failed to fetch class info");
-//     console.error("Failed to fetch class info:", await classRes.text());
-//     return {
-//       summary,
-//       points,
-//       classPoints: null,
-//       nickname: summary.nickname ?? "",
-//     };
-//   }
-
-//   const classInfo = (await classRes.json()) as ClassInfoDto;
-//   const classPoints = Number(classInfo.points) || 0;
-
-//   console.log(" ------------ Successfully fetched class info with points:", classPoints);
+    if (classInfoRes.ok) {
+      const classInfo = (await classInfoRes.json()) as GetClassInfoResponse;
+      classPoints = Number(classInfo.points) || 0;
+    }
+  } catch {
+    classPoints = null;
+  }
 
   return {
     summary,
     points,
-    classPoints: null, // implement later
+    classPoints,
     nickname: summary.nickname ?? "",
     // claimedCareers: summary.claimedCareers, // Optional field for future use
   };

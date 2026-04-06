@@ -1,5 +1,6 @@
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,6 +20,7 @@ export default function AchievementScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();
+  const { t } = useTranslation("navbar");
 
   return (
     <SafeAreaView
@@ -30,7 +32,7 @@ export default function AchievementScreen() {
 
       <View style={themedStyles.segmentedView}>
         <SegmentedControl
-          values={["Karrierer", "Merker"]}
+          values={[t("careersSegment"), t("badgesSegment")]}
           selectedIndex={selectedIndex}
           onChange={(event) => {
             setSelectedIndex(event.nativeEvent.selectedSegmentIndex);

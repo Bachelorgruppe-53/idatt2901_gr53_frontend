@@ -219,6 +219,7 @@ export const createThemedStyles = (
       color: theme.buttontext,
       fontSize: Typography.base,
       fontWeight: FontWeight.medium,
+      alignContent: "center",
     },
     buttonRound: {
       backgroundColor: theme.button,
@@ -367,6 +368,7 @@ export const createThemedStyles = (
       overflow: "hidden",
       marginBottom: Platform.OS === "ios" ? 20 : 10,
       borderRadius: Platform.OS === "ios" ? 20 : 8,
+      backgroundColor: theme.backgroundSecondary,
     },
     activeSegmentText: {
       // fontSize: 16,

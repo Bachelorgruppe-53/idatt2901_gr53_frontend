@@ -3,6 +3,9 @@
     "unknownTitle": "Unknown Career",
     "noDescription": "No description available for this career.",
     "points": "Points",
+    "maxPoints": "Max Points",
+    "startQuiz": "Take quiz to claim",
+    "timeLimit": "Time",
     "closeButton": "Close",
     "claimButton": "Claim"
 }

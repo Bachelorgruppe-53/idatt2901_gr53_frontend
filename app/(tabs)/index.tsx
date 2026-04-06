@@ -1,29 +1,25 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
 import { registerDevice } from "@/services/authService";
 import {
-  Image,
-  Modal,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+  loadCompetition,
+  type CompetitionInfo,
+} from "@/services/home/loadCompetition";
+import { getNickname } from "@/services/utils/secureStorage";
+import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
 import { QRScanner } from "@/src/components/QRScanner";
-import AboutCareer from "@/src/components/careers/aboutCareer";
 import { Colors } from "@/src/constants/Colors";
 import { BaseStyles } from "@/src/constants/Styles";
-import { useThemeColor } from "@/src/hooks/useThemeColor";
-import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useHomeData } from "@/src/hooks/useHomeData";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getNickname } from "@/services/utils/secureStorage";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const COMPETITION_DEBUG = __DEV__;
 
 /**
  * This page is the main landing page when the user opens the app.
@@ -37,7 +33,7 @@ export default function Index() {
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation("home");
+  const { t, i18n } = useTranslation("home");
 
   // Data management
   const { name, points, summary, classPoints, reload } = useHomeData();
@@ -51,6 +47,132 @@ export default function Index() {
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
   const [showContestInfo, setShowContestInfo] = useState(false);
   const [remountKey, setRemountKey] = useState(0);
+  const [competition, setCompetition] = useState<CompetitionInfo | null>(null);
+
+  const formatCompetitionDate = useMemo(
+    () =>
+      new Intl.DateTimeFormat(i18n.resolvedLanguage ?? i18n.language ?? "en", {
+        day: "numeric",
+        month: "long",
+      }),
+    [i18n.language, i18n.resolvedLanguage],
+  );
+
+  const parseCompetitionDate = (value: string): Date | null => {
+    const trimmed = value.trim();
+
+    // Backend can return datetimes like "2026-3-30T08:00" which Android
+    // may not parse consistently via Date(string). Parse manually first.
+    const match = trimmed.match(
+      /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{2})(?::(\d{2}))?$/,
+    );
+
+    let parsed: Date;
+    if (match) {
+      const [, y, m, d, hh, mm, ss] = match;
+      parsed = new Date(
+        Number(y),
+        Number(m) - 1,
+        Number(d),
+        Number(hh),
+        Number(mm),
+        ss ? Number(ss) : 0,
+      );
+    } else {
+      parsed = new Date(trimmed);
+    }
+
+    const isValid = !Number.isNaN(parsed.getTime());
+    if (COMPETITION_DEBUG) {
+      console.log("[home] parseCompetitionDate", {
+        input: value,
+        parsed: isValid ? parsed.toISOString() : null,
+        valid: isValid,
+      });
+    }
+    return isValid ? parsed : null;
+  };
+
+  const competitionTitle = competition?.title ?? t("classCompetition");
+
+  const startDate = competition
+    ? parseCompetitionDate(competition.startTime)
+    : null;
+  const endDate = competition
+    ? parseCompetitionDate(competition.endTime)
+    : null;
+
+  const competitionPeriod =
+    startDate && endDate
+      ? `${formatCompetitionDate.format(startDate)} - ${formatCompetitionDate.format(endDate)}`
+      : t("competitionPeriodFallback");
+
+  const classQuizStartsIn = (() => {
+    if (!competition) return t("competitionStartsFallback");
+
+    if (competition.active) {
+      return t("contestActive", "Pågår nå");
+    }
+
+    if (!startDate) return "-";
+
+    const msPerDay = 1000 * 60 * 60 * 24;
+    const daysUntilStart = Math.max(
+      0,
+      Math.ceil((startDate.getTime() - Date.now()) / msPerDay),
+    );
+
+    return `${daysUntilStart} ${t("days")}`;
+  })();
+
+  useEffect(() => {
+    if (!COMPETITION_DEBUG) return;
+
+    console.log("[home] competition derived", {
+      competition,
+      competitionTitle: competition?.title,
+      startDate: startDate ? startDate.toISOString() : null,
+      endDate: endDate ? endDate.toISOString() : null,
+      competitionPeriod,
+      classQuizStartsIn,
+    });
+  }, [
+    competition,
+    competitionTitle,
+    startDate,
+    endDate,
+    competitionPeriod,
+    classQuizStartsIn,
+  ]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const language = i18n.resolvedLanguage ?? i18n.language;
+
+    if (COMPETITION_DEBUG) {
+      console.log("[home] loadCompetition effect start", {
+        language,
+      });
+    }
+
+    const load = async () => {
+      const data = await loadCompetition(language);
+      if (!isMounted) return;
+      if (COMPETITION_DEBUG) {
+        console.log("[home] loadCompetition effect result", data);
+      }
+      setCompetition(data);
+    };
+
+    void load();
+
+    return () => {
+      isMounted = false;
+      if (COMPETITION_DEBUG) {
+        console.log("[home] loadCompetition effect cleanup");
+      }
+    };
+  }, [i18n.language, i18n.resolvedLanguage]);
 
   const handleScan = (data: string) => {
     console.log("Scanned QR code:", data);
@@ -65,27 +187,22 @@ export default function Index() {
   };
 
   const handleRegisterDevice = async () => {
-  try {
-    await registerDevice();
-    await loadNickname();
-    setRemountKey((prev) => prev + 1);
-  } catch (error) {
-    console.error("Failed to register device:", error);
-    alert(t("registerFailed", "Failed to register device"));
-  }
-};
+    try {
+      await registerDevice();
+      await loadNickname();
+      setRemountKey((prev) => prev + 1);
+    } catch (error) {
+      console.error("Failed to register device:", error);
+      alert(t("registerFailed"));
+    }
+  };
 
   const handleQRPress = async () => {
     startScanning();
   };
 
   if (isScanning) {
-    return (
-      <QRScanner
-        onScan={handleScan}
-        onClose={stopScanning}
-      />
-    );
+    return <QRScanner onScan={handleScan} onClose={stopScanning} />;
   }
 
   if (showJoinClass) {
@@ -120,67 +237,68 @@ export default function Index() {
       <Text style={[themedStyles.subheading, { marginBottom: 20 }]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
-      <View
-        style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.mb16]}
-      >
+      <View style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.mb16]}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
         <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
       </View>
       <View style={[BaseStyles.rowCenter, BaseStyles.my16]}>
-        <View style={[styles.card, {borderColor: Colors.brand.lightBlue}]}>
+        <View style={[styles.card, { borderColor: Colors.brand.lightBlue }]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
             {t("you")}:
           </Text>
           {summary?.classCode ? (
-          <Text style={[themedStyles.boldText, BaseStyles.textXxxl, BaseStyles.px16]}>
-          {points} p
-          </Text>
+            <Text
+              style={[
+                themedStyles.boldText,
+                BaseStyles.textXxxl,
+                BaseStyles.px16,
+              ]}
+            >
+              {points} p
+            </Text>
           ) : (
-          <Text style={[themedStyles.text, BaseStyles.px16]}>
-            {t("noClassPoints")}
-          </Text>
+            <Text style={[themedStyles.text, BaseStyles.px16]}>
+              {t("noClassPoints")}
+            </Text>
           )}
         </View>
-        <View style={[styles.card, {borderColor: Colors.brand.lightBlue}]}>
+        <View style={[styles.card, { borderColor: Colors.brand.lightBlue }]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
             {t("class")}:
           </Text>
-          {summary?.classCode ? (
-          <Text style={[themedStyles.boldText, BaseStyles.textXxxl, BaseStyles.px16]}>
-          {classPoints ?? 0} p
-          </Text>
+          {classPoints !== null ? (
+            <Text
+              style={[
+                themedStyles.boldText,
+                BaseStyles.textXxxl,
+                BaseStyles.px16,
+              ]}
+            >
+              {classPoints ?? 0} p
+            </Text>
           ) : (
-          <Text style={[themedStyles.text, BaseStyles.px16]}>
-            {t("noClassPoints")}
-          </Text>
+            <Text style={[themedStyles.text, BaseStyles.px16]}>
+              {t("noClassPoints")}
+            </Text>
           )}
         </View>
       </View>
 
-      {/* TODO: koble opp mot backend */}
       <Text style={themedStyles.text}>
-        {t("findCareers", { count: 5 })}
+        {t("findCareers", { count: summary?.numberOfClaims ?? 0 })}
       </Text>
 
-      <Pressable
-        style={[
-          themedStyles.button,
-        ]}
-        onPress={handleRegisterDevice}
-      >
-        <Text style={themedStyles.buttonText}>
-          {/* {t("takeTest")} */} register device (TEMP)
-        </Text>
+      <Pressable style={[themedStyles.button]} onPress={handleRegisterDevice}>
+        <Text style={themedStyles.buttonText}>{t("registerDeviceTemp")}</Text>
       </Pressable>
-
-
 
       {/* Class info / Join class */}
       {summary?.classCode ? (
         <View style={[BaseStyles.rowCenter, BaseStyles.gap16, BaseStyles.m16]}>
           <MaterialIcons name="school" size={35} color={Colors.brand.purple} />
           <Text style={themedStyles.heading}>
-            {summary.className ?? t("class")} - {summary.schoolName ?? t("school")}
+            {summary.className ?? t("class")} -{" "}
+            {summary.schoolName ?? t("school")}
           </Text>
         </View>
       ) : (
@@ -192,65 +310,94 @@ export default function Index() {
         </Pressable>
       )}
 
-
       <View
-        style={[styles.contestCard, BaseStyles.center, {borderColor: Colors.brand.lightBlue}]}
+        style={[
+          styles.contestCard,
+          BaseStyles.center,
+          { borderColor: Colors.brand.lightBlue },
+        ]}
       >
+        <Text style={[themedStyles.subheading, BaseStyles.p8]}>
+          {competitionTitle}
+        </Text>
+
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           {t("contestPeriod")}:
         </Text>
         <Pressable
           onPress={() => setShowContestInfo(true)}
-          style={[BaseStyles.p8, {position: "absolute", top: 0, right: 10}]}
+          style={[BaseStyles.p8, { position: "absolute", top: 0, right: 10 }]}
           accessibilityRole="button"
-          accessibilityLabel="Mer informasjon om konkurransen"
+          accessibilityLabel={t("contestInfoLabel")}
         >
           <MaterialIcons name="info-outline" size={20} color={theme.border} />
         </Pressable>
 
         <Text style={[themedStyles.subheading, BaseStyles.p8]}>
-          15.august - 30.september
+          {competitionPeriod}
         </Text>
+        {/* 
         <Text style={[themedStyles.text, BaseStyles.p8]}>
           {t("classQuizStartsIn")}:
         </Text>
         <Text style={[themedStyles.heading, BaseStyles.p8]}>
-          14 dager
-        </Text>
+          {classQuizStartsIn}
+        </Text> 
+        */}
 
-      <Modal
-        visible={showContestInfo}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowContestInfo(false)}
-      >
-        <Pressable
-          style={themedStyles.modalBackdrop}
-          onPress={() => setShowContestInfo(false)}
+        <Modal
+          visible={showContestInfo}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowContestInfo(false)}
         >
-          <Pressable style={themedStyles.modalCard} onPress={() => {}}>
-            <Text style={[themedStyles.subheading, BaseStyles.mb16]}>
-              Om konkurransen
-            </Text>
-            <Text style={[themedStyles.text, BaseStyles.mb16]}>
-              Her kan du se perioden for konkurransen og når klassequizen starter.
-              Samle poeng ved å fullføre aktiviteter og bidra til klassens totalscore.
-            </Text>
-            <Pressable
-              style={themedStyles.smallButton}
-              onPress={() => setShowContestInfo(false)}
-            >
-              <Text style={themedStyles.buttonText}>{t("closeButton")}</Text>
+          <Pressable
+            style={themedStyles.modalBackdrop}
+            onPress={() => setShowContestInfo(false)}
+          >
+            <Pressable style={themedStyles.modalCard} onPress={() => {}}>
+              <Text style={[themedStyles.subheading, BaseStyles.mb16]}>
+                {competition?.title ?? t("competitionInfoTitle")}
+              </Text>
+              <Text style={[themedStyles.text, BaseStyles.mb16]}>
+                {t("competitionInfoGeneric")}
+                {"\n"}
+                {"\n"}
+                {t("competitionOnArea") + " "}
+                <Text style={themedStyles.boldText}>
+                  {competition?.area ?? t("notAvailable")}
+                </Text>
+                {" " + t("competitionFrom") + " "}
+                <Text style={themedStyles.boldText}>
+                  {startDate
+                    ? formatCompetitionDate.format(startDate)
+                    : t("notAvailable")}
+                </Text>
+                {" " + t("competitionTo") + " "}
+                <Text style={themedStyles.boldText}>
+                  {endDate
+                    ? formatCompetitionDate.format(endDate)
+                    : t("notAvailable")}
+                </Text>
+                {". "}
+                {competition?.active
+                  ? t("competitionActiveMessage")
+                  : t("competitionStartsMessage", {
+                      startsIn: classQuizStartsIn,
+                    })}
+              </Text>
+              <Pressable
+                style={themedStyles.smallButton}
+                onPress={() => setShowContestInfo(false)}
+              >
+                <Text style={themedStyles.buttonText}>{t("closeButton")}</Text>
+              </Pressable>
             </Pressable>
           </Pressable>
-        </Pressable>
-      </Modal>
+        </Modal>
       </View>
 
-      <Pressable
-        style={themedStyles.buttonRound}
-        onPress={handleQRPress}
-      >
+      <Pressable style={themedStyles.buttonRound} onPress={handleQRPress}>
         <MaterialIcons
           name="qr-code-scanner"
           size={35}
@@ -263,14 +410,14 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   card: {
-    width: '35%',
-    height: '100%',
+    width: "35%",
+    height: "100%",
     borderRadius: 8,
     borderWidth: 2,
     margin: 10,
   },
   contestCard: {
-    width: '80%',
+    width: "80%",
     borderRadius: 8,
     borderWidth: 2,
     margin: 10,

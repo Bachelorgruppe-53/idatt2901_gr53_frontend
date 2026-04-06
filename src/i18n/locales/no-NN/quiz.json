@@ -1,0 +1,9 @@
+{
+  "maxPointsLabel": "Makspoeng",
+  "timeLimitLabel": "Tidsgrense",
+  "secondsUnit": "sek",
+  "loadingText": "Lastar quiz...",
+  "noQuestionsText": "Ingen spørsmål tilgjengeleg.",
+  "questionCounterText": "Spørsmål",
+  "ofText": "av"
+}
