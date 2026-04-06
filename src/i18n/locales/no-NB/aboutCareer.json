@@ -1,11 +1,13 @@
 {
-    "fetchError": "Kunne ikke laste informasjon. Prøv igjen senere.",
-    "unknownTitle": "Ukjent yrke",
-    "noDescription": "Ingen beskrivelse tilgjengelig for dette yrket.",
-    "points": "Poeng",
-    "maxPoints": "Makspoeng",
-    "startQuiz": "Ta quiz for å låse opp",
-    "timeLimit": "Tid",
-    "closeButton": "Lukk",
-    "claimButton": "Krev"
+  "fetchError": "Kunne ikke laste informasjon. Prøv igjen senere.",
+  "unknownTitle": "Ukjent yrke",
+  "noDescription": "Ingen beskrivelse tilgjengelig for dette yrket.",
+  "points": "Poeng",
+  "maxPoints": "Makspoeng",
+  "startQuiz": "Ta quiz for å låse opp",
+  "setFavoriteCareer": "Sett som favorittyrke",
+  "removeFavoriteCareer": "Fjern favorittyrke",
+  "timeLimit": "Tid",
+  "closeButton": "Lukk",
+  "claimButton": "Krev"
 }

@@ -5,6 +5,8 @@
     "points": "Points",
     "maxPoints": "Max Points",
     "startQuiz": "Take quiz to claim",
+    "setFavoriteCareer": "Set as favorite career",
+    "removeFavoriteCareer": "Remove favorite career",
     "timeLimit": "Time",
     "closeButton": "Close",
     "claimButton": "Claim"
