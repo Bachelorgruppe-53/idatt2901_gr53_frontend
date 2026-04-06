@@ -2,11 +2,15 @@ import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId, registerDevice } from "@/services/authService";
 import { getLanguageCode } from "@/services/language/languageCode";
 import type {
-  QuizItem,
+  ClaimRequest,
+  QuestionAnswerDto,
+  QuizMetadata,
   QuizOptionDto,
   QuizQuestionDto,
   QuizResponseDto,
-} from "@/src/components/quiz/quiz";
+  UseCareerQuizParams,
+} from "@/services/types/quiz";
+import type { QuizItem } from "@/src/components/quiz/quiz";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/config";
@@ -17,29 +21,6 @@ import i18n from "../i18n/config";
  * @param {UseCareerQuizParams} params - The parameters for the useCareerQuiz hook, including careerId and onClaimSuccess callback.
  * @returns An object containing quiz state and handler functions for use in components.
  */
-
-interface QuestionAnswerDto {
-  questionId: number;
-  chosenOptionIds: number[];
-}
-
-interface ClaimRequest {
-  careerId: number;
-  quizId: number;
-  responseTime: number;
-  chosenOptionIds: number[];
-}
-
-interface UseCareerQuizParams {
-  careerId: number | null;
-  onClaimSuccess: () => void;
-}
-
-interface QuizMetadata {
-  quizId: number | null;
-  maxPoints: number | null;
-  timeLimit: number | null;
-}
 
 export function useCareerQuiz({
   careerId,

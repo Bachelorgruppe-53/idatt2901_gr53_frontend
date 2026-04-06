@@ -1,3 +1,4 @@
+import type { QuizQuestionType } from "@/services/types/quiz";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -13,27 +14,6 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
  * @param {QuizProps} props - The props for the Quiz component.
  * @returns {JSX.Element} The rendered Quiz component.
  */
-
-export type QuizOptionDto = {
-  id: number;
-  optionText: string;
-};
-
-export type QuizQuestionType = "MULTIPLE_CHOICE" | "TRUE_FALSE" | string;
-
-export type QuizQuestionDto = {
-  id: number;
-  questionText: string;
-  type: QuizQuestionType;
-  options: QuizOptionDto[];
-};
-
-export type QuizResponseDto = {
-  quizId: number;
-  maxPoints: number;
-  timeLimit: number;
-  questions: QuizQuestionDto[];
-};
 
 export type QuizItem = {
   questionId: number;
@@ -205,7 +185,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: "100%",
     maxWidth: "100%",
-    minWidth: "100%"
+    minWidth: "100%",
   },
   progressText: {
     fontSize: 12,

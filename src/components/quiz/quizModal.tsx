@@ -1,10 +1,10 @@
+import type { QuizItem } from "@/src/components/quiz/quiz";
 import { BaseStyles } from "@/src/constants/Styles";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Modal, Pressable, ScrollView, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import type { QuizItem } from "./quiz";
 import Quiz from "./quiz";
 
 /**
