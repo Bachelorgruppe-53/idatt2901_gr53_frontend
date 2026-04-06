@@ -6,6 +6,12 @@ const USER_ID_KEY = "user_id";
 const NICKNAME_KEY = "user_nickname";
 const LANGUAGE_KEY = "app_language";
 const THEME_MODE_KEY = "app_theme_mode";
+const FAVORITE_CAREER_KEY = "favorite_career";
+
+export type FavoriteCareer = {
+  id: number;
+  title: string;
+};
 
 /**
  * Store authentication token securely
@@ -178,6 +184,60 @@ export const getThemePreference = async (): Promise<string | null> => {
   } catch (error) {
     console.error("Error retrieving theme preference:", error);
     return null;
+  }
+};
+
+/**
+ * Store selected favorite career.
+ */
+export const saveFavoriteCareer = async (
+  favoriteCareer: FavoriteCareer,
+): Promise<void> => {
+  try {
+    await SecureStore.setItemAsync(
+      FAVORITE_CAREER_KEY,
+      JSON.stringify(favoriteCareer),
+    );
+  } catch (error) {
+    console.error("Error saving favorite career:", error);
+    throw error;
+  }
+};
+
+/**
+ * Retrieve selected favorite career.
+ */
+export const getFavoriteCareer = async (): Promise<FavoriteCareer | null> => {
+  try {
+    const raw = await SecureStore.getItemAsync(FAVORITE_CAREER_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as FavoriteCareer;
+    if (
+      typeof parsed === "object" &&
+      parsed !== null &&
+      typeof parsed.id === "number" &&
+      typeof parsed.title === "string"
+    ) {
+      return parsed;
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error retrieving favorite career:", error);
+    return null;
+  }
+};
+
+/**
+ * Delete selected favorite career.
+ */
+export const deleteFavoriteCareer = async (): Promise<void> => {
+  try {
+    await SecureStore.deleteItemAsync(FAVORITE_CAREER_KEY);
+  } catch (error) {
+    console.error("Error deleting favorite career:", error);
+    throw error;
   }
 };
 

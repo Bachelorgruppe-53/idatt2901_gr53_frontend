@@ -1,6 +1,11 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import { getLanguageCode } from "@/services/language/languageCode";
+import {
+  deleteFavoriteCareer,
+  getFavoriteCareer,
+  saveFavoriteCareer,
+} from "@/services/utils/secureStorage";
 import QuizModal from "@/src/components/quiz/quizModal";
 import { Colors } from "@/src/constants/Colors";
 import { BaseStyles } from "@/src/constants/Styles";
@@ -48,6 +53,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const handleClaimSuccess = () => {
     setShowSuccessBanner(true);
@@ -138,6 +144,40 @@ export default function AboutCareer({ careerId, onClose }: Props) {
     void load();
   }, [careerId, i18n.language, i18n.resolvedLanguage, t]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadFavorite = async () => {
+      if (careerId === null) {
+        if (isMounted) setIsFavorite(false);
+        return;
+      }
+
+      const favorite = await getFavoriteCareer();
+      if (!isMounted) return;
+      setIsFavorite(favorite?.id === careerId);
+    };
+
+    void loadFavorite();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [careerId]);
+
+  const handleToggleFavorite = async () => {
+    if (!data || careerId === null) return;
+
+    if (isFavorite) {
+      await deleteFavoriteCareer();
+      setIsFavorite(false);
+      return;
+    }
+
+    await saveFavoriteCareer({ id: careerId, title: data.title });
+    setIsFavorite(true);
+  };
+
   if (loading) {
     return (
       <View style={themedStyles.container}>
@@ -187,12 +227,30 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           </View>
         )}
 
-        <View style={BaseStyles.mb16}>
-          <Text
-            style={[themedStyles.heading, BaseStyles.rowCenter, BaseStyles.p8]}
-          >
+        <View
+          style={[
+            BaseStyles.mb16, BaseStyles.rowCenter, BaseStyles.gap8,
+          ]}
+        >
+          <Text style={[themedStyles.heading, BaseStyles.p8]}>
             {data?.title || t("unknownTitle")}
           </Text>
+          <Pressable
+            onPress={() => void handleToggleFavorite()}
+            accessibilityRole="button"
+            accessibilityLabel={
+              isFavorite
+                ? t("removeFavoriteCareer")
+                : t("setFavoriteCareer")
+            }
+            hitSlop={8}
+          >
+            <MaterialIcons
+              name={isFavorite ? "star" : "star-border"}
+              size={24}
+              color={Colors.brand.darkYellow}
+            />
+          </Pressable>
         </View>
 
         {(typeof displayedPoints === "number" ||

@@ -1,6 +1,10 @@
 import { loadHomeSummary } from "@/services/home/loadHomeSummary";
 import type { UserSummary } from "@/services/types/summary";
-import { getNickname } from "@/services/utils/secureStorage";
+import {
+  getFavoriteCareer,
+  getNickname,
+  type FavoriteCareer,
+} from "@/services/utils/secureStorage";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
@@ -18,6 +22,9 @@ export function useHomeData() {
   const [points, setPoints] = useState(0);
   const [summary, setSummary] = useState<UserSummary | null>(null);
   const [classPoints, setClassPoints] = useState<number | null>(null);
+  const [favoriteCareer, setFavoriteCareer] = useState<FavoriteCareer | null>(
+    null,
+  );
 
   const requestIdRef = useRef(0);
 
@@ -25,8 +32,12 @@ export function useHomeData() {
     const requestId = ++requestIdRef.current;
 
     const cached = await getNickname();
+    const cachedFavorite = await getFavoriteCareer();
     if (requestId === requestIdRef.current && cached) {
       setName(cached);
+    }
+    if (requestId === requestIdRef.current) {
+      setFavoriteCareer(cachedFavorite);
     }
 
     const data = await loadHomeSummary();
@@ -57,5 +68,5 @@ export function useHomeData() {
     return () => sub.remove();
   }, [reload]);
 
-  return { name, points, summary, classPoints, reload };
+  return { name, points, summary, classPoints, favoriteCareer, reload };
 }
