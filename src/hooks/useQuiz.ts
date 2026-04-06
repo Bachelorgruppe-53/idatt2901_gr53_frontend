@@ -151,7 +151,6 @@ export function useCareerQuiz({
       );
 
       if (!res.ok) {
-        const errorText = await res.text();
         throw new Error(`Quiz error: ${res.status}`);
       }
 
