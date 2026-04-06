@@ -1,5 +1,9 @@
 {
   "maxPointsLabel": "Max points",
   "timeLimitLabel": "Time limit",
-  "secondsUnit": "sec"
+  "secondsUnit": "sec",
+  "loadingText": "Loading quiz...",
+  "noQuestionsText": "No questions available.",
+  "questionCounterText": "Question",
+  "ofText": "of"
 }

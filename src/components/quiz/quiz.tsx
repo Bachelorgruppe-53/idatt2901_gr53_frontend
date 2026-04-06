@@ -1,6 +1,7 @@
 import type { QuizQuestionType } from "@/services/types/quiz";
 import { useThemeColor } from "@/src/hooks/useThemeColor";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 /**
@@ -39,6 +40,7 @@ export default function Quiz({
   isLoading = false,
 }: QuizProps) {
   const theme = useThemeColor();
+  const { t } = useTranslation("quiz");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ export default function Quiz({
         ]}
       >
         <Text style={[styles.loadingText, { color: theme.placeholder }]}>
-          Laster quiz...
+          {t("loadingText")}
         </Text>
       </View>
     );
@@ -69,7 +71,7 @@ export default function Quiz({
         ]}
       >
         <Text style={[styles.loadingText, { color: theme.placeholder }]}>
-          Ingen spørsmål tilgjengelig.
+          {t("noQuestionsText")}
         </Text>
       </View>
     );
@@ -107,7 +109,8 @@ export default function Quiz({
           ]}
         >
           <Text style={[styles.progressText, { color: theme.placeholder }]}>
-            Spørsmål {currentQuestionIndex + 1} av {questions.length}
+            {t("questionCounterText")} {currentQuestionIndex + 1} {t("ofText")}{" "}
+            {questions.length}
           </Text>
         </View>
       </View>
