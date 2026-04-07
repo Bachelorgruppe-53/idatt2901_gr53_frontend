@@ -1,6 +1,7 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId, registerDevice } from "@/services/authService";
 import { getLanguageCode } from "@/services/language/languageCode";
+import { COLOR_BY_CODE } from "@/src/constants/ColorMap";
 import { Colors } from "@/src/constants/Colors";
 
 export interface MapLocation {
@@ -24,19 +25,6 @@ interface StringRequest {
   name: string;
 }
 
-const COLOR_BY_CODE: Record<number, string> = {
-  1: Colors.brand.sage,
-  2: Colors.brand.lightGreen,
-  3: Colors.brand.turquoise,
-  4: Colors.brand.green,
-  5: Colors.brand.yellow,
-  6: Colors.brand.darkYellow,
-  7: Colors.brand.orange,
-  8: Colors.brand.brown,
-  9: Colors.brand.red,
-  10: Colors.brand.purple,
-};
-
 const mapPoiColorToBrandColor = (colorCode: number): string =>
   COLOR_BY_CODE[colorCode] ?? Colors.brand.darkBlue;
 
@@ -59,7 +47,6 @@ const fetchPoiWithUserId = async (url: string, userId: string) => {
     },
   });
 };
-
 
 const fetchPoiByAreaWithUserId = async (
   url: string,

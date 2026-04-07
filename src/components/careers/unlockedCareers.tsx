@@ -1,26 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {
-  ImageSourcePropType,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { loadUnlockedCareers } from "@/services/career/loadUnlockedCareers";
+import type { UnlockedCareer } from "@/services/types/career";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Modal, ScrollView, Text, View } from "react-native";
 import { BaseStyles } from "../../constants/Styles";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
-import { useThemeColor } from "../../hooks/useThemeColor";
 import AboutCareer from "./aboutCareer";
 import CareerBadge from "./careerBadge";
-
-interface Career {
-  career_id: number;
-  name: string;
-  imageSource?: ImageSourcePropType;
-}
-
-const DEFAULT_CAREER_IMAGE = require("../../../assets/images/careers/default.png");
 
 /**
  * This component displays a grid of career options that users can select to view more information.
@@ -28,44 +14,51 @@ const DEFAULT_CAREER_IMAGE = require("../../../assets/images/careers/default.png
  * @returns JSX.Element
  */
 
-//TODO: implement functionality to fetch career data dynamically
 export default function Careers() {
-  const theme = useThemeColor();
+  const { i18n, t } = useTranslation("aboutCareer");
   const themedStyles = useThemedStyles();
 
-  const [careers, setCareers] = useState<Career[]>([]);
+  const [careers, setCareers] = useState<UnlockedCareer[]>([]);
+  const [warningMessage, setWarningMessage] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
 
-  const hardcodedCareers: Career[] = [
-    { career_id: 1, name: "Sykepleier"},
-    { career_id: 2, name: "Jordmor" },
-    { career_id: 3, name: "Utvikler" },
-    { career_id: 4, name: "Renholder" },
-    { career_id: 5, name: "Kirurg" },
-    { career_id: 6, name: "Lege" },
-    { career_id: 7, name: "Økonom" },
-    { career_id: 8, name: "Helsefagarbeider" },
-    { career_id: 9, name: "Portør" },
-  ];
-
   useEffect(() => {
-    // TODO: Replace with actual backend fetch when available
-    // For now, using hardcoded data
-    setCareers(hardcodedCareers);
-  }, []);
+    const load = async () => {
+      const language = i18n.resolvedLanguage ?? i18n.language;
+
+      try {
+        const loadedCareers = await loadUnlockedCareers(language);
+
+        if (loadedCareers.length === 0) {
+          console.warn(
+            `[Careers] No careers returned from backend for language ${language}`,
+          );
+          setCareers([]);
+          setWarningMessage(t("noCareers"));
+          return;
+        }
+
+        setWarningMessage(null);
+        setCareers(loadedCareers);
+      } catch (error) {
+        console.warn(
+          `[Careers] Failed to load careers for language ${language}`,
+          error,
+        );
+        setCareers([]);
+        setWarningMessage(t("noCareers"));
+        return;
+      }
+    };
+
+    void load();
+  }, [i18n.language, i18n.resolvedLanguage, t]);
 
   const handlePress = (career_id: number) => {
     setSelectedCareerId(career_id);
     setModalVisible(true);
   };
-
-  const getImageSource = (career: Career): ImageSourcePropType => {
-    if (career.imageSource) {
-      return career.imageSource;
-    }
-    return DEFAULT_CAREER_IMAGE;
-  };  
 
   return (
     <View style={themedStyles.container}>
@@ -83,13 +76,18 @@ export default function Careers() {
         />
       </Modal>
 
+      {warningMessage ? (
+        <Text style={BaseStyles.my8}>{warningMessage}</Text>
+      ) : null}
+
       <ScrollView contentContainerStyle={BaseStyles.grid}>
         {careers.map((career) => (
           <CareerBadge
             key={career.career_id}
             career_id={career.career_id}
             careerName={career.name}
-            imageSource={getImageSource(career)}
+            iconName={career.iconName}
+            colorCode={career.colorCode}
             onPress={handlePress}
           />
         ))}
@@ -97,12 +95,3 @@ export default function Careers() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  image: {
-    width: 60,
-    height: 60,
-    resizeMode: "contain",
-    alignContent: "center",
-  },
-});
