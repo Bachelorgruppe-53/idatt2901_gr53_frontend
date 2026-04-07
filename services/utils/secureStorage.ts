@@ -242,6 +242,19 @@ export const deleteFavoriteCareer = async (): Promise<void> => {
 };
 
 /**
+ * Delete user-scoped profile data.
+ */
+export const clearUserData = async (): Promise<void> => {
+  try {
+    await SecureStore.deleteItemAsync(NICKNAME_KEY);
+    await SecureStore.deleteItemAsync(FAVORITE_CAREER_KEY);
+  } catch (error) {
+    console.error("Error clearing user data:", error);
+    throw error;
+  }
+};
+
+/**
  * Delete all stored tokens
  */
 export const clearTokens = async (): Promise<void> => {

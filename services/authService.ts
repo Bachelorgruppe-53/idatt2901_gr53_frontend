@@ -1,7 +1,7 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import {
   clearTokens,
-  deleteNickname,
+  clearUserData,
   getToken,
   getUserId,
   saveNickname,
@@ -171,10 +171,9 @@ export const registerDevice = async (): Promise<string> => {
       throw new Error("Backend did not return a user ID in x-user-id header");
     }
 
+    // Always clear user-scoped data — new device = new identity
+    await clearUserData();
     await saveUserId(userId);
-
-    // Always clear the old nickname — new device = new identity
-    await deleteNickname();
 
     const nickname = extractNicknameFromResponse(response.data);
     console.log("[registerDevice] extracted nickname:", nickname);
