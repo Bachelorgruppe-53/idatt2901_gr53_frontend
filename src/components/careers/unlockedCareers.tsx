@@ -26,19 +26,29 @@ export default function Careers() {
   useEffect(() => {
     const load = async () => {
       const language = i18n.resolvedLanguage ?? i18n.language;
-      const loadedCareers = await loadUnlockedCareers(language);
 
-      if (loadedCareers.length === 0) {
+      try {
+        const loadedCareers = await loadUnlockedCareers(language);
+
+        if (loadedCareers.length === 0) {
+          console.warn(
+            `[Careers] No careers returned from backend for language ${language}`,
+          );
+          setCareers([]);
+          setWarningMessage(t("fetchError"));
+          return;
+        }
+
+        setWarningMessage(null);
+        setCareers(loadedCareers);
+      } catch (error) {
         console.warn(
-          `[Careers] No careers returned from backend for language ${language}`,
+          `[Careers] Failed to load careers for language ${language}`,
+          error,
         );
         setCareers([]);
         setWarningMessage(t("fetchError"));
-        return;
       }
-
-      setWarningMessage(null);
-      setCareers(loadedCareers);
     };
 
     void load();
