@@ -1,22 +1,22 @@
 import { AreaSelector } from "@/src/components/map/areaDropdown";
 import { fetchLocations, MapLocation } from "@/src/components/map/mapData";
 import { MapMarker } from "@/src/components/map/MapMarker";
-import { QRScanner } from "@/src/components/QRScanner";
+import { QRScanner, type QRScanPayload } from "@/src/components/QRScanner";
 import { Colors } from "@/src/constants/Colors";
 import { useTheme } from "@/src/context/ThemeContext";
 import { useQRScanner } from "@/src/hooks/useQRScanner";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
-import { useTranslation } from "react-i18next";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  ActivityIndicator,
-  PermissionsAndroid,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-  ViewStyle,
+    ActivityIndicator,
+    PermissionsAndroid,
+    Platform,
+    Pressable,
+    StyleSheet,
+    View,
+    ViewStyle,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
@@ -90,12 +90,16 @@ export const MapComponent = ({
   }, [selectedArea, i18n.language, i18n.resolvedLanguage]);
 
   const handleScan = useCallback(
-    (data: string) => {
+    (payload: QRScanPayload) => {
       stopScanning();
-      alert(`Skannet data: ${data}`);
+      alert(`Skannet data: ${JSON.stringify(payload)}`);
     },
     [stopScanning],
   );
+
+  const handleInvalidScan = useCallback(() => {
+    alert("Invalid QR code. Please try again.");
+  }, []);
 
   // Auto-zoom map to fit all markers when locations change or map is ready
   const fitMapToLocations = useCallback(() => {
@@ -221,7 +225,13 @@ export const MapComponent = ({
   }, [userLocation]);
 
   if (isScanning) {
-    return <QRScanner onScan={handleScan} onClose={stopScanning} />;
+    return (
+      <QRScanner
+        onScan={handleScan}
+        onInvalidScan={handleInvalidScan}
+        onClose={stopScanning}
+      />
+    );
   }
 
   return (

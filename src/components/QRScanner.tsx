@@ -1,9 +1,8 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { CameraView } from 'expo-camera';
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { Colors } from "../constants/Colors";
-import { useThemedStyles } from '../hooks/useStyleSheet';
+import { MaterialIcons } from "@expo/vector-icons";
+import { CameraView } from "expo-camera";
+import { useRef } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { useThemedStyles } from "../hooks/useStyleSheet";
 
 /**
  * QRScanner component that uses the device camera to scan QR codes.
@@ -11,15 +10,62 @@ import { useThemedStyles } from '../hooks/useStyleSheet';
  */
 
 interface QRScannerProps {
-  onScan: (data: string) => void;
+  onScan: (data: QRScanPayload) => void;
+  onInvalidScan?: () => void;
   onClose: () => void;
 }
 
-export function QRScanner({ onScan, onClose }: QRScannerProps) {
-  const themedStyles = useThemedStyles();
-  const handleBarcodeScanned = ({ data }: { data: string }) => {
-    onScan(data);
+export type QRScanPayload = {
+  type: "career";
+  careerId: number;
+};
+
+const QR_SCAN_THROTTLE_MS = 1000;
+
+const isQRScanPayload = (value: unknown): value is QRScanPayload => {
+  if (typeof value !== "object" || value === null) {
+    return false;
   }
+
+  const payload = value as { type?: unknown; careerId?: unknown };
+
+  return (
+    payload.type === "career" &&
+    typeof payload.careerId === "number" &&
+    Number.isInteger(payload.careerId) &&
+    payload.careerId > 0
+  );
+};
+
+const parseQRScanPayload = (data: string): QRScanPayload | null => {
+  try {
+    const parsed = JSON.parse(data) as unknown;
+    return isQRScanPayload(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+export function QRScanner({ onScan, onInvalidScan, onClose }: QRScannerProps) {
+  const themedStyles = useThemedStyles();
+  const lastScanAtRef = useRef(0);
+
+  const handleBarcodeScanned = ({ data }: { data: string }) => {
+    const now = Date.now();
+    if (now - lastScanAtRef.current < QR_SCAN_THROTTLE_MS) {
+      return;
+    }
+
+    lastScanAtRef.current = now;
+
+    const payload = parseQRScanPayload(data);
+    if (payload) {
+      onScan(payload);
+      return;
+    }
+
+    onInvalidScan?.();
+  };
 
   return (
     <View style={styles.container}>
@@ -52,20 +98,20 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFill,
-    justifyContent: 'center' 
+    justifyContent: "center",
   },
   middleContainer: {
-    flexDirection: 'row', 
-    height: 200 
+    flexDirection: "row",
+    height: 200,
   },
-  focusedContainer: { 
-    width: 200, 
-    borderWidth: 2, 
-    borderColor: 'white', 
-    backgroundColor: 'transparent' 
+  focusedContainer: {
+    width: 200,
+    borderWidth: 2,
+    borderColor: "white",
+    backgroundColor: "transparent",
   },
-  unfocusedContainer: { 
+  unfocusedContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)' 
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
 });
