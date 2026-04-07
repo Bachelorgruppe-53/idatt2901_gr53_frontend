@@ -168,14 +168,24 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   const handleToggleFavorite = async () => {
     if (!data || careerId === null) return;
 
-    if (isFavorite) {
-      await deleteFavoriteCareer();
-      setIsFavorite(false);
-      return;
-    }
+    try {
+      if (isFavorite) {
+        await deleteFavoriteCareer();
+        setIsFavorite(false);
+      } else {
+        await saveFavoriteCareer({ id: careerId });
+        setIsFavorite(true);
+      }
 
-    await saveFavoriteCareer({ id: careerId });
-    setIsFavorite(true);
+      setErrorMsg(null);
+    } catch {
+      setErrorMsg(
+        t(
+          "favoriteUpdateError",
+          "Could not update favorite career. Please try again.",
+        ),
+      );
+    }
   };
 
   if (loading) {
@@ -227,11 +237,35 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           </View>
         )}
 
-        <View
-          style={[
-            BaseStyles.mb16, BaseStyles.rowCenter, BaseStyles.gap8,
-          ]}
-        >
+        {errorMsg && (
+          <View
+            style={{
+              width: "100%",
+              marginBottom: 16,
+              padding: 14,
+              borderRadius: 12,
+              backgroundColor: Colors.brand.red + "20",
+              borderLeftWidth: 5,
+              borderLeftColor: Colors.brand.red,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <MaterialIcons name="error" size={22} color={Colors.brand.red} />
+            <Text
+              style={{
+                marginLeft: 10,
+                color: Colors.brand.red,
+                fontWeight: "600",
+                flex: 1,
+              }}
+            >
+              {errorMsg}
+            </Text>
+          </View>
+        )}
+
+        <View style={[BaseStyles.mb16, BaseStyles.rowCenter, BaseStyles.gap8]}>
           <Text style={[themedStyles.heading, BaseStyles.p8]}>
             {data?.title || t("unknownTitle")}
           </Text>
@@ -239,9 +273,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
             onPress={() => void handleToggleFavorite()}
             accessibilityRole="button"
             accessibilityLabel={
-              isFavorite
-                ? t("removeFavoriteCareer")
-                : t("setFavoriteCareer")
+              isFavorite ? t("removeFavoriteCareer") : t("setFavoriteCareer")
             }
             hitSlop={8}
           >
@@ -264,7 +296,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
                   color={Colors.brand.darkYellow}
                 />
                 <Text style={themedStyles.semiboldText}>
-                  {t("maxPoints", "poeng")}: {displayedPoints} 
+                  {t("maxPoints", "poeng")}: {displayedPoints}
                 </Text>
               </>
             )}

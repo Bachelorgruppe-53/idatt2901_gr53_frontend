@@ -7,6 +7,7 @@
   "startQuiz": "Ta quiz for å låse opp",
   "setFavoriteCareer": "Set som favorittyrkje",
   "removeFavoriteCareer": "Fjern favorittyrkje",
+  "favoriteUpdateError": "Klarte ikkje oppdatere favorittyrket. Prøv igjen.",
   "timeLimit": "Tid",
   "closeButton": "Lukk",
   "claimButton": "Krev"

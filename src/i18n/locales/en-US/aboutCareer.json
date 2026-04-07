@@ -7,6 +7,7 @@
     "startQuiz": "Take quiz to claim",
     "setFavoriteCareer": "Set as favorite career",
     "removeFavoriteCareer": "Remove favorite career",
+    "favoriteUpdateError": "Could not update favorite career. Please try again.",
     "timeLimit": "Time",
     "closeButton": "Close",
     "claimButton": "Claim"
