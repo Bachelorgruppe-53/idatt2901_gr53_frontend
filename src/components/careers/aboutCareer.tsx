@@ -174,7 +174,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
       return;
     }
 
-    await saveFavoriteCareer({ id: careerId, title: data.title });
+    await saveFavoriteCareer({ id: careerId });
     setIsFavorite(true);
   };
 

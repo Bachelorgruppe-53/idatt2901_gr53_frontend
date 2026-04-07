@@ -10,7 +10,7 @@ const FAVORITE_CAREER_KEY = "favorite_career";
 
 export type FavoriteCareer = {
   id: number;
-  title: string;
+  title?: string;
 };
 
 /**
@@ -217,7 +217,7 @@ export const getFavoriteCareer = async (): Promise<FavoriteCareer | null> => {
       typeof parsed === "object" &&
       parsed !== null &&
       typeof parsed.id === "number" &&
-      typeof parsed.title === "string"
+      (typeof parsed.title === "undefined" || typeof parsed.title === "string")
     ) {
       return parsed;
     }
