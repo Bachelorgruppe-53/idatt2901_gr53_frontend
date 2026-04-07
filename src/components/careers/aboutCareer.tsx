@@ -79,6 +79,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   });
 
   const displayedPoints = quizMaxPoints ?? data?.points;
+  const isFavoriteDisabled = data === null;
 
   useEffect(() => {
     if (!showSuccessBanner) return;
@@ -270,12 +271,20 @@ export default function AboutCareer({ careerId, onClose }: Props) {
             {data?.title || t("unknownTitle")}
           </Text>
           <Pressable
+            disabled={isFavoriteDisabled}
             onPress={() => void handleToggleFavorite()}
             accessibilityRole="button"
+            accessibilityState={{
+              disabled: isFavoriteDisabled,
+              selected: isFavorite,
+            }}
             accessibilityLabel={
               isFavorite ? t("removeFavoriteCareer") : t("setFavoriteCareer")
             }
             hitSlop={8}
+            style={({ pressed }) => ({
+              opacity: isFavoriteDisabled ? 0.35 : pressed ? 0.6 : 1,
+            })}
           >
             <MaterialIcons
               name={isFavorite ? "star" : "star-border"}
