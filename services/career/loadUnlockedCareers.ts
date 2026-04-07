@@ -3,13 +3,7 @@ import { ensureUserId, registerDevice } from "@/services/authService";
 import { getLanguageCode } from "@/services/language/languageCode";
 import type { CareerDto, UnlockedCareer } from "@/services/types/career";
 
-const CAREER_ENDPOINTS = [
-  "/career/all",
-  "/career/unlocked",
-  "/career/claimed",
-  "/careers/all",
-  "/careers/unlocked",
-] as const;
+const CAREER_ENDPOINTS = ["/career/claimed", "/careers/claimed"] as const;
 
 const isUuidError = (status: number, body: string) =>
   status === 400 && body.includes("Invalid UUID format");
