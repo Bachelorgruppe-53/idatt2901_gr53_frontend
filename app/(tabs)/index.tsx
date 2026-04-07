@@ -6,7 +6,7 @@ import {
 import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
-import { QRScanner } from "@/src/components/QRScanner";
+import { QRScanner, type QRScanPayload } from "@/src/components/QRScanner";
 import { Colors } from "@/src/constants/Colors";
 import { BaseStyles } from "@/src/constants/Styles";
 import { useHomeData } from "@/src/hooks/useHomeData";
@@ -175,10 +175,15 @@ export default function Index() {
     };
   }, [i18n.language, i18n.resolvedLanguage]);
 
-  const handleScan = (data: string) => {
-    console.log("Scanned QR code:", data);
+  const handleScan = (payload: QRScanPayload) => {
+    console.log("Scanned QR code:", payload);
+    setSelectedCareerId(payload.careerId);
+    setShowCareerModal(true);
     stopScanning();
-    // TODO: Handle QR scan logic
+  };
+
+  const handleInvalidScan = () => {
+    alert(t("invalidQR"));
   };
 
   const loadNickname = async () => {
@@ -203,7 +208,13 @@ export default function Index() {
   };
 
   if (isScanning) {
-    return <QRScanner onScan={handleScan} onClose={stopScanning} />;
+    return (
+      <QRScanner
+        onScan={handleScan}
+        onInvalidScan={handleInvalidScan}
+        onClose={stopScanning}
+      />
+    );
   }
 
   if (showJoinClass) {
@@ -240,7 +251,9 @@ export default function Index() {
       </Text>
       <View style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.mb16]}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={themedStyles.subheading}>{favoriteCareer?.title ?? t("noFavoriteCareer")}</Text>
+        <Text style={themedStyles.subheading}>
+          {favoriteCareer?.title ?? t("noFavoriteCareer")}
+        </Text>
       </View>
       <View style={[BaseStyles.rowCenter, BaseStyles.my16]}>
         <View style={[styles.card, { borderColor: Colors.brand.lightBlue }]}>
