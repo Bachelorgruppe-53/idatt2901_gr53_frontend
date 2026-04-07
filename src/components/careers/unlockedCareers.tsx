@@ -52,7 +52,7 @@ export default function Careers() {
     };
 
     void load();
-  }, [i18n.language, i18n.resolvedLanguage]);
+  }, [i18n.language, i18n.resolvedLanguage, t]);
 
   const handlePress = (career_id: number) => {
     setSelectedCareerId(career_id);
