@@ -35,7 +35,7 @@ export default function Careers() {
             `[Careers] No careers returned from backend for language ${language}`,
           );
           setCareers([]);
-          setWarningMessage(t("fetchError"));
+          setWarningMessage(t("noCareers"));
           return;
         }
 
