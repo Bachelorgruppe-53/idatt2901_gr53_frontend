@@ -152,39 +152,45 @@ export const loadUnlockedCareers = async (
 
   for (const endpoint of CAREER_ENDPOINTS) {
     try {
-      let response = await fetchCareersFromEndpointGet(
-        endpoint,
-        userId,
-        languageCode,
-      );
-
-      if (!response.ok) {
-        response = await fetchCareersFromEndpointPost(
+      const fetchCareersWithFallback = async (currentUserId: string) => {
+        let response = await fetchCareersFromEndpointGet(
           endpoint,
-          userId,
+          currentUserId,
           languageCode,
         );
-      }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-
-        if (isUuidError(response.status, errorText)) {
-          userId = await registerDevice();
-          response = await fetchCareersFromEndpointGet(
-            endpoint,
-            userId,
-            languageCode,
-          );
-
-          if (!response.ok) {
-            response = await fetchCareersFromEndpointPost(
-              endpoint,
-              userId,
-              languageCode,
-            );
-          }
+        if (response.ok) {
+          return { response, shouldReregister: false };
         }
+
+        const getErrorText = await response.text();
+        if (isUuidError(response.status, getErrorText)) {
+          return { response, shouldReregister: true };
+        }
+
+        response = await fetchCareersFromEndpointPost(
+          endpoint,
+          currentUserId,
+          languageCode,
+        );
+
+        if (response.ok) {
+          return { response, shouldReregister: false };
+        }
+
+        const postErrorText = await response.text();
+        return {
+          response,
+          shouldReregister: isUuidError(response.status, postErrorText),
+        };
+      };
+
+      let { response, shouldReregister } =
+        await fetchCareersWithFallback(userId);
+
+      if (shouldReregister) {
+        userId = await registerDevice();
+        ({ response } = await fetchCareersWithFallback(userId));
       }
 
       if (!response.ok) {
