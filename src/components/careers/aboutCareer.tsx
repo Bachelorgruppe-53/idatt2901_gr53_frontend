@@ -1,6 +1,11 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import { getLanguageCode } from "@/services/language/languageCode";
+import {
+  deleteFavoriteCareer,
+  getFavoriteCareer,
+  saveFavoriteCareer,
+} from "@/services/utils/secureStorage";
 import QuizModal from "@/src/components/quiz/quizModal";
 import { Colors } from "@/src/constants/Colors";
 import { BaseStyles } from "@/src/constants/Styles";
@@ -48,6 +53,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const handleClaimSuccess = () => {
     setShowSuccessBanner(true);
@@ -73,6 +79,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   });
 
   const displayedPoints = quizMaxPoints ?? data?.points;
+  const isFavoriteDisabled = data === null;
 
   useEffect(() => {
     if (!showSuccessBanner) return;
@@ -138,6 +145,50 @@ export default function AboutCareer({ careerId, onClose }: Props) {
     void load();
   }, [careerId, i18n.language, i18n.resolvedLanguage, t]);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadFavorite = async () => {
+      if (careerId === null) {
+        if (isMounted) setIsFavorite(false);
+        return;
+      }
+
+      const favorite = await getFavoriteCareer();
+      if (!isMounted) return;
+      setIsFavorite(favorite?.id === careerId);
+    };
+
+    void loadFavorite();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [careerId]);
+
+  const handleToggleFavorite = async () => {
+    if (!data || careerId === null) return;
+
+    try {
+      if (isFavorite) {
+        await deleteFavoriteCareer();
+        setIsFavorite(false);
+      } else {
+        await saveFavoriteCareer({ id: careerId });
+        setIsFavorite(true);
+      }
+
+      setErrorMsg(null);
+    } catch {
+      setErrorMsg(
+        t(
+          "favoriteUpdateError",
+          "Could not update favorite career. Please try again.",
+        ),
+      );
+    }
+  };
+
   if (loading) {
     return (
       <View style={themedStyles.container}>
@@ -187,12 +238,60 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           </View>
         )}
 
-        <View style={BaseStyles.mb16}>
-          <Text
-            style={[themedStyles.heading, BaseStyles.rowCenter, BaseStyles.p8]}
+        {errorMsg && (
+          <View
+            style={{
+              width: "100%",
+              marginBottom: 16,
+              padding: 14,
+              borderRadius: 12,
+              backgroundColor: Colors.brand.red + "20",
+              borderLeftWidth: 5,
+              borderLeftColor: Colors.brand.red,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
           >
+            <MaterialIcons name="error" size={22} color={Colors.brand.red} />
+            <Text
+              style={{
+                marginLeft: 10,
+                color: Colors.brand.red,
+                fontWeight: "600",
+                flex: 1,
+              }}
+            >
+              {errorMsg}
+            </Text>
+          </View>
+        )}
+
+        <View style={[BaseStyles.mb16, BaseStyles.rowCenter, BaseStyles.gap8]}>
+          <Text style={[themedStyles.heading, BaseStyles.p8]}>
             {data?.title || t("unknownTitle")}
           </Text>
+          <Pressable
+            disabled={isFavoriteDisabled}
+            onPress={() => void handleToggleFavorite()}
+            accessibilityRole="button"
+            accessibilityState={{
+              disabled: isFavoriteDisabled,
+              selected: isFavorite,
+            }}
+            accessibilityLabel={
+              isFavorite ? t("removeFavoriteCareer") : t("setFavoriteCareer")
+            }
+            hitSlop={8}
+            style={({ pressed }) => ({
+              opacity: isFavoriteDisabled ? 0.35 : pressed ? 0.6 : 1,
+            })}
+          >
+            <MaterialIcons
+              name={isFavorite ? "star" : "star-border"}
+              size={24}
+              color={Colors.brand.darkYellow}
+            />
+          </Pressable>
         </View>
 
         {(typeof displayedPoints === "number" ||
@@ -206,7 +305,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
                   color={Colors.brand.darkYellow}
                 />
                 <Text style={themedStyles.semiboldText}>
-                  {t("maxPoints", "poeng")}: {displayedPoints} 
+                  {t("maxPoints", "poeng")}: {displayedPoints}
                 </Text>
               </>
             )}

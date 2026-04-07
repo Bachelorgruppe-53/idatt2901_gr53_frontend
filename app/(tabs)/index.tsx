@@ -36,7 +36,8 @@ export default function Index() {
   const { t, i18n } = useTranslation("home");
 
   // Data management
-  const { name, points, summary, classPoints, reload } = useHomeData();
+  const { name, points, summary, classPoints, favoriteCareer, reload } =
+    useHomeData();
 
   // QR Scanner
   const { isScanning, startScanning, stopScanning } = useQRScanner();
@@ -239,7 +240,7 @@ export default function Index() {
       </Text>
       <View style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.mb16]}>
         <MaterialIcons name="star" size={24} color={Colors.brand.darkYellow} />
-        <Text style={themedStyles.subheading}>{t("favoriteCareer")}</Text>
+        <Text style={themedStyles.subheading}>{favoriteCareer?.title ?? t("noFavoriteCareer")}</Text>
       </View>
       <View style={[BaseStyles.rowCenter, BaseStyles.my16]}>
         <View style={[styles.card, { borderColor: Colors.brand.lightBlue }]}>
