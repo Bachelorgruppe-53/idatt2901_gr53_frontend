@@ -10,7 +10,7 @@ import { useThemedStyles } from "../../hooks/useStyleSheet";
  * @props career_id - Unique identifier for the career.
  * @props careerName - Name of the career to display.
  * @props iconName - Material/MUI icon name for the career badge.
- * @props onPress - Callback function to handle press events, receives career_id and careerName as arguments.
+ * @props onPress - Callback function to handle press events, receives career_id and optionally careerName as arguments.
  * @returns JSX.Element
  *
  */
@@ -20,7 +20,7 @@ type CareerBadgeProps = {
   careerName: string;
   iconName: string | null;
   colorCode: number | null;
-  onPress: (career_id: number, careerName: string) => void;
+  onPress: (career_id: number, careerName?: string) => void;
 };
 
 const BADGE_SIZE = 64;
