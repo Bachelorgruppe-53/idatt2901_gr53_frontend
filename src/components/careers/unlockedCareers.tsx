@@ -15,7 +15,7 @@ import CareerBadge from "./careerBadge";
  */
 
 export default function Careers() {
-  const { i18n, t } = useTranslation();
+  const { i18n, t } = useTranslation("aboutCareer");
   const themedStyles = useThemedStyles();
 
   const [careers, setCareers] = useState<UnlockedCareer[]>([]);
@@ -33,7 +33,7 @@ export default function Careers() {
           `[Careers] No careers returned from backend for language ${language}`,
         );
         setCareers([]);
-        setWarningMessage(t("fetchError"));
+        setWarningMessage(t("noCareers"));
         return;
       }
 
@@ -42,7 +42,7 @@ export default function Careers() {
     };
 
     void load();
-  }, [i18n.language, i18n.resolvedLanguage]);
+  }, [i18n.language, i18n.resolvedLanguage, t]);
 
   const handlePress = (career_id: number) => {
     setSelectedCareerId(career_id);
