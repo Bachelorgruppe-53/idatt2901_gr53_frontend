@@ -147,7 +147,7 @@ export default function Careers() {
           <SearchBar
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search careers"
+            placeholder={t("searchPlaceholder")}
           />
 
           {noResultsFound ? (
