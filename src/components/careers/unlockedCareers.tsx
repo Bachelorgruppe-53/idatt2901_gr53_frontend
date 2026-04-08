@@ -1,7 +1,8 @@
+import { subscribeToCareerClaimed } from "@/services/career/careerClaimEvents";
 import { loadUnlockedCareers } from "@/services/career/loadUnlockedCareers";
 import type { PaginationInfo, UnlockedCareer } from "@/services/types/career";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList, Modal, Text, View } from "react-native";
 import SearchBar from "../../../components/searchBar";
@@ -12,7 +13,7 @@ import AboutCareer from "./aboutCareer";
 import CareerBadge from "./careerBadge";
 
 /**
- * This component displays a list of unlocked/claimed careers.
+ * This component displays a list of unlocked/caimed careers.
  */
 export default function Careers() {
   const { i18n, t } = useTranslation("aboutCareer");
@@ -27,43 +28,51 @@ export default function Careers() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const load = async () => {
-      const language = i18n.resolvedLanguage ?? i18n.language;
-      setIsLoading(true);
+  const loadFirstPage = useCallback(async () => {
+    const language = i18n.resolvedLanguage ?? i18n.language;
+    setIsLoading(true);
 
-      try {
-        const result = await loadUnlockedCareers(language, 0);
+    try {
+      const result = await loadUnlockedCareers(language, 0);
 
-        if (result.careers.length === 0) {
-          console.warn(
-            `[Careers] No careers returned from backend for language ${language}`,
-          );
-          setCareers([]);
-          setPagination(result.pagination);
-          setCurrentPage(0);
-          setWarningMessage(t("noCareers"));
-          return;
-        }
-
-        setWarningMessage(null);
-        setCareers(result.careers);
-        setPagination(result.pagination);
-        setCurrentPage(0);
-      } catch (error) {
+      if (result.careers.length === 0) {
         console.warn(
-          `[Careers] Failed to load careers for language ${language}`,
-          error,
+          `[Careers] No careers returned from backend for language ${language}`,
         );
         setCareers([]);
+        setPagination(result.pagination);
+        setCurrentPage(0);
         setWarningMessage(t("noCareers"));
-      } finally {
-        setIsLoading(false);
+        return;
       }
-    };
 
-    void load();
+      setWarningMessage(null);
+      setCareers(result.careers);
+      setPagination(result.pagination);
+      setCurrentPage(0);
+    } catch (error) {
+      console.warn(
+        `[Careers] Failed to load careers for language ${language}`,
+        error,
+      );
+      setCareers([]);
+      setWarningMessage(t("noCareers"));
+    } finally {
+      setIsLoading(false);
+    }
   }, [i18n.language, i18n.resolvedLanguage, t]);
+
+  useEffect(() => {
+    void loadFirstPage();
+  }, [loadFirstPage]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToCareerClaimed(() => {
+      void loadFirstPage();
+    });
+
+    return unsubscribe;
+  }, [loadFirstPage]);
 
   const handleEndReached = async () => {
     if (isLoading || !pagination || currentPage >= pagination.totalPages - 1) {

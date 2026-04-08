@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
+import { subscribeToCareerClaimed } from "@/services/career/careerClaimEvents";
 import { loadHomeSummary } from "@/services/home/loadHomeSummary";
 import { getLanguageCode } from "@/services/language/languageCode";
 import type { UserSummary } from "@/services/types/summary";
@@ -122,6 +123,14 @@ export function useHomeData() {
       if (state === "active") void reload();
     });
     return () => sub.remove();
+  }, [reload]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToCareerClaimed(() => {
+      void reload();
+    });
+
+    return unsubscribe;
   }, [reload]);
 
   return { name, points, summary, classPoints, favoriteCareer, reload };
