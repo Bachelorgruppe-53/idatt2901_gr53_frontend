@@ -234,8 +234,22 @@ export const loadUnlockedCareers = async (
       const payload = (await response.json()) as unknown;
       const careers = parseCareers(payload);
       const pagination = extractPaginationInfo(payload);
+
+      // Some claimed-careers endpoints return a plain array without pagination metadata.
+      // Build minimal pagination info so the frontend can still render and stop infinite scroll.
+      const fallbackPagination: PaginationInfo = {
+        size: careers.length,
+        number: page,
+        totalElements: careers.length,
+        totalPages: careers.length > 0 ? 1 : 0,
+      };
+
       if (pagination) {
         return { careers, pagination };
+      }
+
+      if (careers.length > 0) {
+        return { careers, pagination: fallbackPagination };
       }
     } catch {
       continue;
