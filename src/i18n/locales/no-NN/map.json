@@ -1,5 +1,6 @@
 {
   "openQRScanner": "Opne QR-skannar",
+  "invalidQRCode": "Ugyldig QR-kode. Prøv igjen.",
   "locationPermissionTitle": "Lokasjonstilgang",
   "locationPermissionMessage": "Vi treng posisjonen din for å vise han på kartet. Han blir ikkje lagra eller brukt til andre formål.",
   "locationPermissionAskLater": "Spør igjen seinare",
