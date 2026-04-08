@@ -11,5 +11,8 @@
   "timeLimit": "Time",
   "closeButton": "Close",
   "claimButton": "Claim",
-  "noCareers": "No careers unlocked yet. Find a career to unlock it!"
+  "noCareers": "No careers unlocked yet. Find a career to unlock it!",
+  "unlockedCareersTitle": "Unlocked Careers",
+  "noResultsHeading": "No careers found.",
+  "noResultsDesc": "Try adjusting your search."
 }
