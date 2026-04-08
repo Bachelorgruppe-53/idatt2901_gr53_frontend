@@ -2,7 +2,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { COLOR_BY_CODE } from "../../constants/ColorMap";
 import { Colors } from "../../constants/Colors";
-import { BaseStyles } from "../../constants/Styles";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
 
 /**
@@ -23,7 +22,7 @@ type CareerBadgeProps = {
   onPress: (career_id: number, careerName?: string) => void;
 };
 
-const BADGE_SIZE = 64;
+const BADGE_SIZE = 56;
 
 const MUI_ICON_SUFFIX_REGEX = /(Outlined|Rounded|Sharp|TwoTone)$/;
 
@@ -94,7 +93,18 @@ export default function CareerBadge({
 
   return (
     <Pressable
-      style={[BaseStyles.alignCenter, { width: "28%" }]}
+      style={({ pressed }) => ({
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 20,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        marginHorizontal: 16,
+        backgroundColor: pressed ? "rgba(0, 0, 0, 0.1)" : "transparent",
+        borderRadius: 8,
+      })}
+      accessibilityRole="button"
+      accessibilityLabel={`Career: ${careerName}`}
       onPress={() => onPress(career_id, careerName)}
     >
       <View style={styles.iconContainer}>
@@ -105,12 +115,16 @@ export default function CareerBadge({
         </View>
         <MaterialIcons
           name={materialIconName}
-          size={32}
+          size={28}
           color={Colors.brand.white}
+          accessible={false}
+          importantForAccessibility="no"
           style={styles.icon}
         />
       </View>
-      <Text style={[themedStyles.boldText, BaseStyles.my8]}>{careerName}</Text>
+      <Text style={[themedStyles.boldText]} numberOfLines={2}>
+        {careerName}
+      </Text>
     </Pressable>
   );
 }
