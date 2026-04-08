@@ -5,5 +5,8 @@
   "loadingText": "Lastar quiz...",
   "noQuestionsText": "Ingen spørsmål tilgjengeleg.",
   "questionCounterText": "Spørsmål",
-  "ofText": "av"
+  "ofText": "av",
+  "closeQuizModal": "Lukk quiz",
+  "answerOptionAccessibilityLabel": "Alternativ {{marker}}. {{text}}. {{position}} av {{total}}.",
+  "answerOptionAccessibilityHint": "Trykk to gonger for å velje dette svaret"
 }

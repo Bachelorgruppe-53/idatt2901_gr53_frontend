@@ -8,5 +8,6 @@
   "locationPermissionAccept": "Accept",
   "zoomIn": "Zoom in",
   "zoomOut": "Zoom out",
-  "centerOnUserLocation": "Center on my location"
+  "centerOnUserLocation": "Center on my location",
+  "toggleAreaDropdown": "Toggle area dropdown"
 }

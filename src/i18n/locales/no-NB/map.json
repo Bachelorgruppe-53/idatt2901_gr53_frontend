@@ -7,5 +7,6 @@
   "locationPermissionAccept": "Tillat",
   "zoomIn": "Zoom inn",
   "zoomOut": "Zoom ut",
-  "centerOnUserLocation": "Sentrer på min posisjon"
+  "centerOnUserLocation": "Sentrer på min posisjon",
+  "toggleAreaDropdown": "Bytt område meny"
 }

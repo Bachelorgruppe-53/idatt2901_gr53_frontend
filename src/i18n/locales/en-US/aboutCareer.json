@@ -12,5 +12,6 @@
   "closeButton": "Close",
   "claimButton": "Claim",
   "noCareers": "No careers unlocked yet. Find a career to unlock it!",
-  "claimSuccessMessage": "You completed the quiz and claimed your points."
+  "claimSuccessMessage": "You completed the quiz and claimed your points.",
+  "closeAboutCareer": "Close about career"
 }
