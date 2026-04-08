@@ -1,7 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { TextInput, View } from "react-native";
-import { Colors } from "../src/constants/Colors";
 import { useThemedStyles } from "../src/hooks/useStyleSheet";
+import { useThemeColor } from "../src/hooks/useThemeColor";
 
 type SearchBarProps = {
   value: string;
@@ -19,6 +19,7 @@ export default function SearchBar({
   accessibilityHint = "Type to filter results",
 }: SearchBarProps) {
   const themedStyles = useThemedStyles();
+  const theme = useThemeColor();
 
   return (
     <View style={{ width: "100%", paddingHorizontal: 16, paddingTop: 16 }}>
@@ -26,7 +27,7 @@ export default function SearchBar({
         <MaterialIcons
           name="search"
           size={22}
-          color={Colors.brand.gray}
+          color={theme.placeholder}
           accessible={false}
           importantForAccessibility="no"
           style={{
@@ -41,7 +42,7 @@ export default function SearchBar({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={Colors.brand.gray}
+          placeholderTextColor={theme.placeholder}
           accessibilityLabel={accessibilityLabel}
           accessibilityHint={accessibilityHint}
           accessibilityRole="search"
@@ -55,13 +56,13 @@ export default function SearchBar({
             width: "100%",
             minHeight: 48,
             borderWidth: 2,
-            borderColor: Colors.brand.gray,
+            borderColor: theme.border,
             borderRadius: 12,
             paddingLeft: 44,
             paddingRight: 16,
             paddingVertical: 12,
-            color: themedStyles.text?.color || Colors.brand.black,
-            backgroundColor: Colors.brand.white,
+            color: themedStyles.text?.color || theme.text,
+            backgroundColor: theme.backgroundSecondary,
           }}
         />
       </View>

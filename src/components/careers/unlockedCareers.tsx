@@ -128,7 +128,7 @@ export default function Careers() {
           <MaterialIcons
             name="sentiment-very-dissatisfied"
             size={64}
-            color={Colors.brand.black}
+            color={themedStyles.text.color}
           />
           <Text style={[themedStyles.subheading, BaseStyles.textCenter]}>
             {warningMessage}
