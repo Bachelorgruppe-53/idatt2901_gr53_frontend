@@ -1,9 +1,7 @@
-import { registerDevice } from "@/services/authService";
 import {
   loadCompetition,
   type CompetitionInfo,
 } from "@/services/home/loadCompetition";
-import { getNickname } from "@/services/utils/secureStorage";
 import AboutCareer from "@/src/components/careers/aboutCareer";
 import { JoinClassModal } from "@/src/components/joinClass";
 import { QRScanner, type QRScanPayload } from "@/src/components/QRScanner";
@@ -186,23 +184,6 @@ export default function Index() {
     alert(t("invalidQR"));
   };
 
-  const loadNickname = async () => {
-    console.log("Loading nickname from secure storage...");
-    const cached = await getNickname();
-    console.log("Nickname loaded:", cached);
-  };
-
-  const handleRegisterDevice = async () => {
-    try {
-      await registerDevice();
-      await loadNickname();
-      setRemountKey((prev) => prev + 1);
-    } catch (error) {
-      console.error("Failed to register device:", error);
-      alert(t("registerFailed"));
-    }
-  };
-
   const handleQRPress = async () => {
     startScanning();
   };
@@ -255,7 +236,7 @@ export default function Index() {
           {favoriteCareer?.title ?? t("noFavoriteCareer")}
         </Text>
       </View>
-      <View style={[BaseStyles.rowCenter, BaseStyles.my16]}>
+      <View style={styles.cardContainer}>
         <View style={[styles.card, { borderColor: Colors.brand.lightBlue }]}>
           <Text style={[themedStyles.semiboldText, BaseStyles.p8]}>
             {t("you")}:
@@ -302,10 +283,6 @@ export default function Index() {
         {t("findCareers", { count: summary?.numberOfClaims ?? 0 })}
       </Text>
 
-      <Pressable style={[themedStyles.button]} onPress={handleRegisterDevice}>
-        <Text style={themedStyles.buttonText}>{t("registerDeviceTemp")}</Text>
-      </Pressable>
-
       {/* Class info / Join class */}
       {summary?.classCode ? (
         <View style={[BaseStyles.rowCenter, BaseStyles.gap16, BaseStyles.m16]}>
@@ -329,8 +306,8 @@ export default function Index() {
           styles.contestCard,
           BaseStyles.center,
           { borderColor: Colors.brand.lightBlue },
-        ]}
-      >
+        ]}>
+          
         <Text style={[themedStyles.subheading, BaseStyles.p8]}>
           {competitionTitle}
         </Text>
@@ -423,12 +400,19 @@ export default function Index() {
 }
 
 const styles = StyleSheet.create({
+  cardContainer: {
+    width: "80%",
+    marginHorizontal: 10,
+    flexDirection: "row",
+    gap: "6%",
+    paddingBottom: 16,
+  },
   card: {
-    width: "35%",
+    width: "47%",
     height: "100%",
     borderRadius: 8,
     borderWidth: 2,
-    margin: 10,
+    paddingBottom: 10,
   },
   contestCard: {
     width: "80%",
