@@ -10,13 +10,13 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    ActivityIndicator,
-    PermissionsAndroid,
-    Platform,
-    Pressable,
-    StyleSheet,
-    View,
-    ViewStyle,
+  ActivityIndicator,
+  PermissionsAndroid,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+  ViewStyle,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
@@ -54,6 +54,7 @@ export const MapComponent = ({
   const themedStyles = useThemedStyles();
   const { isScanning, startScanning, stopScanning } = useQRScanner();
   const { i18n } = useTranslation();
+  const { t } = useTranslation("map");
 
   const controlBackgroundColor = isDarkMode
     ? "rgba(28,28,30,0.92)"
@@ -98,8 +99,8 @@ export const MapComponent = ({
   );
 
   const handleInvalidScan = useCallback(() => {
-    alert("Invalid QR code. Please try again.");
-  }, []);
+    alert(t("invalidQRCode"));
+  }, [t]);
 
   // Auto-zoom map to fit all markers when locations change or map is ready
   const fitMapToLocations = useCallback(() => {
@@ -148,17 +149,16 @@ export const MapComponent = ({
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       {
-        title: "Location Permission",
-        message:
-          "We need your location in order to display it on the map, it is not saved or used for any other purpose.",
-        buttonNeutral: "Ask again later",
-        buttonNegative: "Cancel",
-        buttonPositive: "Accept",
+        title: t("locationPermissionTitle"),
+        message: t("locationPermissionMessage"),
+        buttonNeutral: t("locationPermissionAskLater"),
+        buttonNegative: t("locationPermissionCancel"),
+        buttonPositive: t("locationPermissionAccept"),
       },
     );
 
     return granted === PermissionsAndroid.RESULTS.GRANTED;
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const startLocationTracking = async () => {
@@ -280,7 +280,7 @@ export const MapComponent = ({
           ]}
           onPress={() => handleZoom(true)}
           accessibilityRole="button"
-          accessibilityLabel="Zoom in"
+          accessibilityLabel={t("zoomIn")}
         >
           <FontAwesome6 name="add" size={20} color={controlIconColor} />
         </Pressable>
@@ -291,7 +291,7 @@ export const MapComponent = ({
           ]}
           onPress={() => handleZoom(false)}
           accessibilityRole="button"
-          accessibilityLabel="Zoom out"
+          accessibilityLabel={t("zoomOut")}
         >
           <FontAwesome6 name="minus" size={20} color={controlIconColor} />
         </Pressable>
@@ -304,7 +304,7 @@ export const MapComponent = ({
           onPress={centerOnUserLocation}
           disabled={!userLocation}
           accessibilityRole="button"
-          accessibilityLabel="Center on my location"
+          accessibilityLabel={t("centerOnUserLocation")}
         >
           <FontAwesome6
             name={userLocation ? "location-arrow" : "location-arrow"}

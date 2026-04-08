@@ -1,0 +1,11 @@
+{
+  "openQRScanner": "Opne QR-skannar",
+  "locationPermissionTitle": "Lokasjonstilgang",
+  "locationPermissionMessage": "Vi treng posisjonen din for å vise han på kartet. Han blir ikkje lagra eller brukt til andre formål.",
+  "locationPermissionAskLater": "Spør igjen seinare",
+  "locationPermissionCancel": "Avbryt",
+  "locationPermissionAccept": "Tillat",
+  "zoomIn": "Zoom inn",
+  "zoomOut": "Zoom ut",
+  "centerOnUserLocation": "Sentrer på min posisjon"
+}

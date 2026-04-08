@@ -22,12 +22,13 @@ export default function FeedbackForm() {
 const openURL = async (url: string) => {
   // Check if the device supports the URL
   const supported = await Linking.canOpenURL(url);
+  const { t } = useTranslation("settings");
 
   if (supported) {
     // Open the URL in the device's default browser
     await Linking.openURL(url);
   } else {
     // Handle cases where the URL cannot be opened
-    alert(`Don't know how to open this URL: ${url}`);
+    alert(t("submitFeedbackError"));
   }
 };

@@ -11,5 +11,6 @@
   "timeLimit": "Tid",
   "closeButton": "Lukk",
   "claimButton": "Krev",
-  "noCareers": "Ingen yrker låst opp ennå. Finn et yrke for å låse det opp!"
+  "noCareers": "Ingen yrker låst opp ennå. Finn et yrke for å låse det opp!",
+  "claimSuccessMessage": "Du fullførte quizen og fikk poengene dine."
 }

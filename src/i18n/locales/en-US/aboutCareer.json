@@ -11,5 +11,6 @@
   "timeLimit": "Time",
   "closeButton": "Close",
   "claimButton": "Claim",
-  "noCareers": "No careers unlocked yet. Find a career to unlock it!"
+  "noCareers": "No careers unlocked yet. Find a career to unlock it!",
+  "claimSuccessMessage": "You completed the quiz and claimed your points."
 }
