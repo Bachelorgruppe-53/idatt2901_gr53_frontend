@@ -100,7 +100,7 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
-      <View style={[themedStyles.modalBackdrop, {backgroundColor: undefined}]}>
+      <View style={[themedStyles.modalBackdrop, {backgroundColor: "transparent"}]}>
         <View style={[BaseStyles.center, BaseStyles.w80]}>
           <View style={[themedStyles.modalCard, BaseStyles.gap8]}>
             <Text style={themedStyles.modalTitle}>{t("joinClass")}</Text>
