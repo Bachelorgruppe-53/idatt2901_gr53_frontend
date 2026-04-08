@@ -16,7 +16,7 @@ export default function FeedbackForm() {
       await Linking.openURL(url);
     } else {
       // Handle cases where the URL cannot be opened.
-      alert(t("submitFeedbackError"));
+      alert(t("submitFeedbackError", { url }));
     }
   };
 
