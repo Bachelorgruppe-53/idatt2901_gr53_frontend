@@ -9,7 +9,9 @@ import enAuth from "./locales/en-US/auth.json";
 import enClass from "./locales/en-US/class.json";
 import enCommon from "./locales/en-US/common.json";
 import enHome from "./locales/en-US/home.json";
+import enMap from "./locales/en-US/map.json";
 import enNavbar from "./locales/en-US/navbar.json";
+import enQRScanner from "./locales/en-US/qrScanner.json";
 import enQuiz from "./locales/en-US/quiz.json";
 import enSettings from "./locales/en-US/settings.json";
 import enStats from "./locales/en-US/stats.json";
@@ -19,7 +21,9 @@ import nbAuth from "./locales/no-NB/auth.json";
 import nbClass from "./locales/no-NB/class.json";
 import nbCommon from "./locales/no-NB/common.json";
 import nbHome from "./locales/no-NB/home.json";
+import nbMap from "./locales/no-NB/map.json";
 import nbNavbar from "./locales/no-NB/navbar.json";
+import nbQRScanner from "./locales/no-NB/qrScanner.json";
 import nbQuiz from "./locales/no-NB/quiz.json";
 import nbSettings from "./locales/no-NB/settings.json";
 import nbStats from "./locales/no-NB/stats.json";
@@ -29,7 +33,9 @@ import nnAuth from "./locales/no-NN/auth.json";
 import nnClass from "./locales/no-NN/class.json";
 import nnCommon from "./locales/no-NN/common.json";
 import nnHome from "./locales/no-NN/home.json";
+import nnMap from "./locales/no-NN/map.json";
 import nnNavbar from "./locales/no-NN/navbar.json";
+import nnQRScanner from "./locales/no-NN/qrScanner.json";
 import nnQuiz from "./locales/no-NN/quiz.json";
 import nnSettings from "./locales/no-NN/settings.json";
 import nnStats from "./locales/no-NN/stats.json";
@@ -71,6 +77,8 @@ const i18nInitPromise = i18n.use(initReactI18next).init({
       stats: enStats,
       class: enClass,
       quiz: enQuiz,
+      map: enMap,
+      qrScanner: enQRScanner,
     },
     "no-NB": {
       common: nbCommon,
@@ -82,6 +90,8 @@ const i18nInitPromise = i18n.use(initReactI18next).init({
       stats: nbStats,
       class: nbClass,
       quiz: nbQuiz,
+      map: nbMap,
+      qrScanner: nbQRScanner,
     },
     "no-NN": {
       common: nnCommon,
@@ -93,6 +103,8 @@ const i18nInitPromise = i18n.use(initReactI18next).init({
       stats: nnStats,
       class: nnClass,
       quiz: nnQuiz,
+      map: nnMap,
+      qrScanner: nnQRScanner,
     },
   },
   lng: getSupportedLanguage(deviceLanguage),
@@ -106,7 +118,9 @@ const i18nInitPromise = i18n.use(initReactI18next).init({
     "aboutCareer",
     "stats",
     "class",
-    "quiz"
+    "quiz",
+    "map",
+    "qrScanner",
   ],
   defaultNS: "common",
   interpolation: {

@@ -43,6 +43,7 @@ export default function SettingsButton({
     <Pressable
       style={styles.button}
       onPress={handlePress}
+      accessibilityLabel={t(labelKey)}
     >
       <MaterialIcons name={iconName} size={24} color={theme.text} />
       <Text style={[themedStyles.boldText, BaseStyles.mx16]}>

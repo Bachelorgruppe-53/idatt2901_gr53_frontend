@@ -1,5 +1,11 @@
+import AboutCareer from "@/src/components/careers/aboutCareer";
 import { AreaSelector } from "@/src/components/map/areaDropdown";
-import { fetchLocations, MapLocation } from "@/src/components/map/mapData";
+import {
+  fetchAreas,
+  fetchLocations,
+  MapArea,
+  MapLocation,
+} from "@/src/components/map/mapData";
 import { MapMarker } from "@/src/components/map/MapMarker";
 import { QRScanner, type QRScanPayload } from "@/src/components/QRScanner";
 import { Colors } from "@/src/constants/Colors";
@@ -10,13 +16,13 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-    ActivityIndicator,
-    PermissionsAndroid,
-    Platform,
-    Pressable,
-    StyleSheet,
-    View,
-    ViewStyle,
+  ActivityIndicator,
+  PermissionsAndroid,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+  ViewStyle,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
@@ -38,13 +44,6 @@ interface MapProps {
   onScanPress?: () => void;
 }
 
-const AREAS = [
-  // todo: fetch areas from backend instead of hardcoding
-  { id: "all", name: "Alle områder", value: null },
-  { id: "st-olavs", label: "St. Olavs Hospital", value: "St. Olavs hospital" },
-  { id: "roros", label: "Røros", value: "Røros" },
-];
-
 export const MapComponent = ({
   style,
   initialLocation,
@@ -54,6 +53,7 @@ export const MapComponent = ({
   const themedStyles = useThemedStyles();
   const { isScanning, startScanning, stopScanning } = useQRScanner();
   const { i18n } = useTranslation();
+  const { t } = useTranslation("map");
 
   const controlBackgroundColor = isDarkMode
     ? "rgba(28,28,30,0.92)"
@@ -63,18 +63,35 @@ export const MapComponent = ({
     ? "rgba(28,28,30,0.9)"
     : "rgba(255,255,255,0.9)";
 
+  const [areas, setAreas] = useState<MapArea[]>([]);
   const [locations, setLocations] = useState<MapLocation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedArea, setSelectedArea] = useState<string | null>(
-    "St. Olavs hospital",
-  );
+  const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
+  const [showCareerModal, setShowCareerModal] = useState(false);
+  const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
   const mapRef = useRef<MapView>(null);
   const watchIdRef = useRef<number | null>(null);
+  const cameraStateRef = useRef<any>(null);
+
+  const areaOptions: MapArea[] = [
+    { id: "all", label: t("allAreas"), value: null },
+    ...areas,
+  ];
+
+  useEffect(() => {
+    const loadAreas = async () => {
+      const language = i18n.resolvedLanguage ?? i18n.language;
+      const fetchedAreas = await fetchAreas(language);
+      setAreas(fetchedAreas);
+    };
+
+    void loadAreas();
+  }, [i18n.language, i18n.resolvedLanguage]);
 
   // Load locations from backend on area change
   useEffect(() => {
@@ -92,14 +109,15 @@ export const MapComponent = ({
   const handleScan = useCallback(
     (payload: QRScanPayload) => {
       stopScanning();
-      alert(`Skannet data: ${JSON.stringify(payload)}`);
+      setSelectedCareerId(payload.careerId);
+      setShowCareerModal(true);
     },
     [stopScanning],
   );
 
   const handleInvalidScan = useCallback(() => {
-    alert("Invalid QR code. Please try again.");
-  }, []);
+    alert(t("invalidQRCode"));
+  }, [t]);
 
   // Auto-zoom map to fit all markers when locations change or map is ready
   const fitMapToLocations = useCallback(() => {
@@ -133,11 +151,57 @@ export const MapComponent = ({
   useEffect(() => {
     if (!isMapReady) return;
     const timer = setTimeout(() => {
+      cameraStateRef.current = null;
       fitMapToLocations();
     }, 200);
 
     return () => clearTimeout(timer);
   }, [isMapReady, locations, fitMapToLocations]);
+
+  // Save camera state before opening scanner, restore on close
+  const saveCameraStateAndStartScanning = useCallback(async () => {
+    if (mapRef.current && isMapReady) {
+      try {
+        const camera = await mapRef.current.getCamera();
+        cameraStateRef.current = {
+          center: camera.center,
+          pitch: camera.pitch,
+          heading: camera.heading,
+          altitude: camera.altitude,
+          zoom: camera.zoom,
+        };
+      } catch (error) {
+        console.warn("Failed to capture camera state", error);
+      }
+    }
+    startScanning();
+  }, [isMapReady, startScanning]);
+
+  useEffect(() => {
+    const restoreCameraState = async () => {
+      if (
+        !isScanning &&
+        mapRef.current &&
+        isMapReady &&
+        cameraStateRef.current
+      ) {
+        try {
+          await mapRef.current.animateCamera(cameraStateRef.current, {
+            duration: 300,
+          });
+        } catch (error) {
+          console.warn("Failed to restore camera state", error);
+        }
+      }
+    };
+
+    if (!isScanning) {
+      const timer = setTimeout(() => {
+        restoreCameraState();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isScanning, isMapReady]);
 
   const requestLocationPermission = useCallback(async () => {
     if (Platform.OS === "ios") {
@@ -148,17 +212,16 @@ export const MapComponent = ({
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       {
-        title: "Location Permission",
-        message:
-          "We need your location in order to display it on the map, it is not saved or used for any other purpose.",
-        buttonNeutral: "Ask again later",
-        buttonNegative: "Cancel",
-        buttonPositive: "Accept",
+        title: t("locationPermissionTitle"),
+        message: t("locationPermissionMessage"),
+        buttonNeutral: t("locationPermissionAskLater"),
+        buttonNegative: t("locationPermissionCancel"),
+        buttonPositive: t("locationPermissionAccept"),
       },
     );
 
     return granted === PermissionsAndroid.RESULTS.GRANTED;
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const startLocationTracking = async () => {
@@ -224,6 +287,11 @@ export const MapComponent = ({
     );
   }, [userLocation]);
 
+  const handleAreaReselect = useCallback(() => {
+    cameraStateRef.current = null;
+    fitMapToLocations();
+  }, [fitMapToLocations]);
+
   if (isScanning) {
     return (
       <QRScanner
@@ -234,12 +302,25 @@ export const MapComponent = ({
     );
   }
 
+  if (showCareerModal && selectedCareerId !== null) {
+    return (
+      <AboutCareer
+        careerId={selectedCareerId}
+        onClose={() => {
+          setShowCareerModal(false);
+          setSelectedCareerId(null);
+        }}
+      />
+    );
+  }
+
   return (
     <View style={themedStyles.container}>
       <AreaSelector
-        areas={AREAS}
+        areas={areaOptions}
         selectedArea={selectedArea}
         onAreaChange={setSelectedArea}
+        onAreaReselect={handleAreaReselect}
       />
 
       <MapView
@@ -256,7 +337,7 @@ export const MapComponent = ({
           <MapMarker
             key={loc.id}
             location={loc}
-            onScan={() => startScanning()}
+            onScan={saveCameraStateAndStartScanning}
           />
         ))}
       </MapView>
@@ -280,7 +361,7 @@ export const MapComponent = ({
           ]}
           onPress={() => handleZoom(true)}
           accessibilityRole="button"
-          accessibilityLabel="Zoom in"
+          accessibilityLabel={t("zoomIn")}
         >
           <FontAwesome6 name="add" size={20} color={controlIconColor} />
         </Pressable>
@@ -291,7 +372,7 @@ export const MapComponent = ({
           ]}
           onPress={() => handleZoom(false)}
           accessibilityRole="button"
-          accessibilityLabel="Zoom out"
+          accessibilityLabel={t("zoomOut")}
         >
           <FontAwesome6 name="minus" size={20} color={controlIconColor} />
         </Pressable>
@@ -304,7 +385,7 @@ export const MapComponent = ({
           onPress={centerOnUserLocation}
           disabled={!userLocation}
           accessibilityRole="button"
-          accessibilityLabel="Center on my location"
+          accessibilityLabel={t("centerOnUserLocation")}
         >
           <FontAwesome6
             name={userLocation ? "location-arrow" : "location-arrow"}

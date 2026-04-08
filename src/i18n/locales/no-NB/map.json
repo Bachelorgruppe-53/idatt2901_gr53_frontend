@@ -1,0 +1,14 @@
+{
+  "openQRScanner": "Åpne QR-skanner",
+  "invalidQRCode": "Ugyldig QR-kode. Prøv igjen.",
+  "locationPermissionTitle": "Lokasjonstillatelse",
+  "locationPermissionMessage": "Vi trenger posisjonen din for å vise den på kartet. Den blir ikke lagret eller brukt til andre formål.",
+  "locationPermissionAskLater": "Spør igjen senere",
+  "locationPermissionCancel": "Avbryt",
+  "locationPermissionAccept": "Tillat",
+  "zoomIn": "Zoom inn",
+  "zoomOut": "Zoom ut",
+  "centerOnUserLocation": "Sentrer på min posisjon",
+  "toggleAreaDropdown": "Bytt område meny",
+  "allAreas": "Alle områder"
+}

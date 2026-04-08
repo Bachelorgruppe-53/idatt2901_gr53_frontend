@@ -78,7 +78,9 @@ export default function QuizModal({
             onComplete={onComplete}
           />
 
-          <Pressable style={themedStyles.closeButton} onPress={onClose}>
+          <Pressable style={themedStyles.closeButton} 
+            onPress={onClose}
+            accessibilityLabel={t("closeQuizModal")}>
             <MaterialIcons name="close" size={24} color={theme.text} />
           </Pressable>
         </ScrollView>

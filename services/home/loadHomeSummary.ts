@@ -20,7 +20,6 @@ export type HomeSummaryResult = {
   points: number;
   classPoints: number | null;
   nickname: string;
-  // claimedCareers?: number; // Optional field for future use
 };
 
 const parseBackendError = (raw: string): string => {
@@ -102,6 +101,5 @@ export const loadHomeSummary = async (): Promise<HomeSummaryResult> => {
     points,
     classPoints,
     nickname: summary.nickname ?? "",
-    // claimedCareers: summary.claimedCareers, // Optional field for future use
   };
 };

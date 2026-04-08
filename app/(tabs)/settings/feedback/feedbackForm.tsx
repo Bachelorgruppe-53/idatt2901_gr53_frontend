@@ -7,6 +7,19 @@ export default function FeedbackForm() {
 
   const { t } = useTranslation("settings");
 
+  const openURL = async (url: string) => {
+    // Check if the device supports the URL.
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      // Open the URL in the device's default browser.
+      await Linking.openURL(url);
+    } else {
+      // Handle cases where the URL cannot be opened.
+      alert(t("submitFeedbackError", { url }));
+    }
+  };
+
   return (
     <View style={themedStyles.container}>
       <Pressable
@@ -18,16 +31,3 @@ export default function FeedbackForm() {
     </View>
   );
 }
-
-const openURL = async (url: string) => {
-  // Check if the device supports the URL
-  const supported = await Linking.canOpenURL(url);
-
-  if (supported) {
-    // Open the URL in the device's default browser
-    await Linking.openURL(url);
-  } else {
-    // Handle cases where the URL cannot be opened
-    alert(`Don't know how to open this URL: ${url}`);
-  }
-};

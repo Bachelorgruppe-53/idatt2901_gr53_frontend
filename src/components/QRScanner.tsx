@@ -3,6 +3,7 @@ import { CameraView } from "expo-camera";
 import { useRef } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useThemedStyles } from "../hooks/useStyleSheet";
+import { useTranslation } from "react-i18next";
 
 /**
  * QRScanner component that uses the device camera to scan QR codes.
@@ -49,6 +50,7 @@ const parseQRScanPayload = (data: string): QRScanPayload | null => {
 export function QRScanner({ onScan, onInvalidScan, onClose }: QRScannerProps) {
   const themedStyles = useThemedStyles();
   const lastScanAtRef = useRef(0);
+  const { t } = useTranslation("qrScanner");
 
   const handleBarcodeScanned = ({ data }: { data: string }) => {
     const now = Date.now();
@@ -85,7 +87,9 @@ export function QRScanner({ onScan, onInvalidScan, onClose }: QRScannerProps) {
         <View style={styles.unfocusedContainer} />
       </View>
 
-      <Pressable style={themedStyles.closeButton} onPress={onClose}>
+      <Pressable style={themedStyles.closeButton} 
+        onPress={onClose}
+        accessibilityLabel={t("closeQRScanner")}>
         <MaterialIcons name="close" size={30} color="white" />
       </Pressable>
     </View>

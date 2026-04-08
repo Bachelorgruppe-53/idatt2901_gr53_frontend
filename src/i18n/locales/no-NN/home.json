@@ -28,7 +28,8 @@
   "days": "dagar",
   "notAvailable": "Ikkje tilgjengeleg",
   "registerFailed": "Klarte ikkje registrere eining",
-  "findCareers": "Du har funne {{count}} yrke!",
+  "findCareers_one": "Du har funne {{count}} yrke!",
+  "findCareers_other": "Du har funne {{count}} yrke!",
   "noClassPoints": "Bli med i ei klasse for å samle poeng!",
   "closeButton": "Lukk"
 }

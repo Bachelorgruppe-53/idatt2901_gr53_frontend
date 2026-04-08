@@ -147,6 +147,14 @@ export default function Quiz({
         <Pressable
           key={opt.id}
           onPress={() => handleSelect(opt.id)}
+          accessibilityRole="button"
+          accessibilityLabel={t("answerOptionAccessibilityLabel", {
+            marker: optionLabels[idx] ?? `${idx + 1}`,
+            text: opt.text,
+            position: idx + 1,
+            total: current.options.length,
+          })}
+          accessibilityHint={t("answerOptionAccessibilityHint")}
           style={({ pressed }) => [
             styles.option,
             {

@@ -28,7 +28,8 @@
   "days": "days",
   "notAvailable": "N/A",
   "registerFailed": "Failed to register device",
-  "findCareers": "You have found {{count}} careers!",
+  "findCareers_one": "You have found {{count}} career!",
+  "findCareers_other": "You have found {{count}} careers!",
   "noClassPoints": "Join a class to earn points!",
   "closeButton": "Close"
 }

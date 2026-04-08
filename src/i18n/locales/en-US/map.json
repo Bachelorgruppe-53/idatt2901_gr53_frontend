@@ -1,0 +1,14 @@
+{
+  "openQRScanner": "Open QR scanner",
+  "invalidQRCode": "Invalid QR code. Please try again.",
+  "locationPermissionTitle": "Location Permission",
+  "locationPermissionMessage": "We need your location in order to display it on the map, it is not saved or used for any other purpose.",
+  "locationPermissionAskLater": "Ask again later",
+  "locationPermissionCancel": "Cancel",
+  "locationPermissionAccept": "Accept",
+  "zoomIn": "Zoom in",
+  "zoomOut": "Zoom out",
+  "centerOnUserLocation": "Center on my location",
+  "toggleAreaDropdown": "Toggle area dropdown",
+  "allAreas": "All areas"
+}
