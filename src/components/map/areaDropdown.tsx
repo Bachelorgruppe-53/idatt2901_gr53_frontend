@@ -3,6 +3,17 @@ import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
 
+/**
+ * Props for the AreaSelector component.
+ * - `areas`: An array of area objects, each containing an `id`, optional `name` and `label`, and a `value`.
+ * - `selectedArea`: The currently selected area value, which can be null if no area is selected.
+ * - `onAreaChange`: A callback function that is called when the user selects a different area. It receives the new area value as an argument.
+ *
+ * This component renders a dropdown menu that allows users to select an area from a list. The dropdown displays the currently selected area and toggles the visibility of the options when pressed. When an option is selected, it calls the `onAreaChange` callback with the new value and closes the dropdown.
+ *
+ * @returns JSX.Element
+ */
+
 interface Area {
   id: string;
   name?: string;

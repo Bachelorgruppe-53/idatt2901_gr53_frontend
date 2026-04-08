@@ -25,9 +25,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 /**
- * AboutCareer component that displays information about a career point of interest (POI) and includes a quiz to unlock points. It handles fetching career data, displaying it, and managing the quiz state and interactions.
+ * Component for displaying detailed information about a career, including a quiz to claim points. It handles loading state, error messages, and allows users to mark the career as a favorite. The component also manages the quiz flow using the useCareerQuiz hook.
  *
- * @param {Props} props - The props for the AboutCareer component, including careerId and onClose callback.
+ * @param {Props} props - The props for the AboutCareer component, including the career ID and a function to close the component.
  * @returns {JSX.Element} The rendered AboutCareer component.
  */
 
