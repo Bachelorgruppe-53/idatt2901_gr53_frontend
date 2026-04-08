@@ -33,6 +33,9 @@ interface StringRequest {
   name: string;
 }
 
+const allLocationsCache = new Map<string, MapLocation[]>();
+const allLocationsPromiseCache = new Map<string, Promise<MapLocation[]>>();
+
 const mapPoiColorToBrandColor = (colorCode: number): string =>
   COLOR_BY_CODE[colorCode] ?? Colors.brand.darkBlue;
 
@@ -128,13 +131,53 @@ const fetchWithRetryOnInvalidUser = async (
   return response;
 };
 
+const getAllLocations = async (
+  selectedLanguage?: string,
+): Promise<MapLocation[]> => {
+  const languageCode = getLanguageCode(selectedLanguage);
+  const cachedLocations = allLocationsCache.get(languageCode);
+
+  if (cachedLocations) {
+    return cachedLocations;
+  }
+
+  const cachedPromise = allLocationsPromiseCache.get(languageCode);
+  if (cachedPromise) {
+    return cachedPromise;
+  }
+
+  const loadPromise = (async () => {
+    const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+    const url = buildPoiUrl(baseUrl, null, languageCode);
+    const response = await fetchWithRetryOnInvalidUser(url, null);
+    const poiArray = await parsePoiArray(response);
+    const locations = poiArray.map(mapDtoToMapLocation);
+
+    allLocationsCache.set(languageCode, locations);
+    return locations;
+  })();
+
+  allLocationsPromiseCache.set(languageCode, loadPromise);
+
+  try {
+    return await loadPromise;
+  } finally {
+    allLocationsPromiseCache.delete(languageCode);
+  }
+};
+
 export const fetchLocations = async (
   areaName: string | null = null,
   selectedLanguage?: string,
 ): Promise<MapLocation[]> => {
   try {
-    const baseUrl = getApiBaseUrl().replace(/\/$/, "");
     const languageCode = getLanguageCode(selectedLanguage);
+
+    if (areaName === null) {
+      return await getAllLocations(selectedLanguage);
+    }
+
+    const baseUrl = getApiBaseUrl().replace(/\/$/, "");
     const url = buildPoiUrl(baseUrl, areaName, languageCode);
     const response = await fetchWithRetryOnInvalidUser(url, areaName);
     const poiArray = await parsePoiArray(response);
@@ -149,15 +192,11 @@ export const fetchAreas = async (
   selectedLanguage?: string,
 ): Promise<MapArea[]> => {
   try {
-    const baseUrl = getApiBaseUrl().replace(/\/$/, "");
-    const languageCode = getLanguageCode(selectedLanguage);
-    const url = buildPoiUrl(baseUrl, null, languageCode);
-    const response = await fetchWithRetryOnInvalidUser(url, null);
-    const poiArray = await parsePoiArray(response);
+    const poiLocations = await getAllLocations(selectedLanguage);
 
     const uniqueAreas = Array.from(
       new Set(
-        poiArray
+        poiLocations
           .map((poi) => poi.area?.trim() || poi.place?.trim())
           .filter((area): area is string => Boolean(area)),
       ),
