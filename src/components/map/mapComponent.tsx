@@ -79,7 +79,7 @@ export const MapComponent = ({
   const cameraStateRef = useRef<any>(null);
 
   const areaOptions: MapArea[] = [
-    { id: "all", label: (t('allAreas')), value: null },
+    { id: "all", label: t("allAreas"), value: null },
     ...areas,
   ];
 
@@ -109,7 +109,8 @@ export const MapComponent = ({
   const handleScan = useCallback(
     (payload: QRScanPayload) => {
       stopScanning();
-      alert(`Skannet data: ${JSON.stringify(payload)}`);
+      setSelectedCareerId(payload.careerId);
+      setShowCareerModal(true);
     },
     [stopScanning],
   );
@@ -290,11 +291,6 @@ export const MapComponent = ({
     cameraStateRef.current = null;
     fitMapToLocations();
   }, [fitMapToLocations]);
-
-  const handleOpenCareer = useCallback((careerId: number) => {
-    setSelectedCareerId(careerId);
-    setShowCareerModal(true);
-  }, []);
 
   if (isScanning) {
     return (
