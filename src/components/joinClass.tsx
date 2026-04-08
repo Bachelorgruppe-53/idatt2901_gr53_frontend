@@ -108,6 +108,7 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
             <TextInput
               style={themedStyles.input}
               placeholder={t("classCode")}
+              accessibilityLabel={t("enterClassCode")}
               placeholderTextColor={theme.placeholder}
               value={classCode}
               onChangeText={(text) => {
@@ -128,6 +129,7 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
                 { backgroundColor: Colors.brand.red },
               ]}
               onPress={onClose}
+              accessibilityLabel={t("close")}
             >
               <Text style={themedStyles.buttonText}>{t("close")}</Text>
             </Pressable>

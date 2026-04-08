@@ -192,7 +192,9 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   if (loading) {
     return (
       <View style={themedStyles.container}>
-        <Pressable style={themedStyles.closeButton} onPress={onClose}>
+        <Pressable style={themedStyles.closeButton} 
+        onPress={onClose}
+        accessibilityLabel={t("closeAboutCareer")}>
           <MaterialIcons name="close" size={24} color={theme.text} />
         </Pressable>
         <ActivityIndicator size="large" color={theme.button} />

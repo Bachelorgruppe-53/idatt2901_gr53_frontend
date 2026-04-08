@@ -1,3 +1,4 @@
+import AboutCareer from "@/src/components/careers/aboutCareer";
 import { AreaSelector } from "@/src/components/map/areaDropdown";
 import { fetchLocations, MapLocation } from "@/src/components/map/mapData";
 import { MapMarker } from "@/src/components/map/MapMarker";
@@ -70,6 +71,8 @@ export const MapComponent = ({
     "St. Olavs hospital",
   );
   const [isMapReady, setIsMapReady] = useState(false);
+  const [showCareerModal, setShowCareerModal] = useState(false);
+  const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -224,12 +227,29 @@ export const MapComponent = ({
     );
   }, [userLocation]);
 
+  const handleOpenCareer = useCallback((careerId: number) => {
+    setSelectedCareerId(careerId);
+    setShowCareerModal(true);
+  }, []);
+
   if (isScanning) {
     return (
       <QRScanner
         onScan={handleScan}
         onInvalidScan={handleInvalidScan}
         onClose={stopScanning}
+      />
+    );
+  }
+
+  if (showCareerModal && selectedCareerId !== null) {
+    return (
+      <AboutCareer
+        careerId={selectedCareerId}
+        onClose={() => {
+          setShowCareerModal(false);
+          setSelectedCareerId(null);
+        }}
       />
     );
   }
@@ -257,6 +277,7 @@ export const MapComponent = ({
             key={loc.id}
             location={loc}
             onScan={() => startScanning()}
+            onOpenCareer={handleOpenCareer}
           />
         ))}
       </MapView>

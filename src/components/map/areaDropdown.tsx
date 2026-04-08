@@ -9,6 +9,7 @@ import {
 import { Colors } from "../../constants/Colors";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
 import { BaseStyles } from "@/src/constants/Styles";
+import { useTranslation } from "react-i18next";
 
 interface Area {
   id: string;
@@ -30,6 +31,7 @@ export const AreaSelector = ({
 }: AreaSelectorProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const themedStyles = useThemedStyles();
+  const { t } = useTranslation("map");
 
   const handleSelect = useCallback(
     (value: string | null) => {
@@ -49,6 +51,7 @@ export const AreaSelector = ({
       <Pressable
         style={themedStyles.dropdownButton}
         onPress={() => setDropdownOpen(!dropdownOpen)}
+        accessibilityLabel={t("toggleAreaDropdown")}
       >
         <Text style={themedStyles.dropdownButtonText}>{selectedAreaLabel}</Text>
         <Text style={themedStyles.text}>▼</Text>
