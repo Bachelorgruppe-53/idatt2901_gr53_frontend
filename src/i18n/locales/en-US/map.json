@@ -9,5 +9,6 @@
   "zoomIn": "Zoom in",
   "zoomOut": "Zoom out",
   "centerOnUserLocation": "Center on my location",
-  "toggleAreaDropdown": "Toggle area dropdown"
+  "toggleAreaDropdown": "Toggle area dropdown",
+  "allAreas": "All areas"
 }

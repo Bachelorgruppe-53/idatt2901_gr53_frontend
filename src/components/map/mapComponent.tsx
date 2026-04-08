@@ -76,9 +76,10 @@ export const MapComponent = ({
   } | null>(null);
   const mapRef = useRef<MapView>(null);
   const watchIdRef = useRef<number | null>(null);
+  const cameraStateRef = useRef<any>(null);
 
   const areaOptions: MapArea[] = [
-    { id: "all", label: "Alle omrader", value: null },
+    { id: "all", label: (t('allAreas')), value: null },
     ...areas,
   ];
 
@@ -149,11 +150,57 @@ export const MapComponent = ({
   useEffect(() => {
     if (!isMapReady) return;
     const timer = setTimeout(() => {
+      cameraStateRef.current = null;
       fitMapToLocations();
     }, 200);
 
     return () => clearTimeout(timer);
   }, [isMapReady, locations, fitMapToLocations]);
+
+  // Save camera state before opening scanner, restore on close
+  const saveCameraStateAndStartScanning = useCallback(async () => {
+    if (mapRef.current && isMapReady) {
+      try {
+        const camera = await mapRef.current.getCamera();
+        cameraStateRef.current = {
+          center: camera.center,
+          pitch: camera.pitch,
+          heading: camera.heading,
+          altitude: camera.altitude,
+          zoom: camera.zoom,
+        };
+      } catch (error) {
+        console.warn("Failed to capture camera state", error);
+      }
+    }
+    startScanning();
+  }, [isMapReady, startScanning]);
+
+  useEffect(() => {
+    const restoreCameraState = async () => {
+      if (
+        !isScanning &&
+        mapRef.current &&
+        isMapReady &&
+        cameraStateRef.current
+      ) {
+        try {
+          await mapRef.current.animateCamera(cameraStateRef.current, {
+            duration: 300,
+          });
+        } catch (error) {
+          console.warn("Failed to restore camera state", error);
+        }
+      }
+    };
+
+    if (!isScanning) {
+      const timer = setTimeout(() => {
+        restoreCameraState();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isScanning, isMapReady]);
 
   const requestLocationPermission = useCallback(async () => {
     if (Platform.OS === "ios") {
@@ -240,6 +287,7 @@ export const MapComponent = ({
   }, [userLocation]);
 
   const handleAreaReselect = useCallback(() => {
+    cameraStateRef.current = null;
     fitMapToLocations();
   }, [fitMapToLocations]);
 
@@ -293,7 +341,7 @@ export const MapComponent = ({
           <MapMarker
             key={loc.id}
             location={loc}
-            onScan={() => startScanning()}
+            onScan={saveCameraStateAndStartScanning}
           />
         ))}
       </MapView>
