@@ -2,12 +2,19 @@ import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import axios, { isAxiosError } from "axios";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from "react-native";
-import { Colors } from "../constants/Colors";
-import { useThemeColor } from "../hooks/useThemeColor";
-import { useThemedStyles } from "../hooks/useStyleSheet";
-import { BaseStyles } from "../constants/Styles";
 import { useTranslation } from "react-i18next";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { Colors } from "../constants/Colors";
+import { BaseStyles } from "../constants/Styles";
+import { useThemedStyles } from "../hooks/useStyleSheet";
+import { useThemeColor } from "../hooks/useThemeColor";
 
 /**
  * This component renders a modal that allows users to join a class by entering a class code.
@@ -78,10 +85,7 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
               : error.message;
 
         console.error("Join class failed:", backendMessage);
-        setError(
-          backendMessage ||
-            t("serverError"),
-        );
+        setError(backendMessage || t("serverError"));
         return;
       }
 
@@ -92,11 +96,11 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1, backgroundColor: "rgba(48, 48, 48, 0.5)" }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
-      <View style={themedStyles.modalBackdrop}>
+      <View style={[themedStyles.modalBackdrop, {backgroundColor: undefined}]}>
         <View style={[BaseStyles.center, BaseStyles.w80]}>
           <View style={[themedStyles.modalCard, BaseStyles.gap8]}>
             <Text style={themedStyles.modalTitle}>{t("joinClass")}</Text>
@@ -119,7 +123,10 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
               <Text style={themedStyles.buttonText}>{t("join")}</Text>
             </Pressable>
             <Pressable
-              style={[themedStyles.smallButton, { backgroundColor: Colors.brand.red }]}
+              style={[
+                themedStyles.smallButton,
+                { backgroundColor: Colors.brand.red },
+              ]}
               onPress={onClose}
             >
               <Text style={themedStyles.buttonText}>{t("close")}</Text>
