@@ -1,9 +1,14 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId, registerDevice } from "@/services/authService";
 import { getLanguageCode } from "@/services/language/languageCode";
-import type { CareerDto, UnlockedCareer } from "@/services/types/career";
+import type {
+  CareerDto,
+  PaginatedCareers,
+  PaginationInfo,
+  UnlockedCareer,
+} from "@/services/types/career";
 
-const CAREER_ENDPOINTS = ["/career/claimed", "/careers/claimed"] as const;
+const CAREER_ENDPOINTS = ["/career/claimed"] as const;
 
 const isUuidError = (status: number, body: string) =>
   status === 400 && body.includes("Invalid UUID format");
@@ -12,10 +17,15 @@ const fetchCareersFromEndpointGet = async (
   endpoint: string,
   userId: string,
   languageCode: string,
+  page: number = 0,
 ): Promise<Response> => {
   const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+  const url = new URL(
+    `${baseUrl}${endpoint}/${encodeURIComponent(languageCode)}`,
+  );
+  url.searchParams.set("page", page.toString());
 
-  return fetch(`${baseUrl}${endpoint}/${encodeURIComponent(languageCode)}`, {
+  return fetch(url.toString(), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -30,10 +40,15 @@ const fetchCareersFromEndpointPost = async (
   endpoint: string,
   userId: string,
   languageCode: string,
+  page: number = 0,
 ): Promise<Response> => {
   const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+  const url = new URL(
+    `${baseUrl}${endpoint}/${encodeURIComponent(languageCode)}`,
+  );
+  url.searchParams.set("page", page.toString());
 
-  return fetch(`${baseUrl}${endpoint}/${encodeURIComponent(languageCode)}`, {
+  return fetch(url.toString(), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -99,6 +114,22 @@ const normalizeCareer = (careerInput: unknown): UnlockedCareer | null => {
   };
 };
 
+const extractPaginationInfo = (payload: unknown): PaginationInfo | null => {
+  if (payload && typeof payload === "object") {
+    const record = payload as Record<string, unknown>;
+    if (record.page && typeof record.page === "object") {
+      const pageObj = record.page as Record<string, unknown>;
+      return {
+        size: readNumber(pageObj.size) ?? 10,
+        number: readNumber(pageObj.number) ?? 0,
+        totalElements: readNumber(pageObj.totalElements) ?? 0,
+        totalPages: readNumber(pageObj.totalPages) ?? 0,
+      };
+    }
+  }
+  return null;
+};
+
 const parseCareers = (payload: unknown): UnlockedCareer[] => {
   if (typeof payload === "string") {
     try {
@@ -146,7 +177,8 @@ const parseCareers = (payload: unknown): UnlockedCareer[] => {
 
 export const loadUnlockedCareers = async (
   selectedLanguage?: string,
-): Promise<UnlockedCareer[]> => {
+  page: number = 0,
+): Promise<PaginatedCareers> => {
   const languageCode = getLanguageCode(selectedLanguage);
   let userId = await ensureUserId();
 
@@ -157,6 +189,7 @@ export const loadUnlockedCareers = async (
           endpoint,
           currentUserId,
           languageCode,
+          page,
         );
 
         if (response.ok) {
@@ -172,6 +205,7 @@ export const loadUnlockedCareers = async (
           endpoint,
           currentUserId,
           languageCode,
+          page,
         );
 
         if (response.ok) {
@@ -199,13 +233,17 @@ export const loadUnlockedCareers = async (
 
       const payload = (await response.json()) as unknown;
       const careers = parseCareers(payload);
-      if (careers.length > 0) {
-        return careers;
+      const pagination = extractPaginationInfo(payload);
+      if (careers.length > 0 && pagination) {
+        return { careers, pagination };
       }
     } catch {
       continue;
     }
   }
 
-  return [];
+  return {
+    careers: [],
+    pagination: { size: 10, number: 0, totalElements: 0, totalPages: 0 },
+  };
 };
