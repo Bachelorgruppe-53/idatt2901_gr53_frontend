@@ -1,6 +1,11 @@
 import AboutCareer from "@/src/components/careers/aboutCareer";
 import { AreaSelector } from "@/src/components/map/areaDropdown";
-import { fetchLocations, MapLocation } from "@/src/components/map/mapData";
+import {
+  fetchAreas,
+  fetchLocations,
+  MapArea,
+  MapLocation,
+} from "@/src/components/map/mapData";
 import { MapMarker } from "@/src/components/map/MapMarker";
 import { QRScanner, type QRScanPayload } from "@/src/components/QRScanner";
 import { Colors } from "@/src/constants/Colors";
@@ -39,13 +44,6 @@ interface MapProps {
   onScanPress?: () => void;
 }
 
-const AREAS = [
-  // todo: fetch areas from backend instead of hardcoding
-  { id: "all", name: "Alle områder", value: null },
-  { id: "st-olavs", label: "St. Olavs Hospital", value: "St. Olavs hospital" },
-  { id: "roros", label: "Røros", value: "Røros" },
-];
-
 export const MapComponent = ({
   style,
   initialLocation,
@@ -65,11 +63,10 @@ export const MapComponent = ({
     ? "rgba(28,28,30,0.9)"
     : "rgba(255,255,255,0.9)";
 
+  const [areas, setAreas] = useState<MapArea[]>([]);
   const [locations, setLocations] = useState<MapLocation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedArea, setSelectedArea] = useState<string | null>(
-    "St. Olavs hospital",
-  );
+  const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
   const [showCareerModal, setShowCareerModal] = useState(false);
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
@@ -79,6 +76,21 @@ export const MapComponent = ({
   } | null>(null);
   const mapRef = useRef<MapView>(null);
   const watchIdRef = useRef<number | null>(null);
+
+  const areaOptions: MapArea[] = [
+    { id: "all", label: "Alle omrader", value: null },
+    ...areas,
+  ];
+
+  useEffect(() => {
+    const loadAreas = async () => {
+      const language = i18n.resolvedLanguage ?? i18n.language;
+      const fetchedAreas = await fetchAreas(language);
+      setAreas(fetchedAreas);
+    };
+
+    void loadAreas();
+  }, [i18n.language, i18n.resolvedLanguage]);
 
   // Load locations from backend on area change
   useEffect(() => {
@@ -227,6 +239,10 @@ export const MapComponent = ({
     );
   }, [userLocation]);
 
+  const handleAreaReselect = useCallback(() => {
+    fitMapToLocations();
+  }, [fitMapToLocations]);
+
   const handleOpenCareer = useCallback((careerId: number) => {
     setSelectedCareerId(careerId);
     setShowCareerModal(true);
@@ -257,9 +273,10 @@ export const MapComponent = ({
   return (
     <View style={themedStyles.container}>
       <AreaSelector
-        areas={AREAS}
+        areas={areaOptions}
         selectedArea={selectedArea}
         onAreaChange={setSelectedArea}
+        onAreaReselect={handleAreaReselect}
       />
 
       <MapView
@@ -277,7 +294,6 @@ export const MapComponent = ({
             key={loc.id}
             location={loc}
             onScan={() => startScanning()}
-            onOpenCareer={handleOpenCareer}
           />
         ))}
       </MapView>

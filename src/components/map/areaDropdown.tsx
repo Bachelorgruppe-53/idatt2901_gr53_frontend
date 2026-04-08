@@ -1,15 +1,7 @@
 import { useCallback, useState } from "react";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { Colors } from "../../constants/Colors";
-import { useThemedStyles } from "../../hooks/useStyleSheet";
-import { BaseStyles } from "@/src/constants/Styles";
 import { useTranslation } from "react-i18next";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useThemedStyles } from "../../hooks/useStyleSheet";
 
 interface Area {
   id: string;
@@ -22,12 +14,14 @@ interface AreaSelectorProps {
   areas: Area[];
   selectedArea: string | null;
   onAreaChange: (value: string | null) => void;
+  onAreaReselect?: (value: string | null) => void;
 }
 
 export const AreaSelector = ({
   areas,
   selectedArea,
   onAreaChange,
+  onAreaReselect,
 }: AreaSelectorProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const themedStyles = useThemedStyles();
@@ -35,10 +29,13 @@ export const AreaSelector = ({
 
   const handleSelect = useCallback(
     (value: string | null) => {
+      if (value === selectedArea) {
+        onAreaReselect?.(value);
+      }
       onAreaChange(value);
       setDropdownOpen(false);
     },
-    [onAreaChange],
+    [onAreaChange, onAreaReselect, selectedArea],
   );
 
   const selectedAreaLabel =
@@ -65,13 +62,12 @@ export const AreaSelector = ({
                 key={area.id}
                 style={[
                   themedStyles.dropdownItem,
-                  selectedArea === area.value && themedStyles.dropdownItemActive,
+                  selectedArea === area.value &&
+                    themedStyles.dropdownItemActive,
                 ]}
                 onPress={() => handleSelect(area.value)}
               >
-                <Text
-                  style={themedStyles.semiboldText}
-                >
+                <Text style={themedStyles.semiboldText}>
                   {area.label || area.name}
                 </Text>
               </Pressable>
