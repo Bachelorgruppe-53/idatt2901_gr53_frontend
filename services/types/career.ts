@@ -14,3 +14,15 @@ export interface UnlockedCareer {
   iconName: string | null;
   colorCode: number | null;
 }
+
+export interface PaginationInfo {
+  size: number;
+  number: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface PaginatedCareers {
+  careers: UnlockedCareer[];
+  pagination: PaginationInfo;
+}
