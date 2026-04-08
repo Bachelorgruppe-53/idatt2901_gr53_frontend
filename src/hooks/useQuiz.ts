@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId, registerDevice } from "@/services/authService";
+import { emitCareerClaimed } from "@/services/career/careerClaimEvents";
 import { getLanguageCode } from "@/services/language/languageCode";
 import type {
   ClaimRequest,
@@ -14,6 +15,35 @@ import type { QuizItem } from "@/src/components/quiz/quiz";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/config";
+
+const extractQuizId = (payload: unknown): number | null => {
+  if (payload && typeof payload === "object") {
+    const p = payload as QuizResponseDto;
+    if (typeof p.quizId === "number") return p.quizId;
+  }
+
+  return null;
+};
+
+const extractQuizMetadata = (payload: unknown): QuizMetadata => {
+  if (!payload || typeof payload !== "object") {
+    return {
+      quizId: null,
+      maxPoints: null,
+      timeLimit: null,
+    };
+  }
+
+  const response = payload as Partial<QuizResponseDto>;
+
+  return {
+    quizId: extractQuizId(payload),
+    maxPoints:
+      typeof response.maxPoints === "number" ? response.maxPoints : null,
+    timeLimit:
+      typeof response.timeLimit === "number" ? response.timeLimit : null,
+  };
+};
 
 /**
  * Custom hook for managing the state and logic of a career quiz. It handles fetching quiz questions, tracking answers, managing quiz completion, and submitting claims based on quiz results.
@@ -42,79 +72,53 @@ export function useCareerQuiz({
   const [quizTimeLimit, setQuizTimeLimit] = useState<number | null>(null);
   const isFetchingQuizRef = useRef(false);
 
-  const toFriendlyClaimError = (status: number, rawError: string): string => {
-    let extractedMessage = "";
-    try {
-      const parsed = JSON.parse(rawError) as {
-        message?: string;
-        error?: string;
-      };
-      extractedMessage = (
-        parsed.message ??
-        parsed.error ??
-        rawError
-      ).toLowerCase();
-    } catch {
-      extractedMessage = rawError.toLowerCase();
-    }
+  const toFriendlyClaimError = useCallback(
+    (status: number, rawError: string): string => {
+      let extractedMessage = "";
+      try {
+        const parsed = JSON.parse(rawError) as {
+          message?: string;
+          error?: string;
+        };
+        extractedMessage = (
+          parsed.message ??
+          parsed.error ??
+          rawError
+        ).toLowerCase();
+      } catch {
+        extractedMessage = rawError.toLowerCase();
+      }
 
-    if (extractedMessage.includes("already claimed")) {
-      return t("alreadyClaimed", "Du har allerede fullført denne.");
-    }
+      if (extractedMessage.includes("already claimed")) {
+        return t("alreadyClaimed", "Du har allerede fullført denne.");
+      }
 
-    if (
-      extractedMessage.includes("no correct quiz answers") ||
-      extractedMessage.includes("points == 0")
-    ) {
-      return t(
-        "incorrectAnswers",
-        "Feil svar! Du må svare riktig for å få poeng.",
-      );
-    }
+      if (
+        extractedMessage.includes("no correct quiz answers") ||
+        extractedMessage.includes("points == 0")
+      ) {
+        return t(
+          "incorrectAnswers",
+          "Feil svar! Du må svare riktig for å få poeng.",
+        );
+      }
 
-    if (status === 409) {
-      return t("alreadyClaimed", "Allerede registrert.");
-    }
+      if (status === 409) {
+        return t("alreadyClaimed", "Allerede registrert.");
+      }
 
-    if (status === 401) {
-      return t("unauthorized", "Ugyldig sesjon.");
-    }
+      if (status === 401) {
+        return t("unauthorized", "Ugyldig sesjon.");
+      }
 
-    if (status >= 500) {
-      return t("serverError", "Serveren har problemer. Prøv igjen senere.");
-    }
+      if (status >= 500) {
+        return t("serverError", "Serveren har problemer. Prøv igjen senere.");
+      }
 
-    return t("quizClaimFailed", `Innsending feilet (Status: ${status})`);
-  };
-
-  const extractQuizId = (payload: unknown): number | null => {
-    if (payload && typeof payload === "object") {
-      const p = payload as QuizResponseDto;
-      if (typeof p.quizId === "number") return p.quizId;
-    }
-
-    return null;
-  };
-
-  const extractQuizMetadata = (payload: unknown): QuizMetadata => {
-    if (!payload || typeof payload !== "object") {
-      return {
-        quizId: null,
-        maxPoints: null,
-        timeLimit: null,
-      };
-    }
-
-    const response = payload as Partial<QuizResponseDto>;
-
-    return {
-      quizId: extractQuizId(payload),
-      maxPoints:
-        typeof response.maxPoints === "number" ? response.maxPoints : null,
-      timeLimit:
-        typeof response.timeLimit === "number" ? response.timeLimit : null,
-    };
-  };
+      return t("quizClaimFailed", `Innsending feilet (Status: ${status})`);
+    },
+    [t],
+  );
 
   const fetchQuizPayload = useCallback(async () => {
     if (careerId === null) {
@@ -159,7 +163,7 @@ export function useCareerQuiz({
       setQuizLoading(false);
       isFetchingQuizRef.current = false;
     }
-  }, [careerId, i18n.language, i18n.resolvedLanguage]);
+  }, [careerId]);
 
   const fetchQuizPreview = useCallback(async () => {
     try {
@@ -211,7 +215,7 @@ export function useCareerQuiz({
       setQuizLoading(false);
       isFetchingQuizRef.current = false;
     }
-  }, [careerId, fetchQuizPayload, t]);
+  }, [fetchQuizPayload, t]);
 
   const handleAnswer = useCallback(
     (questionId: number, chosenOptionIds: number[]) => {
@@ -313,13 +317,25 @@ export function useCareerQuiz({
       }
 
       onClaimSuccess();
+
+      if (careerId !== null) {
+        emitCareerClaimed(careerId);
+      }
     } catch {
       setQuizErrorMsg(t("networkError", "Kunne ikke kontakte serveren."));
       setQuizCompleted(false);
     } finally {
       setIsSubmittingClaim(false);
     }
-  }, [answers, careerId, onClaimSuccess, quizId, quizStartedAt, t]);
+  }, [
+    answers,
+    careerId,
+    onClaimSuccess,
+    quizId,
+    quizStartedAt,
+    t,
+    toFriendlyClaimError,
+  ]);
 
   useEffect(() => {
     if (!shouldAutoClaim) return;
