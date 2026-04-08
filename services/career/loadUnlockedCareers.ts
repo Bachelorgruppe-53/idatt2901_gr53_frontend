@@ -234,7 +234,7 @@ export const loadUnlockedCareers = async (
       const payload = (await response.json()) as unknown;
       const careers = parseCareers(payload);
       const pagination = extractPaginationInfo(payload);
-      if (careers.length > 0 && pagination) {
+      if (pagination) {
         return { careers, pagination };
       }
     } catch {
