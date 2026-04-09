@@ -1,15 +1,11 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import {
-  clearTokens,
-  clearUserData,
-  getToken,
-  getUserId,
-  saveNickname,
-  saveToken,
-  saveUserId,
+    clearUserData,
+    getUserId,
+    saveNickname,
+    saveUserId,
 } from "@/services/utils/secureStorage";
 import axios, { isAxiosError } from "axios";
-import { router } from "expo-router";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -84,38 +80,8 @@ const extractNicknameFromResponse = (data: unknown): string | null => {
   return trimmedNickname.length > 0 ? trimmedNickname : null;
 };
 
-const decodeUserIdFromJwt = (token: string): string | null => {
-  if (typeof globalThis.atob !== "function") {
-    return null;
-  }
-
-  const segments = token.split(".");
-  if (segments.length < 2) {
-    return null;
-  }
-
-  try {
-    const payload = segments[1].replace(/-/g, "+").replace(/_/g, "/");
-    const paddedPayload = payload.padEnd(
-      Math.ceil(payload.length / 4) * 4,
-      "=",
-    );
-    const decodedPayload = globalThis.atob(paddedPayload);
-    const parsedPayload = JSON.parse(decodedPayload) as Record<string, unknown>;
-
-    return (
-      readUserUuid(parsedPayload.userId) ??
-      readUserUuid(parsedPayload.user_id) ??
-      readUserUuid(parsedPayload.id) ??
-      readUserUuid(parsedPayload.sub)
-    );
-  } catch {
-    return null;
-  }
-};
-
 /**
- * Retrieves the current user ID, first checking secure storage, then decoding from JWT if needed.
+ * Retrieves the current user ID from secure storage.
  *
  * @returns The current user ID or null if not available
  */
@@ -125,17 +91,7 @@ export const getCurrentUserId = async (): Promise<string | null> => {
     return storedUserId;
   }
 
-  const token = await getToken();
-  if (!token) {
-    return null;
-  }
-
-  const decodedUserId = decodeUserIdFromJwt(token);
-  if (decodedUserId) {
-    await saveUserId(decodedUserId);
-  }
-
-  return decodedUserId;
+  return null;
 };
 
 /**
@@ -171,7 +127,6 @@ export const registerDevice = async (): Promise<string> => {
       throw new Error("Backend did not return a user ID in x-user-id header");
     }
 
-    // Always clear user-scoped data — new device = new identity
     await clearUserData();
     await saveUserId(userId);
 
@@ -214,131 +169,5 @@ export const ensureUserId = async (): Promise<string> => {
     return storedUserId;
   }
 
-  // No valid stored UUID, register device with backend
   return await registerDevice();
-};
-
-/**
- * Authentication service for admin login and logout.
- */
-
-/**
- * Gets the base URL for the API depending on the environment.
- *
- * @returns the base URL as a string
- */
-/**
- * The base URL for the API.
- */
-const API_BASE_URL = getApiBaseUrl();
-
-/**
- * Axios instance for authentication API calls.
- */
-const authApi = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-/**
- * Request interceptor to add authentication token to headers.
- *
- * @param config axios request configuration
- * @returns modified Axios request configuration
- */
-authApi.interceptors.request.use(
-  async (config) => {
-    const token = await getToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-
-/**
- * Logs in an admin user with the provided username and password.
- *
- * @param username The admin's username.
- * @param password The admin's password.
- * @returns The response data from the login request.
- */
-export const loginAdmin = async (username: string, password: string) => {
-  try {
-    const response = await authApi.post("/auth/login", {
-      username,
-      password,
-    });
-
-    console.log("Login response status:", response.status);
-    console.log("Login response headers:", response.headers);
-
-    const authorizationHeader = response.headers.authorization;
-
-    if (authorizationHeader && authorizationHeader.startsWith("Bearer ")) {
-      const cleanToken = authorizationHeader.substring(7);
-
-      console.log("Token extracted successfully");
-      console.log(cleanToken);
-      await saveToken(cleanToken);
-
-      const userIdFromResponse = extractUserIdFromResponse(response.data);
-      const userIdFromToken = decodeUserIdFromJwt(cleanToken);
-      const resolvedUserId = userIdFromResponse ?? userIdFromToken;
-      if (resolvedUserId) {
-        await saveUserId(resolvedUserId);
-      }
-
-      return {
-        success: true,
-        message: response.data,
-      };
-    } else {
-      throw new Error("No authorization token in response headers");
-    }
-  } catch (error) {
-    if (isAxiosError(error)) {
-      console.error(
-        "Axios error during login:",
-        error.response?.data || error.message,
-      );
-      throw new Error(
-        error.response?.data?.message || "Login failed. Please try again.",
-      );
-    } else {
-      console.error("Unexpected error during login:", error);
-      throw error;
-    }
-  }
-};
-
-/**
- * Logs out the currently authenticated admin user.
- *
- * @returns void
- */
-export const logoutAdmin = async (): Promise<void> => {
-  try {
-    await clearTokens();
-    router.replace("/settings/admin/login");
-  } catch (error) {
-    await clearTokens();
-    throw error;
-  }
-};
-
-/**
- * Checks if the admin user is authenticated.
- *
- * @returns A promise that resolves to a boolean indicating authentication status.
- */
-export const isAuthenticated = async (): Promise<boolean> => {
-  const token = await getToken();
-  return !!token;
 };

@@ -7,33 +7,6 @@ export default function SettingsLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
-        name="admin/login"
-        options={{
-          headerBackTitle: t("settings"),
-          headerTransparent: true,
-          headerBackButtonDisplayMode: "minimal",
-          headerTitle: "",
-        }}
-      />
-      <Stack.Screen
-        name="admin/dashboard"
-        options={{
-          headerBackTitle: t("settings"),
-          headerTransparent: true,
-          headerBackButtonDisplayMode: "minimal",
-          headerTitle: "",
-        }}
-      />
-      <Stack.Screen
-        name="admin/generateClassCode"
-        options={{
-          headerBackTitle: t("adminDashboard"),
-          headerTransparent: true,
-          headerBackButtonDisplayMode: "minimal",
-          headerTitle: t("generateClassCode"),
-        }}
-      />
-      <Stack.Screen
         name="lang/languageSelection"
         options={{
           headerBackTitle: t("settings"),
