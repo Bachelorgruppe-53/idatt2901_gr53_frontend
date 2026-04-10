@@ -32,6 +32,7 @@ export const Colors = {
     border: "#535353",
     barTrack: "#D6D6D6",
     barFill: "#3c3c3c",
+    errorRed: palette.red,
   },
   dark: {
     text: palette.white,
@@ -45,5 +46,6 @@ export const Colors = {
     border: "#8a8988",
     barTrack: "#3c3c3c",
     barFill: "#D6D6D6",
+    errorRed: "#f05860",
   },
 };

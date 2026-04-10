@@ -323,7 +323,7 @@ export const createThemedStyles = (
       fontSize: Typography.base,
     },
     errorText: {
-      color: Colors.brand.red,
+      color: theme.errorRed,
       marginTop: Spacing.sm,
       textAlign: "center",
     },
