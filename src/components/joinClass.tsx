@@ -24,7 +24,6 @@ interface JoinClassModalProps {
 const CODE_LENGTH = 6;
 
 export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
-  // We use a regular space as a placeholder to ensure backspace always triggers events
   const [codeDigits, setCodeDigits] = useState<string[]>(
     Array(CODE_LENGTH).fill(" "),
   );
@@ -41,12 +40,12 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
 
   const handleBackspace = (index: number) => {
     const nextDigits = [...codeDigits];
-    
+
     // If the current cell has a real character, reset it to space
     if (codeDigits[index] !== " ") {
       nextDigits[index] = " ";
       setCodeDigits(nextDigits);
-    } 
+    }
     // If it's already a space, jump back and clear the previous cell
     else if (index > 0) {
       nextDigits[index - 1] = " ";
@@ -57,7 +56,7 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
 
   const handleCodeChange = (text: string, index: number) => {
     setError("");
-    
+
     // Detection for backspace: text becomes empty
     if (text.length === 0) {
       handleBackspace(index);
@@ -84,7 +83,8 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
 
     if (cursor < CODE_LENGTH) {
       setFocusAt(cursor);
-    } else {}
+    } else {
+    }
   };
 
   const validateAndSubmit = async () => {
@@ -123,13 +123,15 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
       style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={[themedStyles.modalBackdrop, { backgroundColor: "transparent" }]}>
+      <View
+        style={[themedStyles.modalBackdrop, { backgroundColor: "transparent" }]}
+      >
         <View style={[BaseStyles.center, BaseStyles.w80]}>
           <View style={[themedStyles.modalCard, BaseStyles.gap8]}>
             <Text style={themedStyles.modalTitle}>{t("joinClass")}</Text>
             <Text style={themedStyles.text}>{t("enterClassCode")}</Text>
-            
-            <View style={[BaseStyles.rowCenter, { gap: 8}]}>
+
+            <View style={[BaseStyles.rowCenter, { gap: 8 }]}>
               {codeDigits.map((digit, index) => (
                 <TextInput
                   key={`code-${index}`}
@@ -147,7 +149,7 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
                       paddingVertical: 0,
                       paddingHorizontal: 0,
                       textAlignVertical: "center",
-                      fontSize:20,
+                      fontSize: 20,
                       fontWeight: "bold",
                       // Hide placeholder space by making it transparent
                       color: digit === " " ? "transparent" : theme.text,
@@ -162,11 +164,15 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
                     }
                   }}
                   // visible-password disables predictive text on Android (backspace fix)
-                  keyboardType={Platform.OS === 'android' ? 'visible-password' : 'ascii-capable'}
+                  keyboardType={
+                    Platform.OS === "android"
+                      ? "visible-password"
+                      : "ascii-capable"
+                  }
                   textContentType="oneTimeCode"
                   autoCapitalize="characters"
                   autoCorrect={false}
-                  maxLength={2} 
+                  maxLength={CODE_LENGTH + 1} // Allow pasting full code
                   caretHidden={false}
                   selectionColor={Colors.brand.darkBlue}
                   // Keep cursor at the end
@@ -176,13 +182,19 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
             </View>
 
             {error ? <Text style={themedStyles.errorText}>{error}</Text> : null}
-            
-            <Pressable style={themedStyles.smallButton} onPress={validateAndSubmit}>
+
+            <Pressable
+              style={themedStyles.smallButton}
+              onPress={validateAndSubmit}
+            >
               <Text style={themedStyles.buttonText}>{t("join")}</Text>
             </Pressable>
-            
+
             <Pressable
-              style={[themedStyles.smallButton, { backgroundColor: Colors.brand.red }]}
+              style={[
+                themedStyles.smallButton,
+                { backgroundColor: theme.errorRed },
+              ]}
               onPress={onClose}
             >
               <Text style={themedStyles.buttonText}>{t("close")}</Text>
