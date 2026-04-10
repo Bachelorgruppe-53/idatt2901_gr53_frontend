@@ -23,6 +23,37 @@ interface JoinClassModalProps {
 
 const CODE_LENGTH = 6;
 
+const getJoinErrorMessage = (data: unknown): string | null => {
+  if (typeof data === "string") {
+    const trimmed = data.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+
+  if (data && typeof data === "object") {
+    const record = data as Record<string, unknown>;
+
+    const directMessageKeys = ["message", "error", "detail", "title"];
+    for (const key of directMessageKeys) {
+      const value = record[key];
+      if (typeof value === "string" && value.trim().length > 0) {
+        return value;
+      }
+    }
+
+    const errors = record.errors;
+    if (Array.isArray(errors)) {
+      const firstTextError = errors.find(
+        (item) => typeof item === "string" && item.trim().length > 0,
+      );
+      if (typeof firstTextError === "string") {
+        return firstTextError;
+      }
+    }
+  }
+
+  return null;
+};
+
 export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
   const [codeDigits, setCodeDigits] = useState<string[]>(
     Array(CODE_LENGTH).fill(" "),
@@ -83,16 +114,17 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
 
     if (cursor < CODE_LENGTH) {
       setFocusAt(cursor);
-    } else {
     }
   };
 
   const validateAndSubmit = async () => {
-    // Join and trim to remove the placeholder spaces
-    const codeToSubmit = codeDigits.join("").trim();
+    const hasCompleteCode = codeDigits.every((digit) =>
+      /^[A-Z0-9]$/.test(digit),
+    );
+    const codeToSubmit = codeDigits.join("");
     setError("");
 
-    if (!codeToSubmit || codeToSubmit.length !== CODE_LENGTH) {
+    if (!hasCompleteCode || codeToSubmit.length !== CODE_LENGTH) {
       setError(t("sixCharacterError"));
       return;
     }
@@ -110,8 +142,8 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
       onClose();
     } catch (error) {
       if (isAxiosError(error)) {
-        // Assume getReadableJoinError is defined or handle simply:
-        setError(error.response?.data?.message || t("serverError"));
+        const backendMessage = getJoinErrorMessage(error.response?.data);
+        setError(backendMessage ?? t("serverError"));
       } else {
         setError(t("serverError"));
       }
@@ -138,6 +170,9 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
                   ref={(ref: TextInput | null) => {
                     inputRefs.current[index] = ref;
                   }}
+                  accessibilityLabel={`Class code character ${index + 1} of ${CODE_LENGTH}`}
+                  accessibilityHint="Enter one character of the 6-character class code"
+                  accessibilityRole="text"
                   style={[
                     themedStyles.input,
                     {
@@ -186,6 +221,9 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
             <Pressable
               style={themedStyles.smallButton}
               onPress={validateAndSubmit}
+              accessibilityRole="button"
+              accessibilityLabel={t("joinClass")}
+              accessibilityHint="Validates and submits the class code"
             >
               <Text style={themedStyles.buttonText}>{t("join")}</Text>
             </Pressable>
@@ -196,6 +234,9 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
                 { backgroundColor: theme.errorRed },
               ]}
               onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel={t("close")}
+              accessibilityHint="Closes the join class dialog"
             >
               <Text style={themedStyles.buttonText}>{t("close")}</Text>
             </Pressable>
