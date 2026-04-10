@@ -10,7 +10,7 @@ interface NotImplementedProps {
 
 export function NotImplemented({ title = "Coming Soon" }: NotImplementedProps) {
   const themedStyles = useThemedStyles();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("settings");
 
   return (
     <View style={[themedStyles.container, BaseStyles.center]}>
