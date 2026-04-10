@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
+import { loadUnlockedCareers } from "@/services/career/loadUnlockedCareers";
 import { getLanguageCode } from "@/services/language/languageCode";
 import {
   deleteFavoriteCareer,
@@ -54,8 +55,10 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isCareerClaimed, setIsCareerClaimed] = useState(false);
 
   const handleClaimSuccess = () => {
+    setIsCareerClaimed(true);
     setShowSuccessBanner(true);
   };
 
@@ -96,6 +99,57 @@ export default function AboutCareer({ careerId, onClose }: Props) {
 
     void fetchQuizPreview();
   }, [careerId, fetchQuizPreview]);
+
+  useEffect(() => {
+    if (careerId === null) {
+      setIsCareerClaimed(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadClaimStatus = async () => {
+      try {
+        const language = i18n.resolvedLanguage ?? i18n.language;
+        let page = 0;
+
+        while (true) {
+          const result = await loadUnlockedCareers(language, page);
+          const claimed = result.careers.some(
+            (career) => career.career_id === careerId,
+          );
+
+          if (claimed) {
+            if (isMounted) {
+              setIsCareerClaimed(true);
+            }
+            return;
+          }
+
+          const totalPages = result.pagination.totalPages;
+          if (totalPages <= 0 || page >= totalPages - 1) {
+            break;
+          }
+
+          page += 1;
+        }
+
+        if (isMounted) {
+          setIsCareerClaimed(false);
+        }
+      } catch {
+        if (isMounted) {
+          setIsCareerClaimed(false);
+        }
+      }
+    };
+
+    void loadClaimStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [careerId, i18n.language, i18n.resolvedLanguage]);
 
   useEffect(() => {
     if (careerId === null) return;
@@ -342,7 +396,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
         />
 
         <View style={[BaseStyles.p16, BaseStyles.alignCenter]}>
-          {!quizCompleted ? (
+          {!isCareerClaimed && !quizCompleted ? (
             <Pressable
               style={[themedStyles.button, BaseStyles.center]}
               onPress={fetchQuiz}
@@ -351,7 +405,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
                 {t("startQuiz", "Ta quiz for å låse opp")}
               </Text>
             </Pressable>
-          ) : (
+          ) : !isCareerClaimed && quizCompleted ? (
             <View
               style={[
                 themedStyles.button,
@@ -364,7 +418,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
                 {t("submitting", "Sender svar...")}
               </Text>
             </View>
-          )}
+          ) : null}
 
           {quizErrorMsg && (
             <View

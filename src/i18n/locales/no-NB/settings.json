@@ -3,12 +3,10 @@
   "lightMode": "Lysmodus",
   "changeLanguage": "Endre språk",
   "editProfile": "Rediger profil",
-  "admin": "Adminpanel",
   "aboutUs": "Om oss",
   "aboutUsContent": "Dette er en prototype av en app utviklet av studenter ved NTNU for St. Olavs hospital i Trondheim. Appen har som mål å hjelpe elever med å oppdage og utforske ulike yrker innen helsesektoren gjennom interaktive funksjoner som karrieretester og QR-kodeskanning.",
   "feedback": "Gi oss tilbakemelding",
   "submitFeedbackError": "Vet ikke hvordan åpne denne URL-en: {{url}}",
-  "dashboard": "Dashbord",
   "language": "Språk",
   "myProfile": "Min profil",
   "theme": "Fargetema",
@@ -21,9 +19,7 @@
   "termsOfService": "Vilkår for bruk",
   "accountSettings": "Kontoinnstillinger",
   "helpSupport": "Hjelp og støtte",
-  "generateClassCode": "Generer klassekode",
   "submitFeedback": "Send inn tilbakemelding",
-  "adminDashboard": "Admin Oversikt",
   "leaveClass": "Forlat klasse",
   "class": "Klasse"
 }

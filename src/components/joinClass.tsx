@@ -72,7 +72,6 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
       );
 
       console.log("Successfully joined class:", response.data);
-      alert(t("joinedClassSuccess"));
       onJoined?.();
       onClose();
     } catch (error) {
