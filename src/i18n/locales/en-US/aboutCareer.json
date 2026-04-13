@@ -16,5 +16,6 @@
   "closeAboutCareer": "Close about career",
   "unlockedCareersTitle": "Unlocked Careers",
   "noResultsHeading": "No careers found.",
-  "noResultsDesc": "Try adjusting your search."
+  "noResultsDesc": "Try adjusting your search.",
+  "searchPlaceholder": "Search careers..."
 }
