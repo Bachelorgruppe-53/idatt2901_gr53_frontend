@@ -1,7 +1,7 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import axios, { isAxiosError } from "axios";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   KeyboardAvoidingView,
@@ -68,6 +68,14 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
   const setFocusAt = (index: number) => {
     inputRefs.current[index]?.focus();
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      inputRefs.current[0]?.focus();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleBackspace = (index: number) => {
     const nextDigits = [...codeDigits];
@@ -170,6 +178,7 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
                   ref={(ref: TextInput | null) => {
                     inputRefs.current[index] = ref;
                   }}
+                  autoFocus={index === 0}
                   accessibilityLabel={`Class code character ${index + 1} of ${CODE_LENGTH}`}
                   accessibilityHint="Enter one character of the 6-character class code"
                   accessibilityRole="text"
