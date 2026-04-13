@@ -1,8 +1,11 @@
+import { loadHomeSummary } from "@/services/home/loadHomeSummary";
 import { Separator } from "@/src/components/Separator";
 import SettingsButton from "@/src/components/settingsButton";
 import { BaseStyles } from "@/src/constants/Styles";
 import { useLeaveClass } from "@/src/hooks/useLeaveClass";
 import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -17,7 +20,26 @@ export default function SettingsScreen() {
   const themedStyles = useThemedStyles();
   const { t } = useTranslation("settings");
   const insets = useSafeAreaInsets();
-  const { leaveClass } = useLeaveClass();
+  const [hasClass, setHasClass] = useState(false);
+
+  const checkMembership = useCallback(async () => {
+    try {
+      const summary = await loadHomeSummary();
+      setHasClass(Boolean(summary.summary?.classCode));
+    } catch {
+      setHasClass(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void checkMembership();
+    }, [checkMembership]),
+  );
+
+  const { leaveClass } = useLeaveClass(() => {
+    void checkMembership();
+  });
 
   return (
     <ScrollView
@@ -93,18 +115,23 @@ export default function SettingsScreen() {
           labelKey="privacyPolicy"
         />
         <Separator />
-        <View style={themedStyles.settingsSection}>
-          <Text style={[themedStyles.subheading, { marginVertical: 10 }]}>
-            {t("class")}
-          </Text>
-        </View>
-        <Separator />
-        <SettingsButton
-          onPress={leaveClass}
-          iconName="exit-to-app"
-          labelKey="leaveClass"
-        />
-        <Separator />
+
+        {hasClass ? (
+          <>
+            <View style={themedStyles.settingsSection}>
+              <Text style={[themedStyles.subheading, { marginVertical: 10 }]}>
+                {t("class")}
+              </Text>
+            </View>
+            <Separator />
+            <SettingsButton
+              onPress={leaveClass}
+              iconName="exit-to-app"
+              labelKey="leaveClass"
+            />
+            <Separator />
+          </>
+        ) : null}
       </View>
     </ScrollView>
   );

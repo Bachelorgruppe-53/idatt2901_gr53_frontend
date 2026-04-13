@@ -33,6 +33,24 @@ export default function SettingsLayout() {
           headerTitle: t("feedback"),
         }}
       />
+      <Stack.Screen
+        name="privacy/privacyPolicy"
+        options={{
+          headerBackTitle: t("settings"),
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: t("privacyPolicy"),
+        }}
+      />
+      <Stack.Screen
+        name="notifications/notificationSettings"
+        options={{
+          headerBackTitle: t("settings"),
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: t("notificationSettings"),
+        }}
+      />
     </Stack>
   );
 }

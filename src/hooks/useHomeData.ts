@@ -113,8 +113,6 @@ export function useHomeData() {
   useFocusEffect(
     useCallback(() => {
       void reload();
-      const interval = setInterval(() => void reload(), 15000);
-      return () => clearInterval(interval);
     }, [reload]),
   );
 
