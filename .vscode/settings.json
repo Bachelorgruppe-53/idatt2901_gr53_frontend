@@ -4,6 +4,9 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "javascript.tsserver.experimental.enableProjectDiagnostics": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
   "conventionalCommits.scopes": [
     "nav-bar",
     "homescreen",
