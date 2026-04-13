@@ -145,4 +145,132 @@ describe("loadHomeSummary", () => {
       "Invalid server response format",
     );
   });
+
+  it("returns no-class fallback when response starts with 'This user'", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      text: async () => "This user has no class assignment",
+    });
+
+    await expect(loadHomeSummary()).resolves.toEqual({
+      summary: null,
+      points: 0,
+      classPoints: null,
+      nickname: "",
+    });
+  });
+
+  it("throws parsed backend message from JSON error payload", async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 403,
+      text: async () => JSON.stringify({ message: "Forbidden" }),
+    });
+
+    await expect(loadHomeSummary()).rejects.toThrow("Forbidden");
+  });
+
+  it("throws parsed backend error field when message is missing", async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 500,
+      text: async () => JSON.stringify({ error: "Server exploded" }),
+    });
+
+    await expect(loadHomeSummary()).rejects.toThrow("Server exploded");
+  });
+
+  it("throws raw backend body when error payload is not JSON", async () => {
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 500,
+      text: async () => "plain backend error",
+    });
+
+    await expect(loadHomeSummary()).rejects.toThrow("plain backend error");
+  });
+
+  it("falls back to zero points and empty nickname when summary fields are missing", async () => {
+    const summaryPayload = {
+      className: "A",
+      schoolName: "B",
+      classCode: "XYZ123",
+    };
+
+    const responses: FetchResponseShape[] = [
+      {
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify(summaryPayload),
+      },
+      {
+        ok: true,
+        status: 200,
+        json: async () => ({ points: 10 }),
+      },
+    ];
+
+    fetchMock.mockImplementation(async () => responses.shift());
+
+    await expect(loadHomeSummary()).resolves.toEqual({
+      summary: summaryPayload,
+      points: 0,
+      classPoints: 10,
+      nickname: "",
+    });
+  });
+
+  it("keeps classPoints as null when class info call is not ok", async () => {
+    const summaryPayload = {
+      nickname: "Anna",
+      points: 42,
+      className: "A",
+      schoolName: "B",
+      classCode: "XYZ123",
+    };
+
+    const responses: FetchResponseShape[] = [
+      {
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify(summaryPayload),
+      },
+      {
+        ok: false,
+        status: 404,
+        json: async () => ({}),
+      },
+    ];
+
+    fetchMock.mockImplementation(async () => responses.shift());
+
+    const result = await loadHomeSummary();
+
+    expect(result.classPoints).toBeNull();
+    expect(result.points).toBe(42);
+  });
+
+  it("keeps classPoints as null when class info request throws", async () => {
+    const summaryPayload = {
+      nickname: "Anna",
+      points: 42,
+      className: "A",
+      schoolName: "B",
+      classCode: "XYZ123",
+    };
+
+    fetchMock
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify(summaryPayload),
+      })
+      .mockRejectedValueOnce(new Error("class info failed"));
+
+    const result = await loadHomeSummary();
+
+    expect(result.classPoints).toBeNull();
+    expect(result.nickname).toBe("Anna");
+  });
 });
