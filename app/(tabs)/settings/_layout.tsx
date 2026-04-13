@@ -41,7 +41,7 @@ export default function SettingsLayout() {
           headerBackButtonDisplayMode: "minimal",
           headerTitle: t("privacyPolicy"),
         }}
-      /> 
+      />
       <Stack.Screen
         name="notifications/notificationSettings"
         options={{

@@ -71,7 +71,7 @@ export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setFocusAt(0);
+      inputRefs.current[0]?.focus();
     }, 0);
 
     return () => clearTimeout(timer);
