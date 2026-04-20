@@ -14,7 +14,15 @@ import { useThemeColor } from "@/src/hooks/useThemeColor";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Linking,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const COMPETITION_DEBUG = __DEV__;
@@ -38,7 +46,8 @@ export default function Index() {
     useHomeData();
 
   // QR Scanner
-  const { isScanning, startScanning, stopScanning } = useQRScanner();
+  const { isScanning, startScanning, stopScanning, permission } =
+    useQRScanner();
 
   // Modal states
   const [showJoinClass, setShowJoinClass] = useState(false);
@@ -184,8 +193,38 @@ export default function Index() {
     alert(t("invalidQR"));
   };
 
+  const showCameraSettingsAlert = () => {
+    Alert.alert(
+      t("cameraPermissionDeniedTitle", "Camera access needed"),
+      t(
+        "cameraPermissionDeniedMessage",
+        "Camera access has been denied. Open Settings to grant permission.",
+      ),
+      [
+        {
+          text: t("cancel", "Cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("openSettings", "Open settings"),
+          onPress: () => {
+            void Linking.openSettings();
+          },
+        },
+      ],
+    );
+  };
+
   const handleQRPress = async () => {
-    startScanning();
+    const started = await startScanning();
+    if (
+      !started &&
+      permission &&
+      !permission.granted &&
+      permission.canAskAgain === false
+    ) {
+      showCameraSettingsAlert();
+    }
   };
 
   if (isScanning) {
@@ -306,8 +345,8 @@ export default function Index() {
           styles.contestCard,
           BaseStyles.center,
           { borderColor: Colors.brand.lightBlue },
-        ]}>
-          
+        ]}
+      >
         <Text style={[themedStyles.subheading, BaseStyles.p8]}>
           {competitionTitle}
         </Text>
