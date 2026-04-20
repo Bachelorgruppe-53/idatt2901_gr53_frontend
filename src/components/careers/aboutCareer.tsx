@@ -2,6 +2,7 @@ import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import { loadUnlockedCareers } from "@/services/career/loadUnlockedCareers";
 import { getLanguageCode } from "@/services/language/languageCode";
+import type { ClaimResponseDto } from "@/services/types/quiz";
 import {
   deleteFavoriteCareer,
   getFavoriteCareer,
@@ -56,8 +57,10 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isCareerClaimed, setIsCareerClaimed] = useState(false);
+  const [claimResult, setClaimResult] = useState<ClaimResponseDto | null>(null);
 
-  const handleClaimSuccess = () => {
+  const handleClaimSuccess = (result: ClaimResponseDto) => {
+    setClaimResult(result);
     setIsCareerClaimed(true);
     setShowSuccessBanner(true);
   };
@@ -85,16 +88,6 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   const isFavoriteDisabled = data === null;
 
   useEffect(() => {
-    if (!showSuccessBanner) return;
-
-    const timer = setTimeout(() => {
-      onClose();
-    }, 1800);
-
-    return () => clearTimeout(timer);
-  }, [showSuccessBanner, onClose]);
-
-  useEffect(() => {
     if (careerId === null) return;
 
     void fetchQuizPreview();
@@ -103,6 +96,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   useEffect(() => {
     if (careerId === null) {
       setIsCareerClaimed(false);
+      setClaimResult(null);
       return;
     }
 
@@ -246,9 +240,11 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   if (loading) {
     return (
       <View style={themedStyles.container}>
-        <Pressable style={themedStyles.closeButton} 
-        onPress={onClose}
-        accessibilityLabel={t("closeAboutCareer")}>
+        <Pressable
+          style={themedStyles.closeButton}
+          onPress={onClose}
+          accessibilityLabel={t("closeAboutCareer")}
+        >
           <MaterialIcons name="close" size={24} color={theme.text} />
         </Pressable>
         <ActivityIndicator size="large" color={theme.button} />
@@ -286,10 +282,20 @@ export default function AboutCareer({ careerId, onClose }: Props) {
                 flex: 1,
               }}
             >
-              {t(
-                "claimSuccessMessage",
-                "Du fullførte quizen og fikk poengene dine.",
-              )}
+              {claimResult
+                ? t(
+                    "claimSuccessWithScore",
+                    "Du fikk {{points}} poeng med {{correct}}/{{total}} riktige.",
+                    {
+                      points: claimResult.points,
+                      correct: claimResult.correctAnswers,
+                      total: claimResult.totalQuestions,
+                    },
+                  )
+                : t(
+                    "claimSuccessMessage",
+                    "Du fullførte quizen og fikk poengene dine.",
+                  )}
             </Text>
           </View>
         )}

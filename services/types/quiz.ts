@@ -26,14 +26,20 @@ export interface QuestionAnswerDto {
 
 export interface ClaimRequest {
   careerId: number;
-  quizId: number;
   responseTime: number;
   chosenOptionIds: number[];
 }
 
+export type ClaimResponseDto = {
+  correctAnswers: number;
+  totalQuestions: number;
+  points: number;
+  isClaimed: boolean;
+};
+
 export interface UseCareerQuizParams {
   careerId: number | null;
-  onClaimSuccess: () => void;
+  onClaimSuccess: (result: ClaimResponseDto) => void;
 }
 
 export interface QuizMetadata {

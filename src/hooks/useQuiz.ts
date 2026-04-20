@@ -4,6 +4,7 @@ import { emitCareerClaimed } from "@/services/career/careerClaimEvents";
 import { getLanguageCode } from "@/services/language/languageCode";
 import type {
   ClaimRequest,
+  ClaimResponseDto,
   QuestionAnswerDto,
   QuizMetadata,
   QuizOptionDto,
@@ -243,18 +244,6 @@ export function useCareerQuiz({
     try {
       let userId = await ensureUserId();
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
-      const resolvedQuizId = quizId;
-
-      if (resolvedQuizId === null) {
-        setQuizErrorMsg(
-          t(
-            "quizClaimFailed",
-            "Kunne ikke finne quiz-id. Prøv å laste quizen på nytt.",
-          ),
-        );
-        setQuizCompleted(false);
-        return;
-      }
 
       const responseTime = quizStartedAt
         ? Math.max(1, Math.floor((Date.now() - quizStartedAt) / 1000))
@@ -262,7 +251,6 @@ export function useCareerQuiz({
 
       const claimBody: ClaimRequest = {
         careerId,
-        quizId: resolvedQuizId,
         responseTime,
         chosenOptionIds: answers.flatMap((a) => a.chosenOptionIds),
       };
@@ -280,43 +268,84 @@ export function useCareerQuiz({
         });
       };
 
-      let res = await claimCareer(userId);
+      const readClaimResponse = async (res: Response) => {
+        const clonedResponse = res.clone();
 
-      if (!res.ok) {
-        const errorText = await res.text();
-
-        if (res.status === 400 && errorText.includes("Invalid UUID format")) {
-          userId = await registerDevice();
-          res = await claimCareer(userId);
-        } else {
-          const friendly = toFriendlyClaimError(res.status, errorText);
-          setQuizErrorMsg(friendly);
-          setQuizCompleted(false);
-          console.log("Claim failed", {
-            status: res.status,
-            errorText,
-            friendly,
-            userId,
-          });
-          return;
+        try {
+          const parsed = (await clonedResponse.json()) as ClaimResponseDto;
+          return {
+            parsed,
+            rawText: JSON.stringify(parsed),
+          };
+        } catch {
+          return {
+            parsed: null,
+            rawText: await res.text(),
+          };
         }
-      }
+      };
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        const friendly = toFriendlyClaimError(res.status, errorText);
+      const handleClaimFailure = async (res: Response, userIdValue: string) => {
+        const { rawText } = await readClaimResponse(res);
+
+        if (res.status === 400 && rawText.includes("Invalid UUID format")) {
+          return { retryWithNewUser: true as const };
+        }
+
+        const friendly = toFriendlyClaimError(res.status, rawText);
         setQuizErrorMsg(friendly);
         setQuizCompleted(false);
         console.log("Claim failed", {
           status: res.status,
-          errorText,
+          errorText: rawText,
+          friendly,
+          userId: userIdValue,
+        });
+
+        return { retryWithNewUser: false as const };
+      };
+
+      let res = await claimCareer(userId);
+
+      if (!res.ok) {
+        const failure = await handleClaimFailure(res, userId);
+        if (failure.retryWithNewUser) {
+          userId = await registerDevice();
+          res = await claimCareer(userId);
+          if (!res.ok) {
+            await handleClaimFailure(res, userId);
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+
+      const claimResponseResult = await readClaimResponse(res);
+      const claimResponse = claimResponseResult.parsed;
+
+      if (!claimResponse?.isClaimed) {
+        const friendly =
+          claimResponse &&
+          (claimResponse.correctAnswers === 0 || claimResponse.points === 0)
+            ? t(
+                "incorrectAnswers",
+                "Feil svar! Du må svare riktig for å få poeng.",
+              )
+            : t("quizClaimFailed", "Innsending feilet.");
+
+        setQuizErrorMsg(friendly);
+        setQuizCompleted(false);
+        console.log("Claim failed", {
+          status: res.status,
+          errorText: claimResponseResult.rawText,
           friendly,
           userId,
         });
         return;
       }
 
-      onClaimSuccess();
+      onClaimSuccess(claimResponse);
 
       if (careerId !== null) {
         emitCareerClaimed(careerId);
@@ -331,7 +360,6 @@ export function useCareerQuiz({
     answers,
     careerId,
     onClaimSuccess,
-    quizId,
     quizStartedAt,
     t,
     toFriendlyClaimError,
@@ -349,7 +377,6 @@ export function useCareerQuiz({
     handleClaim,
     isSubmittingClaim,
     quizQuestions.length,
-    quizId,
     shouldAutoClaim,
   ]);
 
