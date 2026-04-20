@@ -16,5 +16,7 @@
   "noCareers": "Oi her var det tomt! Finn eit yrke for å låse det opp!",
   "unlockedCareersTitle": "Opplåste yrker",
   "noResultsHeading": "Ingen yrker funnet.",
-  "noResultsDesc": "Prøv å justere søket ditt."
+  "noResultsDesc": "Prøv å justere søket ditt.",
+  "searchPlaceholder": "Søk etter yrker...",
+  "claimSuccessWithScore": "Du fikk {{points}} poeng med {{correct}}/{{total}} riktige."
 }

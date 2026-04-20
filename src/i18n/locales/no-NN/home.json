@@ -8,8 +8,8 @@
   "cameraDenied": "Kamera-tilgang nekta. Vennligst gi tillatelse i innstillingane.",
   "hello": "Hei",
   "welcomeMessage": "Velkomen",
-  "you": "Du",
-  "class": "Klassa",
+  "you": "Dine poeng",
+  "class": "Klassens poeng",
   "school": "Skule",
   "classCompetition": "Klassekonkurranse",
   "contestPeriod": "Konkurranseperiode",
@@ -31,5 +31,15 @@
   "findCareers_one": "Du har funne {{count}} yrke!",
   "findCareers_other": "Du har funne {{count}} yrke!",
   "noClassPoints": "Bli med i ei klasse for å samle poeng!",
-  "closeButton": "Lukk"
+  "closeButton": "Lukk",
+  "cameraPermissionDeniedTitle": "Kameratilgang er nødvendig",
+  "cameraPermissionDeniedMessage": "Kameratilgang har vorte nekta. Opna innstillingane for å gje tilgang.",
+  "cancel": "Avbryt",
+  "openSettings": "Opna innstillingar",
+  "gameInfoTitle": "Korleis fungerer spelet?",
+  "gameInfoBody": "Finn karrieringar rundt på kartet, fullfør quizen for å låsa opp poeng, og bruk klasseoversikten for å samanlikna framgang med medelevane dine.",
+  "gameInfoDetail1": "1. Bli med i ein klasse for å sjå rangeringa di og poenga til klassen.",
+  "gameInfoDetail2": "2. Skann ein QR-kode frå heimskjermen eller på kartet.",
+  "gameInfoDetail3": "3. Svar rett på quiz-spørsmåla for å tena poeng.",
+  "gameInfoDetailPoints": "Tips! Jau raskare du svarer rett, dess fleire poeng tenar du!"
 }
