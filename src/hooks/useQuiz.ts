@@ -4,6 +4,7 @@ import { emitCareerClaimed } from "@/services/career/careerClaimEvents";
 import { getLanguageCode } from "@/services/language/languageCode";
 import type {
   ClaimRequest,
+  ClaimResponseDto,
   QuestionAnswerDto,
   QuizMetadata,
   QuizOptionDto,
@@ -16,19 +17,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/config";
 
-const extractQuizId = (payload: unknown): number | null => {
-  if (payload && typeof payload === "object") {
-    const p = payload as QuizResponseDto;
-    if (typeof p.quizId === "number") return p.quizId;
-  }
-
-  return null;
-};
-
 const extractQuizMetadata = (payload: unknown): QuizMetadata => {
   if (!payload || typeof payload !== "object") {
     return {
-      quizId: null,
       maxPoints: null,
       timeLimit: null,
     };
@@ -37,7 +28,6 @@ const extractQuizMetadata = (payload: unknown): QuizMetadata => {
   const response = payload as Partial<QuizResponseDto>;
 
   return {
-    quizId: extractQuizId(payload),
     maxPoints:
       typeof response.maxPoints === "number" ? response.maxPoints : null,
     timeLimit:
@@ -67,7 +57,6 @@ export function useCareerQuiz({
   const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
   const [shouldAutoClaim, setShouldAutoClaim] = useState(false);
   const [quizErrorMsg, setQuizErrorMsg] = useState<string | null>(null);
-  const [quizId, setQuizId] = useState<number | null>(null);
   const [quizMaxPoints, setQuizMaxPoints] = useState<number | null>(null);
   const [quizTimeLimit, setQuizTimeLimit] = useState<number | null>(null);
   const isFetchingQuizRef = useRef(false);
@@ -171,7 +160,6 @@ export function useCareerQuiz({
       if (!payload) return;
 
       const metadata = extractQuizMetadata(payload);
-      setQuizId(metadata.quizId);
       setQuizMaxPoints(metadata.maxPoints);
       setQuizTimeLimit(metadata.timeLimit);
     } catch {
@@ -201,7 +189,6 @@ export function useCareerQuiz({
       const metadata = extractQuizMetadata(payload);
 
       setQuizQuestions(mapped);
-      setQuizId(metadata.quizId);
       setQuizMaxPoints(metadata.maxPoints);
       setQuizTimeLimit(metadata.timeLimit);
       setAnswers([]);
@@ -243,18 +230,6 @@ export function useCareerQuiz({
     try {
       let userId = await ensureUserId();
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
-      const resolvedQuizId = quizId;
-
-      if (resolvedQuizId === null) {
-        setQuizErrorMsg(
-          t(
-            "quizClaimFailed",
-            "Kunne ikke finne quiz-id. Prøv å laste quizen på nytt.",
-          ),
-        );
-        setQuizCompleted(false);
-        return;
-      }
 
       const responseTime = quizStartedAt
         ? Math.max(1, Math.floor((Date.now() - quizStartedAt) / 1000))
@@ -262,7 +237,6 @@ export function useCareerQuiz({
 
       const claimBody: ClaimRequest = {
         careerId,
-        quizId: resolvedQuizId,
         responseTime,
         chosenOptionIds: answers.flatMap((a) => a.chosenOptionIds),
       };
@@ -280,43 +254,84 @@ export function useCareerQuiz({
         });
       };
 
-      let res = await claimCareer(userId);
+      const readClaimResponse = async (res: Response) => {
+        const clonedResponse = res.clone();
 
-      if (!res.ok) {
-        const errorText = await res.text();
-
-        if (res.status === 400 && errorText.includes("Invalid UUID format")) {
-          userId = await registerDevice();
-          res = await claimCareer(userId);
-        } else {
-          const friendly = toFriendlyClaimError(res.status, errorText);
-          setQuizErrorMsg(friendly);
-          setQuizCompleted(false);
-          console.log("Claim failed", {
-            status: res.status,
-            errorText,
-            friendly,
-            userId,
-          });
-          return;
+        try {
+          const parsed = (await clonedResponse.json()) as ClaimResponseDto;
+          return {
+            parsed,
+            rawText: JSON.stringify(parsed),
+          };
+        } catch {
+          return {
+            parsed: null,
+            rawText: await res.text(),
+          };
         }
-      }
+      };
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        const friendly = toFriendlyClaimError(res.status, errorText);
+      const handleClaimFailure = async (res: Response, userIdValue: string) => {
+        const { rawText } = await readClaimResponse(res);
+
+        if (res.status === 400 && rawText.includes("Invalid UUID format")) {
+          return { retryWithNewUser: true as const };
+        }
+
+        const friendly = toFriendlyClaimError(res.status, rawText);
         setQuizErrorMsg(friendly);
         setQuizCompleted(false);
         console.log("Claim failed", {
           status: res.status,
-          errorText,
+          errorText: rawText,
+          friendly,
+          userId: userIdValue,
+        });
+
+        return { retryWithNewUser: false as const };
+      };
+
+      let res = await claimCareer(userId);
+
+      if (!res.ok) {
+        const failure = await handleClaimFailure(res, userId);
+        if (failure.retryWithNewUser) {
+          userId = await registerDevice();
+          res = await claimCareer(userId);
+          if (!res.ok) {
+            await handleClaimFailure(res, userId);
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+
+      const claimResponseResult = await readClaimResponse(res);
+      const claimResponse = claimResponseResult.parsed;
+
+      if (!claimResponse?.isClaimed) {
+        const friendly =
+          claimResponse &&
+          (claimResponse.correctAnswers === 0 || claimResponse.points === 0)
+            ? t(
+                "incorrectAnswers",
+                "Feil svar! Du må svare riktig for å få poeng.",
+              )
+            : t("quizClaimFailed", "Innsending feilet.");
+
+        setQuizErrorMsg(friendly);
+        setQuizCompleted(false);
+        console.log("Claim failed", {
+          status: res.status,
+          errorText: claimResponseResult.rawText,
           friendly,
           userId,
         });
         return;
       }
 
-      onClaimSuccess();
+      onClaimSuccess(claimResponse);
 
       if (careerId !== null) {
         emitCareerClaimed(careerId);
@@ -331,7 +346,6 @@ export function useCareerQuiz({
     answers,
     careerId,
     onClaimSuccess,
-    quizId,
     quizStartedAt,
     t,
     toFriendlyClaimError,
@@ -349,7 +363,6 @@ export function useCareerQuiz({
     handleClaim,
     isSubmittingClaim,
     quizQuestions.length,
-    quizId,
     shouldAutoClaim,
   ]);
 
@@ -361,7 +374,6 @@ export function useCareerQuiz({
     setAnswers([]);
     setQuizStartedAt(null);
     setQuizErrorMsg(null);
-    setQuizId(null);
     setQuizMaxPoints(null);
     setQuizTimeLimit(null);
     setShouldAutoClaim(false);

@@ -8,8 +8,8 @@
   "cameraDenied": "Camera access denied. Please grant permission in settings.",
   "hello": "Hello",
   "welcomeMessage": "Welcome",
-  "you": "You",
-  "class": "Class",
+  "you": "Your points",
+  "class": "Class points",
   "school": "School",
   "classCompetition": "Class competition",
   "contestPeriod": "Contest Period",
@@ -31,5 +31,15 @@
   "findCareers_one": "You have found {{count}} career!",
   "findCareers_other": "You have found {{count}} careers!",
   "noClassPoints": "Join a class to earn points!",
-  "closeButton": "Close"
+  "closeButton": "Close",
+  "cameraPermissionDeniedTitle": "Camera access needed",
+  "cameraPermissionDeniedMessage": "Camera access has been denied. Open Settings to grant permission.",
+  "cancel": "Cancel",
+  "openSettings": "Open Settings",
+  "gameInfoTitle": "How the game works",
+  "gameInfoBody": "Find careers around the map, complete the quiz to unlock points, and use the class overview to compare progress with your classmates.",
+  "gameInfoDetail1": "1. Join a class to see your ranking and class points.",
+  "gameInfoDetail2": "2. Scan a QR code or open a career from the map.",
+  "gameInfoDetail3": "3. Answer the quiz questions correctly to earn points.",
+  "gameInfoDetailPoints": "Tip! The quicker you answer correctly, the more points you earn!"
 }

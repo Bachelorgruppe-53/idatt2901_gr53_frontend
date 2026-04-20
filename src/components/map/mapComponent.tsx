@@ -16,7 +16,9 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Alert,
   ActivityIndicator,
+  Linking,
   PermissionsAndroid,
   Platform,
   Pressable,
@@ -51,9 +53,31 @@ export const MapComponent = ({
 }: MapProps) => {
   const { isDarkMode } = useTheme();
   const themedStyles = useThemedStyles();
-  const { isScanning, startScanning, stopScanning } = useQRScanner();
+  const { isScanning, startScanning, stopScanning, permission } =
+    useQRScanner();
   const { i18n } = useTranslation();
   const { t } = useTranslation("map");
+  const showCameraSettingsAlert = useCallback(() => {
+    Alert.alert(
+      t("cameraPermissionDeniedTitle", "Camera access needed"),
+      t(
+        "cameraPermissionDeniedMessage",
+        "Camera access has been denied. Open Settings to grant permission.",
+      ),
+      [
+        {
+          text: t("cancel", "Cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("openSettings", "Open settings"),
+          onPress: () => {
+            void Linking.openSettings();
+          },
+        },
+      ],
+    );
+  }, [t]);
 
   const controlBackgroundColor = isDarkMode
     ? "rgba(28,28,30,0.92)"
@@ -174,8 +198,17 @@ export const MapComponent = ({
         console.warn("Failed to capture camera state", error);
       }
     }
-    startScanning();
-  }, [isMapReady, startScanning]);
+
+    const started = await startScanning();
+    if (
+      !started &&
+      permission &&
+      !permission.granted &&
+      permission.canAskAgain === false
+    ) {
+      showCameraSettingsAlert();
+    }
+  }, [isMapReady, permission, showCameraSettingsAlert, startScanning]);
 
   useEffect(() => {
     const restoreCameraState = async () => {
