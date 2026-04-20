@@ -10,5 +10,9 @@
   "zoomOut": "Zoom ut",
   "centerOnUserLocation": "Sentrer på min posisjon",
   "toggleAreaDropdown": "Bytt område meny",
-  "allAreas": "Alle områder"
+  "allAreas": "Alle områder",
+  "cameraPermissionDeniedTitle": "Kamera-tilgang nødvendig",
+  "cameraPermissionDeniedMessage": "Kamera-tilgang har blitt nektet. Åpne innstillinger for å gi tillatelse.",
+  "cancel": "Avbryt",
+  "openSettings": "Åpne innstillinger"
 }

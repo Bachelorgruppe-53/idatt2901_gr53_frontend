@@ -10,5 +10,9 @@
   "zoomOut": "Zoom out",
   "centerOnUserLocation": "Center on my location",
   "toggleAreaDropdown": "Toggle area dropdown",
-  "allAreas": "All areas"
+  "allAreas": "All areas",
+  "cameraPermissionDeniedTitle": "Camera access needed",
+  "cameraPermissionDeniedMessage": "Camera access has been denied. Open Settings to grant permission.",
+  "cancel": "Cancel",
+  "openSettings": "Open Settings"
 }
