@@ -288,7 +288,7 @@ export default function Index() {
                 BaseStyles.px16,
               ]}
             >
-              {points} p
+              {points}
             </Text>
           ) : (
             <Text style={[themedStyles.text, BaseStyles.px16]}>
@@ -308,7 +308,7 @@ export default function Index() {
                 BaseStyles.px16,
               ]}
             >
-              {classPoints ?? 0} p
+              {classPoints ?? 0}
             </Text>
           ) : (
             <Text style={[themedStyles.text, BaseStyles.px16]}>
