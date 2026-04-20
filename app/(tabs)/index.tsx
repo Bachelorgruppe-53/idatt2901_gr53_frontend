@@ -263,10 +263,10 @@ export default function Index() {
 
   return (
     <View key={remountKey} style={themedStyles.container}>
-      <Text style={[themedStyles.subheading, { marginBottom: 10 }]}>
+      <Text style={[themedStyles.heading, { marginBottom: 10 }]}>
         {t("hello")},
       </Text>
-      <Text style={[themedStyles.subheading, { marginBottom: 20 }]}>
+      <Text style={[themedStyles.heading, { marginBottom: 20 }]}>
         {name ? name : t("welcomeMessage")}!
       </Text>
       <View style={[BaseStyles.rowCenter, BaseStyles.gap8, BaseStyles.mb16]}>
