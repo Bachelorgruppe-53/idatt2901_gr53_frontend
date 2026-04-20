@@ -700,7 +700,7 @@ describe("loadUnlockedCareers", () => {
       expect(result.careers[0].career_id).toBe(1);
     });
 
-    it("continues to next endpoint on unfixes errors", async () => {
+    it("continues to next endpoint on unfixable errors", async () => {
       (global.fetch as jest.Mock)
         .mockResolvedValueOnce({
           ok: false,
