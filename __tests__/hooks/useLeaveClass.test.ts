@@ -7,8 +7,15 @@ import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
 jest.mock("@/services/apiConfig");
-jest.mock("@/services/authService");
-jest.mock("axios");
+jest.mock("@/services/authService", () => ({
+  ensureUserId: jest.fn(),
+}));
+jest.mock("axios", () => ({
+  __esModule: true,
+  default: {
+    put: jest.fn(),
+  },
+}));
 jest.mock("react-i18next");
 
 const mockedGetApiBaseUrl = getApiBaseUrl as jest.MockedFunction<

@@ -11,13 +11,28 @@ import { useTranslation } from "react-i18next";
 import { AppState } from "react-native";
 
 jest.mock("@/services/apiConfig");
-jest.mock("@/services/authService");
-jest.mock("@/services/career/careerClaimEvents");
-jest.mock("@/services/home/loadHomeSummary");
-jest.mock("@/services/language/languageCode");
-jest.mock("@/services/utils/secureStorage");
-jest.mock("expo-router");
-jest.mock("react-i18next");
+jest.mock("@/services/authService", () => ({
+  ensureUserId: jest.fn(),
+}));
+jest.mock("@/services/career/careerClaimEvents", () => ({
+  subscribeToCareerClaimed: jest.fn(),
+}));
+jest.mock("@/services/home/loadHomeSummary", () => ({
+  loadHomeSummary: jest.fn(),
+}));
+jest.mock("@/services/language/languageCode", () => ({
+  getLanguageCode: jest.fn(),
+}));
+jest.mock("@/services/utils/secureStorage", () => ({
+  getFavoriteCareer: jest.fn(),
+  getNickname: jest.fn(),
+}));
+jest.mock("expo-router", () => ({
+  useFocusEffect: jest.fn(),
+}));
+jest.mock("react-i18next", () => ({
+  useTranslation: jest.fn(),
+}));
 
 const mockedGetApiBaseUrl = getApiBaseUrl as jest.MockedFunction<
   typeof getApiBaseUrl

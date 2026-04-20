@@ -8,10 +8,19 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { useTranslation } from "react-i18next";
 
 jest.mock("@/services/apiConfig");
-jest.mock("@/services/authService");
-jest.mock("@/services/career/careerClaimEvents");
-jest.mock("@/services/language/languageCode");
-jest.mock("react-i18next");
+jest.mock("@/services/authService", () => ({
+  ensureUserId: jest.fn(),
+  registerDevice: jest.fn(),
+}));
+jest.mock("@/services/career/careerClaimEvents", () => ({
+  emitCareerClaimed: jest.fn(),
+}));
+jest.mock("@/services/language/languageCode", () => ({
+  getLanguageCode: jest.fn(),
+}));
+jest.mock("react-i18next", () => ({
+  useTranslation: jest.fn(),
+}));
 jest.mock("@/src/i18n/config", () => ({
   resolvedLanguage: "en",
   language: "en",
@@ -62,6 +71,16 @@ const mockQuizResponse = {
     },
   ],
 };
+
+const createResponse = <T>(body: T, status = 200) => ({
+  ok: status >= 200 && status < 300,
+  status,
+  json: async () => body,
+  text: async () => (typeof body === "string" ? body : JSON.stringify(body)),
+  clone() {
+    return createResponse(body, status);
+  },
+});
 
 describe("useCareerQuiz", () => {
   beforeEach(() => {
@@ -438,11 +457,14 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => ({ success: true }),
-        });
+        .mockResolvedValueOnce(
+          createResponse({
+            correctAnswers: 2,
+            totalQuestions: 2,
+            points: 100,
+            isClaimed: true,
+          }),
+        );
 
       const onClaimSuccess = jest.fn();
       const { result } = renderHook(() =>
@@ -477,11 +499,14 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => ({ success: true }),
-        });
+        .mockResolvedValueOnce(
+          createResponse({
+            correctAnswers: 2,
+            totalQuestions: 2,
+            points: 100,
+            isClaimed: true,
+          }),
+        );
 
       const { result } = renderHook(() =>
         useCareerQuiz({
@@ -516,16 +541,15 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 400,
-          text: async () => "Invalid UUID format",
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => ({ success: true }),
-        });
+        .mockResolvedValueOnce(createResponse("Invalid UUID format", 400))
+        .mockResolvedValueOnce(
+          createResponse({
+            correctAnswers: 2,
+            totalQuestions: 2,
+            points: 100,
+            isClaimed: true,
+          }),
+        );
 
       const onClaimSuccess = jest.fn();
       const { result } = renderHook(() =>
@@ -560,11 +584,7 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 409,
-          text: async () => "Already claimed",
-        });
+        .mockResolvedValueOnce(createResponse("Already claimed", 409));
 
       const { result } = renderHook(() =>
         useCareerQuiz({
@@ -635,11 +655,14 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => ({ success: true }),
-        });
+        .mockResolvedValueOnce(
+          createResponse({
+            correctAnswers: 2,
+            totalQuestions: 2,
+            points: 100,
+            isClaimed: true,
+          }),
+        );
 
       const { result } = renderHook(() =>
         useCareerQuiz({
@@ -727,7 +750,7 @@ describe("useCareerQuiz", () => {
       expect((global.fetch as jest.Mock).mock.calls).toHaveLength(1);
     });
 
-    it("sets quizClaimFailed when quiz id is missing during claim", async () => {
+    it("claims successfully even when preview metadata lacks quizId", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         status: 200,
@@ -737,6 +760,14 @@ describe("useCareerQuiz", () => {
           questions: mockQuizResponse.questions,
         }),
       });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        createResponse({
+          correctAnswers: 2,
+          totalQuestions: 2,
+          points: 100,
+          isClaimed: true,
+        }),
+      );
 
       const { result } = renderHook(() =>
         useCareerQuiz({ careerId: 5, onClaimSuccess: jest.fn() }),
@@ -753,7 +784,7 @@ describe("useCareerQuiz", () => {
       });
 
       await waitFor(() => {
-        expect(result.current.quizErrorMsg).toBe("quizClaimFailed");
+        expect(result.current.quizErrorMsg).toBeNull();
       });
     });
 
@@ -764,11 +795,7 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 401,
-          text: async () => "auth failed",
-        });
+        .mockResolvedValueOnce(createResponse("auth failed", 401));
 
       const { result } = renderHook(() =>
         useCareerQuiz({ careerId: 5, onClaimSuccess: jest.fn() }),
@@ -796,11 +823,7 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 500,
-          text: async () => "internal",
-        });
+        .mockResolvedValueOnce(createResponse("internal", 500));
 
       const { result } = renderHook(() =>
         useCareerQuiz({ careerId: 5, onClaimSuccess: jest.fn() }),
@@ -828,11 +851,7 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 418,
-          text: async () => "teapot",
-        });
+        .mockResolvedValueOnce(createResponse("teapot", 418));
 
       const { result } = renderHook(() =>
         useCareerQuiz({ careerId: 5, onClaimSuccess: jest.fn() }),
@@ -860,16 +879,8 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 400,
-          text: async () => "Invalid UUID format",
-        })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 409,
-          text: async () => "duplicate",
-        });
+        .mockResolvedValueOnce(createResponse("Invalid UUID format", 400))
+        .mockResolvedValueOnce(createResponse("duplicate", 409));
 
       const { result } = renderHook(() =>
         useCareerQuiz({ careerId: 5, onClaimSuccess: jest.fn() }),
@@ -900,11 +911,9 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 409,
-          text: async () => "Already claimed this career",
-        });
+        .mockResolvedValueOnce(
+          createResponse("Already claimed this career", 409),
+        );
 
       const { result } = renderHook(() =>
         useCareerQuiz({
@@ -939,12 +948,9 @@ describe("useCareerQuiz", () => {
           status: 200,
           json: async () => mockQuizResponse,
         })
-        .mockResolvedValueOnce({
-          ok: false,
-          status: 400,
-          text: async () =>
-            JSON.stringify({ message: "No correct quiz answers" }),
-        });
+        .mockResolvedValueOnce(
+          createResponse({ message: "No correct quiz answers" }, 400),
+        );
 
       const { result } = renderHook(() =>
         useCareerQuiz({
