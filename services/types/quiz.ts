@@ -43,7 +43,6 @@ export interface UseCareerQuizParams {
 }
 
 export interface QuizMetadata {
-  quizId: number | null;
   maxPoints: number | null;
   timeLimit: number | null;
 }

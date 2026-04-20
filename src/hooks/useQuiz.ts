@@ -17,19 +17,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n/config";
 
-const extractQuizId = (payload: unknown): number | null => {
-  if (payload && typeof payload === "object") {
-    const p = payload as QuizResponseDto;
-    if (typeof p.quizId === "number") return p.quizId;
-  }
-
-  return null;
-};
-
 const extractQuizMetadata = (payload: unknown): QuizMetadata => {
   if (!payload || typeof payload !== "object") {
     return {
-      quizId: null,
       maxPoints: null,
       timeLimit: null,
     };
@@ -38,7 +28,6 @@ const extractQuizMetadata = (payload: unknown): QuizMetadata => {
   const response = payload as Partial<QuizResponseDto>;
 
   return {
-    quizId: extractQuizId(payload),
     maxPoints:
       typeof response.maxPoints === "number" ? response.maxPoints : null,
     timeLimit:
@@ -68,7 +57,6 @@ export function useCareerQuiz({
   const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
   const [shouldAutoClaim, setShouldAutoClaim] = useState(false);
   const [quizErrorMsg, setQuizErrorMsg] = useState<string | null>(null);
-  const [quizId, setQuizId] = useState<number | null>(null);
   const [quizMaxPoints, setQuizMaxPoints] = useState<number | null>(null);
   const [quizTimeLimit, setQuizTimeLimit] = useState<number | null>(null);
   const isFetchingQuizRef = useRef(false);
@@ -172,7 +160,6 @@ export function useCareerQuiz({
       if (!payload) return;
 
       const metadata = extractQuizMetadata(payload);
-      setQuizId(metadata.quizId);
       setQuizMaxPoints(metadata.maxPoints);
       setQuizTimeLimit(metadata.timeLimit);
     } catch {
@@ -202,7 +189,6 @@ export function useCareerQuiz({
       const metadata = extractQuizMetadata(payload);
 
       setQuizQuestions(mapped);
-      setQuizId(metadata.quizId);
       setQuizMaxPoints(metadata.maxPoints);
       setQuizTimeLimit(metadata.timeLimit);
       setAnswers([]);
@@ -388,7 +374,6 @@ export function useCareerQuiz({
     setAnswers([]);
     setQuizStartedAt(null);
     setQuizErrorMsg(null);
-    setQuizId(null);
     setQuizMaxPoints(null);
     setQuizTimeLimit(null);
     setShouldAutoClaim(false);
