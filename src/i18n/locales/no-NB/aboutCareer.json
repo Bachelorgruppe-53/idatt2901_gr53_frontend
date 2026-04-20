@@ -18,5 +18,6 @@
   "noResults": "Ingen yrker funnet. Prøv å justere søket ditt.",
   "noResultsHeading": "Ingen yrker funnet.",
   "noResultsDesc": "Prøv å justere søket ditt.",
-  "searchPlaceholder": "Søk etter yrker..."
+  "searchPlaceholder": "Søk etter yrker...",
+  "claimSuccessWithScore": "Du fikk {{points}} poeng med {{correct}}/{{total}} riktige."
 }
