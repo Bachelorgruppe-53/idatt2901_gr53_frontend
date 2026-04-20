@@ -275,7 +275,7 @@ export default function Index() {
           padding: 8,
         })}
         accessibilityRole="button"
-        accessibilityLabel={t("gameInfoLabel", "Game info")}
+        accessibilityLabel="Game info"
       >
         <MaterialIcons name="info-outline" size={24} color={theme.border} />
       </Pressable>
