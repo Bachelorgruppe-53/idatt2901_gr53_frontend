@@ -54,6 +54,7 @@ export default function Index() {
   const [showCareerModal, setShowCareerModal] = useState(false);
   const [selectedCareerId, setSelectedCareerId] = useState<number | null>(null);
   const [showContestInfo, setShowContestInfo] = useState(false);
+  const [showGameInfo, setShowGameInfo] = useState(false);
   const [remountKey, setRemountKey] = useState(0);
   const [competition, setCompetition] = useState<CompetitionInfo | null>(null);
 
@@ -263,6 +264,22 @@ export default function Index() {
 
   return (
     <View key={remountKey} style={themedStyles.container}>
+      <Pressable
+        onPress={() => setShowGameInfo(true)}
+        style={({ pressed }) => ({
+          position: "absolute",
+          top: insets.top + 8,
+          right: 16,
+          zIndex: 20,
+          opacity: pressed ? 0.7 : 1,
+          padding: 8,
+        })}
+        accessibilityRole="button"
+        accessibilityLabel={t("gameInfoLabel", "Game info")}
+      >
+        <MaterialIcons name="info-outline" size={24} color={theme.border} />
+      </Pressable>
+
       <Text style={[themedStyles.heading, { marginBottom: 10 }]}>
         {t("hello")},
       </Text>
@@ -426,6 +443,60 @@ export default function Index() {
           </Pressable>
         </Modal>
       </View>
+
+      <Modal
+        visible={showGameInfo}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowGameInfo(false)}
+      >
+        <Pressable
+          style={themedStyles.modalBackdrop}
+          onPress={() => setShowGameInfo(false)}
+        >
+          <Pressable style={themedStyles.modalCard} onPress={() => {}}>
+            <Text style={[themedStyles.subheading, BaseStyles.mb16]}>
+              {t("gameInfoTitle", "How the game works")}
+            </Text>
+            <Text style={[themedStyles.text, BaseStyles.mb16]}>
+              {t(
+                "gameInfoBody",
+                "Find careers around the map, complete the quiz to unlock points, and use the class overview to compare progress with your classmates.",
+              )}
+            </Text>
+            <Text style={[themedStyles.text, BaseStyles.mb16]}>
+              {t(
+                "gameInfoDetail1",
+                "1. Join a class to see your ranking and class points.",
+              )}
+            </Text>
+            <Text style={[themedStyles.text, BaseStyles.mb16]}>
+              {t(
+                "gameInfoDetail2",
+                "2. Scan a QR code or open a career from the map.",
+              )}
+            </Text>
+            <Text style={[themedStyles.text, BaseStyles.mb16]}>
+              {t(
+                "gameInfoDetail3",
+                "3. Answer the quiz questions correctly to earn points.",
+              )}
+            </Text>
+            <Text style={[themedStyles.text, BaseStyles.mb16]}>
+              {t(
+                "gameInfoDetailPoints",
+                "Tip! The quicker you answer correctly, the more points you earn!",
+              )}
+            </Text>
+            <Pressable
+              style={themedStyles.smallButton}
+              onPress={() => setShowGameInfo(false)}
+            >
+              <Text style={themedStyles.buttonText}>{t("closeButton")}</Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       <Pressable style={themedStyles.buttonRound} onPress={handleQRPress}>
         <MaterialIcons

@@ -31,5 +31,17 @@
   "findCareers_one": "Du har funnet {{count}} yrke!",
   "findCareers_other": "Du har funnet {{count}} yrker!",
   "noClassPoints": "Bli med i en klasse for å samle poeng!",
-  "closeButton": "Lukk"
+  "closeButton": "Lukk",
+  "cameraPermissionDeniedTitle": "Kamera-tilgang nødvendig",
+  "cameraPermissionDeniedMessage": "Kamera-tilgang har blitt nektet. Åpne innstillinger for å gi tillatelse.",
+  "cancel": "Avbryt",
+  "openSettings": "Åpne innstillinger",
+  "gameInfoTitle": "Hvordan fungerer spillet?",
+  "gameInfoBody": "Finn karrierer rundt på kartet, fullfør quizen for å låse opp poeng, og bruk klassens oversikt for å sammenligne fremgang med dine medelever.",
+  "gameInfoDetail1": "1. Bli med i en klasse for å se din rangering og klassens poeng.",
+  "gameInfoDetail2": "2. Skann en QR-kode fra hjemskjermen eller på kartet.",
+  "gameInfoDetail3": "3. Svar riktig på quiz-spørsmålene for å tjene poeng.",
+  "gameInfoDetailPoints": "Tips! Jo raskere du svarer riktig, desto flere poeng tjener du!"
+
 }
+
