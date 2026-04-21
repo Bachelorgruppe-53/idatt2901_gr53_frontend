@@ -1,6 +1,8 @@
 {
   "maxPointsLabel": "Max points",
   "timeLimitLabel": "Time limit",
+  "timeLeftLabel": "Time left for bonus points",
+  "timeUpMessage": "The faster you are, the more points you get",
   "secondsUnit": "sec",
   "loadingText": "Loading quiz...",
   "noQuestionsText": "No questions available.",

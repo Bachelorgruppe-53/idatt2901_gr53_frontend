@@ -385,6 +385,7 @@ export function useCareerQuiz({
     quizCompleted,
     quizLoading,
     quizQuestions,
+    quizStartedAt,
     quizMaxPoints,
     quizTimeLimit,
     quizErrorMsg,

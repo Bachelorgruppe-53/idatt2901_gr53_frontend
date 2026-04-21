@@ -71,6 +71,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
     quizCompleted,
     quizLoading,
     quizQuestions,
+    quizStartedAt,
     quizMaxPoints,
     quizTimeLimit,
     quizErrorMsg,
@@ -86,6 +87,17 @@ export default function AboutCareer({ careerId, onClose }: Props) {
 
   const displayedPoints = quizMaxPoints ?? data?.points;
   const isFavoriteDisabled = data === null;
+  const hasActiveQuizSession =
+    quizQuestions.length > 0 && quizStartedAt !== null && !quizCompleted;
+
+  const handleOpenQuiz = () => {
+    if (hasActiveQuizSession) {
+      setShowQuiz(true);
+      return;
+    }
+
+    void fetchQuiz();
+  };
 
   useEffect(() => {
     if (careerId === null) return;
@@ -253,7 +265,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
   }
 
   return (
-    <SafeAreaView style={themedStyles.container}>
+    <SafeAreaView style={[themedStyles.container, BaseStyles.px8]}>
       <ScrollView contentContainerStyle={themedStyles.content}>
         {showSuccessBanner && (
           <View
@@ -356,8 +368,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           </Pressable>
         </View>
 
-        {(typeof displayedPoints === "number" ||
-          typeof quizTimeLimit === "number") && (
+        <View style={[BaseStyles.gap16, BaseStyles.rowCenter]}>
           <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
             {typeof displayedPoints === "number" && (
               <>
@@ -371,11 +382,10 @@ export default function AboutCareer({ careerId, onClose }: Props) {
                 </Text>
               </>
             )}
+          </View>
 
-            {typeof displayedPoints === "number" &&
-            typeof quizTimeLimit === "number" ? (
-              <Text style={themedStyles.semiboldText}>•</Text>
-            ) : null}
+          <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
+            <MaterialIcons name="timer" size={16} color={theme.accent} />
 
             {typeof quizTimeLimit === "number" && (
               <Text style={themedStyles.semiboldText}>
@@ -383,7 +393,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
               </Text>
             )}
           </View>
-        )}
+        </View>
 
         <Text style={[themedStyles.text, BaseStyles.m16]}>
           {data?.description || t("noDescription")}
@@ -396,6 +406,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           isLoading={quizLoading}
           maxPoints={quizMaxPoints}
           timeLimit={quizTimeLimit}
+          startedAt={quizStartedAt}
           onAnswer={handleAnswer}
           onComplete={handleQuizComplete}
           onClose={() => setShowQuiz(false)}
@@ -405,7 +416,7 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           {!isCareerClaimed && !quizCompleted ? (
             <Pressable
               style={[themedStyles.button, BaseStyles.center]}
-              onPress={fetchQuiz}
+              onPress={handleOpenQuiz}
             >
               <Text style={[themedStyles.buttonText]}>
                 {t("startQuiz", "Ta quiz for å låse opp")}
