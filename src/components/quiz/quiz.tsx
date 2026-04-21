@@ -5,15 +5,17 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 /**
- * Quiz component that renders a series of questions with multiple choice answers.
- * Props:
- * - questions: Array of quiz items, each containing a question and its options.
- * - onAnswer: Callback function called when an answer is selected, with the question ID and chosen option IDs.
- * - onComplete: Optional callback function called when all questions have been answered.
- * - isLoading: Optional boolean to indicate if the quiz data is still loading.
- *
- * @param {QuizProps} props - The props for the Quiz component.
- * @returns {JSX.Element} The rendered Quiz component.
+ * The core Quiz engine responsible for question progression and user interaction.
+ * * Features:
+ * - **State Management**: Tracks current question index and resets automatically when the `questions` array changes.
+ * - **UX Design**: Renders a visual progress bar (dots) and a counter pill for user orientation.
+ * - **Dynamic Options**: Maps alphabet labels (A, B, C...) to answer choices for better readability.
+ * - **A11y Support**: Fully localized accessibility labels and hints for screen readers, including position context.
+ * 
+ * @param questions - Array of QuizItem objects containing IDs, strings, and multiple-choice options.
+ * @param onAnswer - Callback for when a user selects an option (notifies parent of selection).
+ * @param onComplete - Triggered automatically once the user answers the final question.
+ * @param isLoading - State-driven flag to show/hide the loading view.
  */
 
 export type QuizItem = {
@@ -43,10 +45,12 @@ export default function Quiz({
   const { t } = useTranslation("quiz");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
+  // Resets question index to 0 whenever a new set of questions is loaded
   useEffect(() => {
     setCurrentQuestionIndex(0);
   }, [questions]);
 
+  // Early return for loading state to avoid rendering empty question views
   if (isLoading) {
     return (
       <View
@@ -62,6 +66,7 @@ export default function Quiz({
     );
   }
 
+  // Handle cases where the quiz might be empty to prevent "undefined" errors on currentQuestion
   if (!questions.length) {
     return (
       <View
@@ -79,11 +84,13 @@ export default function Quiz({
 
   const current = questions[currentQuestionIndex];
   const optionLabels = ["A", "B", "C", "D", "E", "F"];
-
+  
   const handleSelect = (optionId: number) => {
+    // Notify parent component of the selection
     onAnswer(current.questionId, [optionId]);
 
     const next = currentQuestionIndex + 1;
+    // Check if there are more questions or if the quiz is finished
     if (next < questions.length) {
       setCurrentQuestionIndex(next);
     } else {
@@ -115,6 +122,7 @@ export default function Quiz({
         </View>
       </View>
 
+      {/* Visual Progress Indicator (Dots) */}
       <View style={styles.progressDots}>
         {questions.map((_: QuizItem, idx: number) => (
           <View
@@ -143,6 +151,7 @@ export default function Quiz({
         </Text>
       </View>
 
+      {/* Answer Options Map */}
       {current.options.map((opt: QuizItem["options"][number], idx: number) => (
         <Pressable
           key={opt.id}
@@ -166,6 +175,7 @@ export default function Quiz({
           ]}
         >
           <View style={styles.optionContent}>
+            {/* The A, B, C Marker */}
             <View
               style={[
                 styles.optionLabel,
