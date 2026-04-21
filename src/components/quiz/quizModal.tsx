@@ -10,11 +10,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Quiz from "./quiz";
 
 /**
- * QuizModal component that displays a quiz in a modal view.
- * It shows the quiz title, questions, and handles the quiz logic such as timing and scoring.
+ * A full-screen modal wrapper for the Quiz engine.
+ * * Features:
+ * - **State Management**: Tracks and formats real-time countdowns based on `startedAt` and `timeLimit`.
+ * - **Theming**: Integrates with `useThemedStyles` and `useThemeColor` for dynamic UI updates.
+ * - **Localization**: Uses `i18next` for translating labels (points, time, and accessibility).
+ * - **Flow Control**: Manages the lifecycle between the active quiz state and the modal's visibility.
  * 
- * @returns JSX.Element
- * 
+ * @param visible - Controls the visibility of the modal.
+ * @param title - Optional header text for the quiz session.
+ * @param questions - Array of QuizItem objects to be rendered by the internal Quiz component.
+ * @param timeLimit - Total duration allowed for the quiz in seconds.
+ * @param startedAt - Unix timestamp (ms) representing when the quiz attempt began.
+ * @param onAnswer - Callback triggered when a user selects options for a question.
+ * @param onComplete - Optional callback triggered after the final question is answered.
+ * @param onClose - Callback to dismiss the modal.
  */
 
 interface QuizModalProps {
@@ -47,6 +57,7 @@ export default function QuizModal({
   const { t } = useTranslation("quiz");
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
 
+  // Calculates time left by comparing current time to the start timestamp
   const getRemainingSeconds = useCallback(
     (limit: number, startTimestamp: number) => {
       const elapsedSeconds = Math.floor((Date.now() - startTimestamp) / 1000);
@@ -56,13 +67,16 @@ export default function QuizModal({
   );
 
   useEffect(() => {
+    // Disable timer if timeLimit or startedAt is not provided
     if (typeof timeLimit !== "number" || typeof startedAt !== "number") {
       setRemainingSeconds(null);
       return;
     }
 
+    // Initialize remaining seconds immediately on mount
     setRemainingSeconds(getRemainingSeconds(timeLimit, startedAt));
 
+    // Set up interval to update remaining seconds every second, and clear on unmount
     const interval = setInterval(() => {
       setRemainingSeconds(getRemainingSeconds(timeLimit, startedAt));
     }, 1000);
@@ -70,6 +84,7 @@ export default function QuizModal({
     return () => clearInterval(interval);
   }, [getRemainingSeconds, startedAt, timeLimit]);
 
+  // Format remaining seconds into MM:SS format for display
   const formattedRemainingTime =
     typeof remainingSeconds === "number"
       ? `${String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:${String(remainingSeconds % 60).padStart(2, "0")}`
@@ -88,6 +103,7 @@ export default function QuizModal({
             <Text style={[themedStyles.heading, BaseStyles.mb16]}>{title}</Text>
           )}
 
+          {/* Metadata Row: Displays Max Points and/or Time Remaining if available */}
           {(typeof maxPoints === "number" || typeof timeLimit === "number") && (
             <Text
               style={[BaseStyles.mb16, { color: theme.text, opacity: 0.75 }]}
@@ -105,6 +121,7 @@ export default function QuizModal({
             </Text>
           )}
 
+          {/* Feedback message shown only when the countdown reaches zero */}
           {remainingSeconds === 0 && (
             <Text
               style={[BaseStyles.mb16, { color: theme.text, opacity: 0.75 }]}
@@ -113,6 +130,7 @@ export default function QuizModal({
             </Text>
           )}
 
+          {/* Core Quiz Engine: Handles question rendering and user input */}
           <Quiz
             questions={questions}
             isLoading={isLoading}
