@@ -36,10 +36,16 @@ const extractQuizMetadata = (payload: unknown): QuizMetadata => {
 };
 
 /**
- * Custom hook for managing the state and logic of a career quiz. It handles fetching quiz questions, tracking answers, managing quiz completion, and submitting claims based on quiz results.
- *
- * @param {UseCareerQuizParams} params - The parameters for the useCareerQuiz hook, including careerId and onClaimSuccess callback.
- * @returns An object containing quiz state and handler functions for use in components.
+ * A comprehensive orchestrator hook for the Career Quiz lifecycle.
+ * * Features:
+ * - **Data Fetching**: Manages authenticated POST requests to retrieve localized quiz content and metadata.
+ * - **State Sync**: Tracks answer accumulation, response timing, and question progression.
+ * - **Auto-Submission**: Uses an effect-driven "Auto-Claim" system that triggers as soon as the final answer is recorded.
+ * - **Error Mapping**: Translates technical API errors (409 Already Claimed, 401 Unauthorized) into localized user-friendly strings.
+ * - **Resilience**: Implements a "Retry with New User" fallback if the local UUID becomes invalid/corrupted.
+ * 
+ * @param careerId - The unique identifier for the career being quizzed.
+ * @param onClaimSuccess - Callback fired after the API confirms a successful point claim.
  */
 
 export function useCareerQuiz({
@@ -61,6 +67,7 @@ export function useCareerQuiz({
   const [quizTimeLimit, setQuizTimeLimit] = useState<number | null>(null);
   const isFetchingQuizRef = useRef(false);
 
+  // Transforms raw API error responses into user-friendly messages based on status codes and error content.
   const toFriendlyClaimError = useCallback(
     (status: number, rawError: string): string => {
       let extractedMessage = "";
@@ -109,6 +116,7 @@ export function useCareerQuiz({
     [t],
   );
 
+  // Fetches quiz data from the API, including questions and metadata, while managing loading state and errors.
   const fetchQuizPayload = useCallback(async () => {
     if (careerId === null) {
       return null;
@@ -154,6 +162,7 @@ export function useCareerQuiz({
     }
   }, [careerId]);
 
+  // A lightweight fetch to populate quiz metadata for the preview card without loading full questions.
   const fetchQuizPreview = useCallback(async () => {
     try {
       const payload = await fetchQuizPayload();
@@ -167,6 +176,7 @@ export function useCareerQuiz({
     }
   }, [fetchQuizPayload]);
 
+  // Fetches the full quiz data and initializes state for the quiz modal, including questions, metadata, and resetting answers.
   const fetchQuiz = useCallback(async () => {
     try {
       const payload = await fetchQuizPayload();
@@ -204,6 +214,7 @@ export function useCareerQuiz({
     }
   }, [fetchQuizPayload, t]);
 
+  // Handles user answer selection by updating the local state and notifying the parent component. Also manages question progression.
   const handleAnswer = useCallback(
     (questionId: number, chosenOptionIds: number[]) => {
       setAnswers((prev) => {
@@ -214,12 +225,14 @@ export function useCareerQuiz({
     [],
   );
 
+  // Marks the quiz as completed, hides the quiz modal, and triggers the auto-claim effect to attempt point claiming immediately after the last answer is recorded.
   const handleQuizComplete = useCallback(() => {
     setQuizCompleted(true);
     setShowQuiz(false);
     setShouldAutoClaim(true);
   }, []);
 
+  // Submits the user's answers to the backend. Includes logic for calculating response time and handling session retries.
   const handleClaim = useCallback(async () => {
     if (careerId === null || answers.length === 0) return;
 
@@ -231,6 +244,7 @@ export function useCareerQuiz({
       let userId = await ensureUserId();
       const baseUrl = getApiBaseUrl().replace(/\/$/, "");
 
+      // Calculate response time in seconds, ensuring a minimum of 1 second to avoid zero or negative values.
       const responseTime = quizStartedAt
         ? Math.max(1, Math.floor((Date.now() - quizStartedAt) / 1000))
         : 1;
@@ -254,6 +268,7 @@ export function useCareerQuiz({
         });
       };
 
+      // Helper to handle reading response bodies safely, accounting for both JSON and plain text error formats.
       const readClaimResponse = async (res: Response) => {
         const clonedResponse = res.clone();
 
@@ -271,6 +286,7 @@ export function useCareerQuiz({
         }
       };
 
+      // Handles failures in the claim process, including retry logic for invalid UUIDs.
       const handleClaimFailure = async (res: Response, userIdValue: string) => {
         const { rawText } = await readClaimResponse(res);
 
@@ -293,6 +309,7 @@ export function useCareerQuiz({
 
       let res = await claimCareer(userId);
 
+      // FALLBACK: If the claim fails due to an invalid UUID (e.g., corrupted local storage), attempt to register a new device and retry the claim once.
       if (!res.ok) {
         const failure = await handleClaimFailure(res, userId);
         if (failure.retryWithNewUser) {
@@ -385,6 +402,7 @@ export function useCareerQuiz({
     quizCompleted,
     quizLoading,
     quizQuestions,
+    quizStartedAt,
     quizMaxPoints,
     quizTimeLimit,
     quizErrorMsg,
