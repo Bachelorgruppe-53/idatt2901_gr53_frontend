@@ -16,7 +16,7 @@ import Quiz from "./quiz";
  * - **Theming**: Integrates with `useThemedStyles` and `useThemeColor` for dynamic UI updates.
  * - **Localization**: Uses `i18next` for translating labels (points, time, and accessibility).
  * - **Flow Control**: Manages the lifecycle between the active quiz state and the modal's visibility.
- * 
+ *
  * @param visible - Controls the visibility of the modal.
  * @param title - Optional header text for the quiz session.
  * @param questions - Array of QuizItem objects to be rendered by the internal Quiz component.
@@ -90,6 +90,10 @@ export default function QuizModal({
       ? `${String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:${String(remainingSeconds % 60).padStart(2, "0")}`
       : null;
 
+  const timeDisplayText =
+    formattedRemainingTime ??
+    (typeof timeLimit === "number" ? `${timeLimit} ${t("secondsUnit")}` : null);
+
   return (
     <Modal
       visible={visible}
@@ -104,19 +108,21 @@ export default function QuizModal({
           )}
 
           {/* Metadata Row: Displays Max Points and/or Time Remaining if available */}
-          {(typeof maxPoints === "number" || typeof timeLimit === "number") && (
+          {(typeof maxPoints === "number" || timeDisplayText !== null) && (
             <Text
               style={[BaseStyles.mb16, { color: theme.text, opacity: 0.75 }]}
             >
               {typeof maxPoints === "number"
                 ? `${t("maxPointsLabel")}: ${maxPoints}`
                 : ""}
-              {typeof maxPoints === "number" &&
-              typeof formattedRemainingTime === "string"
+              {typeof maxPoints === "number" && timeDisplayText !== null
                 ? " • "
                 : ""}
-              {formattedRemainingTime
-                ? `${t("timeLeftLabel", "Time left")}: ${formattedRemainingTime}`
+              {timeDisplayText
+                ? `${t(
+                    formattedRemainingTime ? "timeLeftLabel" : "timeLimitLabel",
+                    formattedRemainingTime ? "Time left" : "Time limit",
+                  )}: ${timeDisplayText}`
                 : ""}
             </Text>
           )}

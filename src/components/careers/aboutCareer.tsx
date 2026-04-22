@@ -368,7 +368,8 @@ export default function AboutCareer({ careerId, onClose }: Props) {
           </Pressable>
         </View>
 
-        <View style={[BaseStyles.gap16, BaseStyles.rowCenter]}>
+        {(typeof displayedPoints === "number" ||
+          typeof quizTimeLimit === "number") && (
           <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
             {typeof displayedPoints === "number" && (
               <>
@@ -382,18 +383,22 @@ export default function AboutCareer({ careerId, onClose }: Props) {
                 </Text>
               </>
             )}
-          </View>
 
-          <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
-            <MaterialIcons name="timer" size={16} color={theme.accent} />
+            {typeof displayedPoints === "number" &&
+            typeof quizTimeLimit === "number" ? (
+              <Text style={themedStyles.semiboldText}>•</Text>
+            ) : null}
 
             {typeof quizTimeLimit === "number" && (
-              <Text style={themedStyles.semiboldText}>
-                {t("timeLimit", "Tid")}: {quizTimeLimit}s
-              </Text>
+              <>
+                <MaterialIcons name="timer" size={16} color={theme.accent} />
+                <Text style={themedStyles.semiboldText}>
+                  {t("timeLimit", "Tid")}: {quizTimeLimit}s
+                </Text>
+              </>
             )}
           </View>
-        </View>
+        )}
 
         <Text style={[themedStyles.text, BaseStyles.m16]}>
           {data?.description || t("noDescription")}

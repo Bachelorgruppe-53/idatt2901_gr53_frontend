@@ -81,7 +81,7 @@ describe("QuizModal", () => {
       jest.advanceTimersByTime(1000);
     });
 
-    expect(getByText("Time left: 00:29")).toBeTruthy();
+    expect(getByText("Time left: 1:29")).toBeTruthy();
   });
 
   it("keeps modal open and shows message when countdown reaches zero", async () => {
