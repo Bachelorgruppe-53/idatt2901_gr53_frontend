@@ -1,0 +1,13 @@
+{
+    "joinClass": "Bli med i ein klasse",
+    "enterClassCode": "Skriv inn klassekode",
+    "classCode": "Klassekode",
+    "join": "Bli med",
+    "close": "Lukk",
+    "classCodeEmpty": "Klassekoden kan ikkje vere tom",
+    "sixCharacterError": "Klassekoden må vere 6 tegn",
+    "invalidCharacterError": "Klassekoden kan berre innehalde bokstavar og tal",
+    "joinClassError": "Kunne ikkje bli med i klassen. Ver venleg og sjekk klassekoden og prøv på nytt.",
+    "joinedClassSuccess": "Du har blitt med i klassen!",
+    "serverError": "Det oppstod ein feil ved tilkopling til servaren. Ver venleg og prøv på nytt seinare."
+}

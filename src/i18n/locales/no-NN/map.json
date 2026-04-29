@@ -1,0 +1,18 @@
+{
+  "openQRScanner": "Opne QR-skannar",
+  "invalidQRCode": "Ugyldig QR-kode. Prøv igjen.",
+  "locationPermissionTitle": "Lokasjonstilgang",
+  "locationPermissionMessage": "Vi treng posisjonen din for å vise han på kartet. Han blir ikkje lagra eller brukt til andre formål.",
+  "locationPermissionAskLater": "Spør igjen seinare",
+  "locationPermissionCancel": "Avbryt",
+  "locationPermissionAccept": "Tillat",
+  "zoomIn": "Zoom inn",
+  "zoomOut": "Zoom ut",
+  "centerOnUserLocation": "Sentrer på min posisjon",
+  "toggleAreaDropdown": "Bytt område meny",
+  "allAreas": "Alle områder",
+  "cameraPermissionDeniedTitle": "Kameratilgang er nødvendig",
+  "cameraPermissionDeniedMessage": "Kameratilgang har vorte nekta. Opna innstillingane for å gje tilgang.",
+  "cancel": "Avbryt",
+  "openSettings": "Opna innstillingar"
+}

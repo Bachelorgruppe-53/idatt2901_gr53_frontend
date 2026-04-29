@@ -1,0 +1,14 @@
+{
+  "maxPointsLabel": "Makspoeng",
+  "timeLimitLabel": "Tidsgrense",
+  "timeLeftLabel": "Tid igjen for bonuspoeng",
+  "timeUpMessage": "Jo raskere du er, desto fleire poeng får du",
+  "secondsUnit": "sek",
+  "loadingText": "Lastar quiz...",
+  "noQuestionsText": "Ingen spørsmål tilgjengeleg.",
+  "questionCounterText": "Spørsmål",
+  "ofText": "av",
+  "closeQuizModal": "Lukk quiz",
+  "answerOptionAccessibilityLabel": "Alternativ {{marker}}. {{text}}. {{position}} av {{total}}.",
+  "answerOptionAccessibilityHint": "Trykk to gonger for å velje dette svaret"
+}

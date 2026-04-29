@@ -1,0 +1,22 @@
+{
+  "fetchError": "Klarte ikkje laste informasjon. Prøv igjen seinare.",
+  "unknownTitle": "Ukjent yrke",
+  "noDescription": "Ingen beskriving tilgjengeleg for dette yrket.",
+  "points": "Poeng",
+  "maxPoints": "Makspoeng",
+  "startQuiz": "Ta quiz for å låse opp",
+  "setFavoriteCareer": "Set som favorittyrkje",
+  "removeFavoriteCareer": "Fjern favorittyrkje",
+  "favoriteUpdateError": "Klarte ikkje oppdatere favorittyrket. Prøv igjen.",
+  "timeLimit": "Tid",
+  "closeButton": "Lukk",
+  "claimButton": "Krev",
+  "claimSuccessMessage": "Du fullførte quizen og fikk poengene dine.",
+  "closeAboutCareer": "Lukk om yrket",
+  "noCareers": "Oi her var det tomt! Finn eit yrke for å låse det opp!",
+  "unlockedCareersTitle": "Opplåste yrker",
+  "noResultsHeading": "Ingen yrker funnet.",
+  "noResultsDesc": "Prøv å justere søket ditt.",
+  "searchPlaceholder": "Søk etter yrker...",
+  "claimSuccessWithScore": "Du fikk {{points}} poeng med {{correct}}/{{total}} riktige."
+}

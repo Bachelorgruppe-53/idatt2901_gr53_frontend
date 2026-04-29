@@ -1,0 +1,14 @@
+{
+    "joinClass": "Join a Class",
+    "enterClassCode": "Enter Class Code",
+    "classCode": "Class Code",
+    "join": "Join",
+    "close": "Close",
+    "classCodeEmpty": "Class code cannot be empty",
+    "sixCharacterError": "Class code must be 6 characters long",
+    "invalidCharacterError": "Class code can only contain letters and numbers",
+    "joinClassError": "Failed to join class. Please check the class code and try again.",
+    "joinedClassSuccess": "Successfully joined the class!",
+    "serverError": "An error occured when trying to connect to the server. Please try again later."
+
+}

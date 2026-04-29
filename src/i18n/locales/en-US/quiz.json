@@ -1,0 +1,14 @@
+{
+  "maxPointsLabel": "Max points",
+  "timeLimitLabel": "Time limit",
+  "timeLeftLabel": "Time left for bonus points",
+  "timeUpMessage": "The faster you are, the more points you get",
+  "secondsUnit": "sec",
+  "loadingText": "Loading quiz...",
+  "noQuestionsText": "No questions available.",
+  "questionCounterText": "Question",
+  "ofText": "of",
+  "closeQuizModal": "Close quiz",
+  "answerOptionAccessibilityLabel": "Option {{marker}}. {{text}}. {{position}} of {{total}}.",
+  "answerOptionAccessibilityHint": "Double tap to select this answer"
+}

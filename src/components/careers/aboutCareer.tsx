@@ -1,0 +1,469 @@
+import { getApiBaseUrl } from "@/services/apiConfig";
+import { ensureUserId } from "@/services/authService";
+import { loadUnlockedCareers } from "@/services/career/loadUnlockedCareers";
+import { getLanguageCode } from "@/services/language/languageCode";
+import type { ClaimResponseDto } from "@/services/types/quiz";
+import {
+  deleteFavoriteCareer,
+  getFavoriteCareer,
+  saveFavoriteCareer,
+} from "@/services/utils/secureStorage";
+import QuizModal from "@/src/components/quiz/quizModal";
+import { Colors } from "@/src/constants/Colors";
+import { BaseStyles } from "@/src/constants/Styles";
+import { useCareerQuiz } from "@/src/hooks/useQuiz";
+import { useThemedStyles } from "@/src/hooks/useStyleSheet";
+import { useThemeColor } from "@/src/hooks/useThemeColor";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+/**
+ * Component for displaying detailed information about a career, including a quiz to claim points. It handles loading state, error messages, and allows users to mark the career as a favorite. The component also manages the quiz flow using the useCareerQuiz hook.
+ *
+ * @param {Props} props - The props for the AboutCareer component, including the career ID and a function to close the component.
+ * @returns {JSX.Element} The rendered AboutCareer component.
+ */
+
+interface PoiDto {
+  id: number;
+  title: string;
+  description: string;
+  points: number;
+  color: number;
+}
+
+interface Props {
+  careerId: number | null;
+  onClose: () => void;
+}
+
+export default function AboutCareer({ careerId, onClose }: Props) {
+  const theme = useThemeColor();
+  const themedStyles = useThemedStyles();
+  const { t, i18n } = useTranslation("aboutCareer");
+
+  const [data, setData] = useState<PoiDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isCareerClaimed, setIsCareerClaimed] = useState(false);
+  const [claimResult, setClaimResult] = useState<ClaimResponseDto | null>(null);
+
+  const handleClaimSuccess = (result: ClaimResponseDto) => {
+    setClaimResult(result);
+    setIsCareerClaimed(true);
+    setShowSuccessBanner(true);
+  };
+
+  const {
+    showQuiz,
+    setShowQuiz,
+    quizCompleted,
+    quizLoading,
+    quizQuestions,
+    quizStartedAt,
+    quizMaxPoints,
+    quizTimeLimit,
+    quizErrorMsg,
+    isSubmittingClaim,
+    fetchQuizPreview,
+    fetchQuiz,
+    handleAnswer,
+    handleQuizComplete,
+  } = useCareerQuiz({
+    careerId,
+    onClaimSuccess: handleClaimSuccess,
+  });
+
+  const displayedPoints = quizMaxPoints ?? data?.points;
+  const isFavoriteDisabled = data === null;
+  const hasActiveQuizSession =
+    quizQuestions.length > 0 && quizStartedAt !== null && !quizCompleted;
+
+  const handleOpenQuiz = () => {
+    if (hasActiveQuizSession) {
+      setShowQuiz(true);
+      return;
+    }
+
+    void fetchQuiz();
+  };
+
+  useEffect(() => {
+    if (careerId === null) return;
+
+    void fetchQuizPreview();
+  }, [careerId, fetchQuizPreview]);
+
+  useEffect(() => {
+    if (careerId === null) {
+      setIsCareerClaimed(false);
+      setClaimResult(null);
+      return;
+    }
+
+    let isMounted = true;
+
+    const loadClaimStatus = async () => {
+      try {
+        const language = i18n.resolvedLanguage ?? i18n.language;
+        let page = 0;
+
+        while (true) {
+          const result = await loadUnlockedCareers(language, page);
+          const claimed = result.careers.some(
+            (career) => career.career_id === careerId,
+          );
+
+          if (claimed) {
+            if (isMounted) {
+              setIsCareerClaimed(true);
+            }
+            return;
+          }
+
+          const totalPages = result.pagination.totalPages;
+          if (totalPages <= 0 || page >= totalPages - 1) {
+            break;
+          }
+
+          page += 1;
+        }
+
+        if (isMounted) {
+          setIsCareerClaimed(false);
+        }
+      } catch {
+        if (isMounted) {
+          setIsCareerClaimed(false);
+        }
+      }
+    };
+
+    void loadClaimStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [careerId, i18n.language, i18n.resolvedLanguage]);
+
+  useEffect(() => {
+    if (careerId === null) return;
+
+    const load = async () => {
+      setLoading(true);
+      setErrorMsg(null);
+
+      try {
+        const userId = await ensureUserId();
+        const baseUrl = getApiBaseUrl().replace(/\/$/, "");
+        const languageCode = getLanguageCode(
+          i18n.resolvedLanguage ?? i18n.language,
+        );
+
+        const res = await fetch(
+          `${baseUrl}/career/info/${encodeURIComponent(languageCode)}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "X-User-ID": userId,
+            },
+            body: JSON.stringify({ id: careerId }),
+          },
+        );
+
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status}`);
+        }
+
+        const json = (await res.json()) as PoiDto | string;
+        if (typeof json === "string") {
+          setErrorMsg(json);
+          setData(null);
+        } else {
+          setData(json);
+        }
+      } catch {
+        setErrorMsg(t("fetchError"));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void load();
+  }, [careerId, i18n.language, i18n.resolvedLanguage, t]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadFavorite = async () => {
+      if (careerId === null) {
+        if (isMounted) setIsFavorite(false);
+        return;
+      }
+
+      const favorite = await getFavoriteCareer();
+      if (!isMounted) return;
+      setIsFavorite(favorite?.id === careerId);
+    };
+
+    void loadFavorite();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [careerId]);
+
+  const handleToggleFavorite = async () => {
+    if (!data || careerId === null) return;
+
+    try {
+      if (isFavorite) {
+        await deleteFavoriteCareer();
+        setIsFavorite(false);
+      } else {
+        await saveFavoriteCareer({ id: careerId });
+        setIsFavorite(true);
+      }
+
+      setErrorMsg(null);
+    } catch {
+      setErrorMsg(
+        t(
+          "favoriteUpdateError",
+          "Could not update favorite career. Please try again.",
+        ),
+      );
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={themedStyles.container}>
+        <Pressable
+          style={themedStyles.closeButton}
+          onPress={onClose}
+          accessibilityLabel={t("closeAboutCareer")}
+        >
+          <MaterialIcons name="close" size={24} color={theme.text} />
+        </Pressable>
+        <ActivityIndicator size="large" color={theme.button} />
+      </View>
+    );
+  }
+
+  return (
+    <SafeAreaView style={[themedStyles.container, BaseStyles.px8]}>
+      <ScrollView contentContainerStyle={themedStyles.content}>
+        {showSuccessBanner && (
+          <View
+            style={{
+              width: "100%",
+              marginBottom: 16,
+              padding: 14,
+              borderRadius: 12,
+              backgroundColor: Colors.brand.turquoise + "20",
+              borderLeftWidth: 5,
+              borderLeftColor: Colors.brand.turquoise,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <MaterialIcons
+              name="check-circle"
+              size={22}
+              color={Colors.brand.turquoise}
+            />
+            <Text
+              style={{
+                marginLeft: 10,
+                color: Colors.brand.turquoise,
+                fontWeight: "600",
+                flex: 1,
+              }}
+            >
+              {claimResult
+                ? t(
+                    "claimSuccessWithScore",
+                    "Du fikk {{points}} poeng med {{correct}}/{{total}} riktige.",
+                    {
+                      points: claimResult.points,
+                      correct: claimResult.correctAnswers,
+                      total: claimResult.totalQuestions,
+                    },
+                  )
+                : t(
+                    "claimSuccessMessage",
+                    "Du fullførte quizen og fikk poengene dine.",
+                  )}
+            </Text>
+          </View>
+        )}
+
+        {errorMsg && (
+          <View
+            style={{
+              width: "100%",
+              marginBottom: 16,
+              padding: 14,
+              borderRadius: 12,
+              backgroundColor: Colors.brand.red + "20",
+              borderLeftWidth: 5,
+              borderLeftColor: Colors.brand.red,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <MaterialIcons name="error" size={22} color={Colors.brand.red} />
+            <Text
+              style={{
+                marginLeft: 10,
+                color: Colors.brand.red,
+                fontWeight: "600",
+                flex: 1,
+              }}
+            >
+              {errorMsg}
+            </Text>
+          </View>
+        )}
+
+        <View style={[BaseStyles.mb16, BaseStyles.rowCenter, BaseStyles.gap8]}>
+          <Text style={[themedStyles.heading, BaseStyles.p8]}>
+            {data?.title || t("unknownTitle")}
+          </Text>
+          <Pressable
+            disabled={isFavoriteDisabled}
+            onPress={() => void handleToggleFavorite()}
+            accessibilityRole="button"
+            accessibilityState={{
+              disabled: isFavoriteDisabled,
+              selected: isFavorite,
+            }}
+            accessibilityLabel={
+              isFavorite ? t("removeFavoriteCareer") : t("setFavoriteCareer")
+            }
+            hitSlop={8}
+            style={({ pressed }) => ({
+              opacity: isFavoriteDisabled ? 0.35 : pressed ? 0.6 : 1,
+            })}
+          >
+            <MaterialIcons
+              name={isFavorite ? "star" : "star-border"}
+              size={24}
+              color={Colors.brand.darkYellow}
+            />
+          </Pressable>
+        </View>
+
+        {(typeof displayedPoints === "number" ||
+          typeof quizTimeLimit === "number") && (
+          <View style={[BaseStyles.rowCenter, BaseStyles.gap4]}>
+            {typeof displayedPoints === "number" && (
+              <>
+                <MaterialIcons
+                  name="stars"
+                  size={16}
+                  color={Colors.brand.darkYellow}
+                />
+                <Text style={themedStyles.semiboldText}>
+                  {t("maxPoints", "poeng")}: {displayedPoints}
+                </Text>
+              </>
+            )}
+
+            {typeof displayedPoints === "number" &&
+            typeof quizTimeLimit === "number" ? (
+              <Text style={themedStyles.semiboldText}>•</Text>
+            ) : null}
+
+            {typeof quizTimeLimit === "number" && (
+              <>
+                <MaterialIcons name="timer" size={16} color={theme.accent} />
+                <Text style={themedStyles.semiboldText}>
+                  {t("timeLimit", "Tid")}: {quizTimeLimit}s
+                </Text>
+              </>
+            )}
+          </View>
+        )}
+
+        <Text style={[themedStyles.text, BaseStyles.m16]}>
+          {data?.description || t("noDescription")}
+        </Text>
+
+        <QuizModal
+          visible={showQuiz}
+          title={data?.title}
+          questions={quizQuestions}
+          isLoading={quizLoading}
+          maxPoints={quizMaxPoints}
+          timeLimit={quizTimeLimit}
+          startedAt={quizStartedAt}
+          onAnswer={handleAnswer}
+          onComplete={handleQuizComplete}
+          onClose={() => setShowQuiz(false)}
+        />
+
+        <View style={[BaseStyles.p16, BaseStyles.alignCenter]}>
+          {!isCareerClaimed && !quizCompleted ? (
+            <Pressable
+              style={[themedStyles.button, BaseStyles.center]}
+              onPress={handleOpenQuiz}
+            >
+              <Text style={[themedStyles.buttonText]}>
+                {t("startQuiz", "Ta quiz for å låse opp")}
+              </Text>
+            </Pressable>
+          ) : !isCareerClaimed && quizCompleted ? (
+            <View
+              style={[
+                themedStyles.button,
+                { opacity: 0.7, flexDirection: "row" },
+                BaseStyles.center,
+              ]}
+            >
+              <ActivityIndicator color="#FFFFFF" size="small" />
+              <Text style={[themedStyles.buttonText]}>
+                {t("submitting", "Sender svar...")}
+              </Text>
+            </View>
+          ) : null}
+
+          {quizErrorMsg && (
+            <View
+              style={{
+                marginTop: 20,
+                padding: 15,
+                backgroundColor: Colors.brand.red + "20",
+                borderRadius: 10,
+                borderLeftWidth: 5,
+                borderLeftColor: Colors.brand.red,
+              }}
+            >
+              <Text style={{ color: Colors.brand.red, fontWeight: "bold" }}>
+                {quizErrorMsg}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <Pressable style={themedStyles.closeButton} onPress={onClose}>
+          <MaterialIcons name="close" size={24} color={theme.text} />
+        </Pressable>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
