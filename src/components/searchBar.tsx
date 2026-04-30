@@ -1,7 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { TextInput, View } from "react-native";
-import { useThemedStyles } from "../src/hooks/useStyleSheet";
-import { useThemeColor } from "../src/hooks/useThemeColor";
+import { useThemedStyles } from "../hooks/useStyleSheet";
+import { useThemeColor } from "../hooks/useThemeColor";
 
 type SearchBarProps = {
   value: string;
