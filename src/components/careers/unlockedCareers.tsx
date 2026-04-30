@@ -5,7 +5,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList, Modal, Text, View } from "react-native";
-import SearchBar from "../../../components/searchBar";
+import SearchBar from "../searchBar";
 import { Colors } from "../../constants/Colors";
 import { BaseStyles } from "../../constants/Styles";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
