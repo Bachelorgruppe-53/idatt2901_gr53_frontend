@@ -1,6 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "rootDir": ".",
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "strict": true,

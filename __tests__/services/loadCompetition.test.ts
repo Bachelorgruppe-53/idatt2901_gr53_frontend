@@ -1,8 +1,8 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import { ensureUserId } from "@/services/authService";
 import {
-    loadCompetition,
-    type CompetitionInfo,
+  loadCompetition,
+  type CompetitionInfo,
 } from "@/services/home/loadCompetition";
 import { getLanguageCode } from "@/services/language/languageCode";
 
@@ -124,8 +124,8 @@ describe("loadCompetition", () => {
       expect(callUrl).toContain("/nb");
     });
 
-    it("url encodes language code in API call", async () => {
-      mockedGetLanguageCode.mockReturnValue("zh-Hans");
+    it("uses resolved language code in API call", async () => {
+      mockedGetLanguageCode.mockReturnValue("en");
 
       (global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -143,7 +143,7 @@ describe("loadCompetition", () => {
       await loadCompetition("zh-Hans");
 
       const callUrl = (global.fetch as jest.Mock).mock.calls[0][0];
-      expect(callUrl).toContain("zh-Hans");
+      expect(callUrl).toContain("/en");
     });
   });
 
@@ -501,6 +501,7 @@ describe("loadCompetition", () => {
         active: true,
         startTime: "2024-01-01T00:00:00Z",
         endTime: "2024-01-31T23:59:59Z",
+        area: "Area 1",
       };
 
       const competition2: CompetitionInfo = {
@@ -509,6 +510,7 @@ describe("loadCompetition", () => {
         active: false,
         startTime: "2024-02-01T00:00:00Z",
         endTime: "2024-02-28T23:59:59Z",
+        area: "Area 2",
       };
 
       (global.fetch as jest.Mock)

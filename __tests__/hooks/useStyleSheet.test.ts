@@ -43,7 +43,7 @@ describe("useThemedStyles", () => {
     const { result, rerender } = renderHook(() => useThemedStyles());
     const first = result.current;
 
-    rerender();
+    rerender(undefined);
 
     expect(result.current).toBe(first);
   });
