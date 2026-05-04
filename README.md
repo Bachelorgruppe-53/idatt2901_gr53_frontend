@@ -44,7 +44,7 @@ Key folders:
 - src/context/: global context providers (theme)
 - src/i18n/: localization config and translation files
 - services/: API and storage layer
-- [__tests__](__tests__/): unit- og integrasjontests
+- [__tests__](__tests__/): unit- and integrasjontests
 
 ## Prerequisites
 
@@ -187,7 +187,7 @@ Use these tests as the first safety net before merging frontend changes.
 - App cannot reach backend:
   - Verify `EXPO_PUBLIC_API_URL` and backend port
   - Confirm device/emulator can access your backend host
--- Native module issues when running in Expo Go (Expo Go may not be compatible with Expo SDK 55):
+- Native module issues when running in Expo Go (Expo Go may not be compatible with Expo SDK 55):
   - Use a development build when required by native dependencies (see "Development build (dev-client)" above)
   - If you get a "No development build installed" error, uninstall the previous build and reinstall the dev client on the simulator:
 
