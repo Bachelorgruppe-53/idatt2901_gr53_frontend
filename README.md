@@ -48,7 +48,7 @@ Key folders:
 
 ## Prerequisites
 
-- Node.js LTS (18+, includes npm)
+- Node.js 20.19.4 or newer (includes npm)
 - Xcode (for iOS simulator/builds on macOS)
 - Android Studio (for Android emulator/builds)
 
