@@ -44,7 +44,7 @@ Key folders:
 - src/context/: global context providers (theme)
 - src/i18n/: localization config and translation files
 - services/: API and storage layer
-- [__tests__](__tests__/): unit- and integrasjontests
+- [__tests__](__tests__/): unit and integration tests
 
 ## Prerequisites
 
@@ -211,6 +211,6 @@ npx expo run:ios
 
 ## Authors / Team
 Developed as part of a Bachelor's thesis in Computer Science at NTNU:
-- **Anne Cecilie Nilsen** - Frontend (Mobileapplication Lead)
+- **Anne Cecilie Nilsen** - Frontend (Mobile application Lead)
 - **Brahim Helland** - Frontend (Admin Webpages Lead)
 - **Ingrid Midtmoen Døvre** - Backend & Database Lead

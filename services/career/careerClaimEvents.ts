@@ -19,7 +19,3 @@ export function subscribeToCareerClaimed(listener: CareerClaimedListener) {
     listeners.delete(listener);
   };
 }
-
-export function __resetCareerClaimedListenersForTests() {
-  listeners.clear();
-}

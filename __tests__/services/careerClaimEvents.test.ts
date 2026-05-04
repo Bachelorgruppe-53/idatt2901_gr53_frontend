@@ -1,12 +1,15 @@
-import {
-    __resetCareerClaimedListenersForTests,
-    emitCareerClaimed,
-    subscribeToCareerClaimed,
-} from "@/services/career/careerClaimEvents";
+let emitCareerClaimed: (careerId: number) => void;
+let subscribeToCareerClaimed: (
+  listener: (careerId: number) => void,
+) => () => void;
 
 describe("careerClaimEvents", () => {
   beforeEach(() => {
-    __resetCareerClaimedListenersForTests();
+    jest.resetModules();
+    const module =
+      require("@/services/career/careerClaimEvents") as typeof import("@/services/career/careerClaimEvents");
+    emitCareerClaimed = module.emitCareerClaimed;
+    subscribeToCareerClaimed = module.subscribeToCareerClaimed;
   });
 
   describe("emitCareerClaimed", () => {
