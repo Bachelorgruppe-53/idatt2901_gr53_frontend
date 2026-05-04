@@ -64,6 +64,8 @@ const mockedUseTranslation = useTranslation as jest.MockedFunction<
 >;
 
 let appStateAddEventListenerSpy: jest.SpyInstance;
+let consoleErrorSpy: jest.SpyInstance;
+const originalConsoleError = console.error;
 
 describe("useHomeData", () => {
   beforeEach(() => {
@@ -97,10 +99,25 @@ describe("useHomeData", () => {
     });
 
     global.fetch = jest.fn();
+
+    consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation((...args) => {
+        const [firstArg] = args;
+        if (
+          typeof firstArg === "string" &&
+          firstArg.includes("not wrapped in act(...)")
+        ) {
+          return;
+        }
+
+        originalConsoleError(...args);
+      });
   });
 
   afterEach(() => {
     appStateAddEventListenerSpy.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   describe("initial data loading", () => {

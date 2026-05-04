@@ -83,6 +83,8 @@ const createResponse = <T>(body: T, status = 200) => ({
 });
 
 describe("useCareerQuiz", () => {
+  let consoleLogSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -105,6 +107,11 @@ describe("useCareerQuiz", () => {
     });
 
     global.fetch = jest.fn();
+    consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
+  });
+
+  afterEach(() => {
+    consoleLogSpy.mockRestore();
   });
 
   describe("initial state", () => {

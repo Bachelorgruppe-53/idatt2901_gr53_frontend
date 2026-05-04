@@ -29,11 +29,13 @@ const mockedUseTranslation = useTranslation as jest.MockedFunction<
   typeof useTranslation
 >;
 let mockedAlert: jest.SpyInstance;
+let consoleErrorSpy: jest.SpyInstance;
 
 describe("useLeaveClass", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockedAlert = jest.spyOn(Alert, "alert").mockImplementation(() => {});
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
 
     mockedGetApiBaseUrl.mockReturnValue("http://localhost:8080/");
     mockedEnsureUserId.mockResolvedValue("user-1");
@@ -46,6 +48,7 @@ describe("useLeaveClass", () => {
 
   afterEach(() => {
     mockedAlert.mockRestore();
+    consoleErrorSpy.mockRestore();
   });
 
   it("shows confirmation alert when leaveClass is called", () => {

@@ -1,9 +1,14 @@
 import {
+    __resetCareerClaimedListenersForTests,
     emitCareerClaimed,
     subscribeToCareerClaimed,
 } from "@/services/career/careerClaimEvents";
 
 describe("careerClaimEvents", () => {
+  beforeEach(() => {
+    __resetCareerClaimedListenersForTests();
+  });
+
   describe("emitCareerClaimed", () => {
     it("calls all registered listeners with career ID", () => {
       const listener1 = jest.fn();

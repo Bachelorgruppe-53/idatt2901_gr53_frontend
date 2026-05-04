@@ -29,14 +29,18 @@ const mockedGetLanguageCode = getLanguageCode as jest.MockedFunction<
 >;
 
 describe("loadCompetition", () => {
+  let consoleLogSpy: jest.SpyInstance;
+
   beforeEach(() => {
     mockedGetApiBaseUrl.mockReturnValue("http://localhost:8080/");
     mockedEnsureUserId.mockResolvedValue("test-user-id");
     mockedGetLanguageCode.mockReturnValue("en");
     global.fetch = jest.fn();
+    consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
   });
 
   afterEach(() => {
+    consoleLogSpy.mockRestore();
     jest.clearAllMocks();
   });
 

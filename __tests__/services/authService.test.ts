@@ -1,14 +1,14 @@
 import { getApiBaseUrl } from "@/services/apiConfig";
 import {
-    ensureUserId,
-    getCurrentUserId,
-    registerDevice,
+  ensureUserId,
+  getCurrentUserId,
+  registerDevice,
 } from "@/services/authService";
 import {
-    clearUserData,
-    getUserId,
-    saveNickname,
-    saveUserId,
+  clearUserData,
+  getUserId,
+  saveNickname,
+  saveUserId,
 } from "@/services/utils/secureStorage";
 import axios from "axios";
 
@@ -49,8 +49,18 @@ const mockedClearUserData = clearUserData as jest.MockedFunction<
 const mockedAxiosCreate = (axios as unknown as { create: jest.Mock }).create;
 
 describe("authService", () => {
+  let consoleErrorSpy: jest.SpyInstance;
+  let consoleLogSpy: jest.SpyInstance;
+
   beforeEach(() => {
     mockedGetApiBaseUrl.mockReturnValue("http://localhost:8080");
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+    consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
+    consoleLogSpy.mockRestore();
   });
 
   it("returns null from getCurrentUserId when stored value is not a UUID", async () => {
