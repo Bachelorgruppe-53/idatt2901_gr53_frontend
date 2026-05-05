@@ -33,23 +33,24 @@ The app helps users discover careers through:
 
 Key folders:
 
-- app/: Expo Router routes
-  - app/(tabs)/index.tsx: home screen
-  - app/(tabs)/map.tsx: map screen
-  - app/(tabs)/stats/: scoreboards
-  - app/(tabs)/achievements.tsx: careers and badges
-  - app/(tabs)/settings/: settings subpages
-- src/components/: reusable UI and feature components
-- src/hooks/: custom hooks (home, QR scanner, theming, quiz, etc.)
-- src/context/: global context providers (theme)
-- src/i18n/: localization config and translation files
-- services/: API and storage layer
-- [__tests__](__tests__/): unit and integration tests
+- [app/](app/): Expo Router routes
+  - [app/(tabs)/index.tsx](app/(tabs)/index.tsx): home screen
+  - [app/(tabs)/map.tsx](app/(tabs)/map.tsx): map screen
+  - [app/(tabs)/stats/](app/(tabs)/stats/): scoreboards
+  - [app/(tabs)/achievements.tsx](app/(tabs)/achievements.tsx): careers and badges
+  - [app/(tabs)/settings/](app/(tabs)/settings/): settings subpages
+- [src/components/](src/components/): reusable UI and feature components
+- [src/hooks/](src/hooks/): custom hooks (home, QR scanner, theming, quiz, etc.)
+- [src/context/](src/context/): global context providers (theme)
+- [src/i18n/](src/i18n/): localization config and translation files
+- [services/](services/): API and storage layer
+- [\__tests__](__tests__/): unit and integration tests
+- [\__mocks__](__mocks__/): test mocks for Expo/native dependencies
 
 ## Prerequisites
 
 - Node.js 20.19.4 or newer (includes npm)
-- Xcode (for iOS simulator/builds on macOS)
+- Xcode (for iOS simulator/builds)
 - Android Studio (for Android emulator/builds)
 
 Then follow these steps:
@@ -60,17 +61,31 @@ Then follow these steps:
 npm install
 ```
 
-2. Configure the API base URL if needed:
-
-Create a .env file in the root directory to persist your local configuration:
+2. Start the development server (local):
 
 ```bash
-EXPO_PUBLIC_API_URL=http://YOUR_BACKEND_HOST:8080
+npx expo start
 ```
 
-If this is not set, the app falls back to environment-aware defaults in `services/apiConfig.ts`.
+Useful start options:
 
-Development build (dev-client)
+- `npx expo start --clear` to clear the Metro cache
+- Press `i` in the Expo CLI to open the iOS simulator (Xcode is needed)
+- Press `a` in the Expo CLI to open the Android emulator (Android emulator needed)
+
+## Available scripts
+
+- npm run lint: run Expo ESLint checks
+- npm test: run Jest tests
+- npm run test:watch: run Jest in watch mode
+
+Run coverage:
+
+```bash
+npm test -- --coverage --watch=false
+```
+
+### Development build (dev-client)
 --------------------------------
 Some native libraries used by this project (camera, maps, secure storage, dev-menu etc.) are not available in the stock Expo Go app. Build and install a development client (dev-build) on the simulator/device when you need full native functionality:
 
@@ -84,30 +99,6 @@ npx expo run:android
 ```
 
 The project includes `expo-dev-client` in `package.json`; use the commands above when you see errors like "No development build for this project is installed." Restart the Metro server after installing the dev-client.
-
-3. Start the development server (local):
-
-```bash
-npx expo start
-```
-
-Useful start options:
-
-- `npx expo start --clear` to clear the Metro cache
-- Press `i` in the Expo CLI to open the iOS simulator (Xcode is needed)
-- Press `a` in the Expo CLI to open the Android emulator
-
-## Available scripts
-
-- npm run lint: run Expo ESLint checks
-- npm test: run Jest tests
-- npm run test:watch: run Jest in watch mode
-
-Run coverage:
-
-```bash
-npm test -- --coverage --watch=false
-```
 
 ## Routing and app bootstrap
 
@@ -197,6 +188,8 @@ xcrun simctl uninstall booted com.brahimage.appBacheloroppgave
 
 # Then build+install a dev client
 npx expo run:ios
+npx expo run:android
+
 ```
 
 - Stale metro cache:
