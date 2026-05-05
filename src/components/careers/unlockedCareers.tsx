@@ -13,7 +13,9 @@ import AboutCareer from "./aboutCareer";
 import CareerBadge from "./careerBadge";
 
 /**
- * This component displays a list of unlocked/caimed careers.
+ * Component that displays a list of unlocked careers/POIs for the user. 
+ * It supports pagination, searching, and real-time updates when new careers are claimed.
+ * @returns JSX.Element
  */
 export default function Careers() {
   const { i18n, t } = useTranslation("aboutCareer");

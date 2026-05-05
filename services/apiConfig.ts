@@ -6,6 +6,14 @@ const DEFAULT_BACKEND_HOST = "10.22.24.64";
 
 const trimTrailingSlash = (value: string): string => value.replace(/\/$/, "");
 
+/**
+ * Determines the base URL for the backend API based on the environment and configuration.
+ * @returns The base URL for the backend API as a string. The function checks for a configured API URL, uses Expo's hostUri in development, and falls back to defaults based on the platform and environment.
+ * 
+ * The priority for determining the API base URL is as follows:
+ * 1. If EXPO_PUBLIC_API_URL environment variable is set, it will be used after trimming any trailing slash.
+ * 2. In development mode (__DEV__ is true), it will use the hostUri provided by Expo if available, or default to http://
+ */
 const getHostFromExpoConfig = (): string | null => {
   const hostUri = Constants.expoConfig?.hostUri;
   if (!hostUri) {
@@ -17,6 +25,12 @@ const getHostFromExpoConfig = (): string | null => {
   return host || null;
 };
 
+/**
+ * Retrieves the configured API URL from the environment variable EXPO_PUBLIC_API_URL. 
+ * If the variable is not set or is empty, it returns null. 
+ * If it is set, it trims any trailing slash from the URL before returning it.
+ * @returns The configured API URL as a string, or null if it is not set or empty.
+ */
 const getConfiguredApiUrl = (): string | null => {
   const value = process.env.EXPO_PUBLIC_API_URL?.trim();
   if (!value) {
@@ -26,6 +40,16 @@ const getConfiguredApiUrl = (): string | null => {
   return trimTrailingSlash(value);
 };
 
+/**
+ * Determines the base URL for the backend API based on the environment and configuration.
+ * It checks for a configured API URL, uses Expo's hostUri in development, and falls back to defaults based on the platform and environment.
+ * @returns The base URL for the backend API as a string.
+ * 
+ * The priority for determining the API base URL is as follows:
+ * 1. If EXPO_PUBLIC_API_URL environment variable is set, it will be used after trimming any trailing slash.
+ * 2. In development mode (__DEV__ is true), it will use the hostUri provided by Expo if available, or default to http://localhost:8080.
+ * 3. On Android in development mode, it will default to http://
+ */
 export const getApiBaseUrl = (): string => {
   const configuredApiUrl = getConfiguredApiUrl();
   if (configuredApiUrl) {

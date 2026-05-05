@@ -1,3 +1,8 @@
+
+/**
+ * A palette of color values used throughout the application.
+ */
+
 const palette = {
   darkBlue: "#003087",
   lightBlue: "#6CACE4",

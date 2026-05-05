@@ -11,6 +11,14 @@ export type FavoriteCareer = {
   title?: string;
 };
 
+/**
+ * Saves the user ID securely in the device's secure storage. 
+ * This function is used to store the unique identifier for the user, which is required for making authenticated requests to the backend API.
+ * The user ID is expected to be a string, and it will be stored under a predefined key.
+ * If there is an error during the saving process, it will be logged and re-thrown for further handling.
+ * 
+ * @param userId - The user ID to be saved, which should be a string.
+ */
 export const saveUserId = async (userId: string): Promise<void> => {
   try {
     await SecureStore.setItemAsync(USER_ID_KEY, userId);
@@ -20,6 +28,10 @@ export const saveUserId = async (userId: string): Promise<void> => {
   }
 };
 
+/**
+ * Retrieves the user ID from secure storage. This function is used to get the stored user ID when making authenticated requests to the backend API.
+ * @returns The user ID as a string if it exists. If there is an error during retrieval, it will be logged and null will be returned.
+ */
 export const getUserId = async (): Promise<string | null> => {
   try {
     return await SecureStore.getItemAsync(USER_ID_KEY);
@@ -29,6 +41,9 @@ export const getUserId = async (): Promise<string | null> => {
   }
 };
 
+/**
+ * Deletes the stored user ID from secure storage.
+ */
 export const deleteUserId = async (): Promise<void> => {
   try {
     await SecureStore.deleteItemAsync(USER_ID_KEY);

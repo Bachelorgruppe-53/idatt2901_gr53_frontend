@@ -2,6 +2,11 @@ import { useThemedStyles } from "@/src/hooks/useStyleSheet";
 import { useTranslation } from "react-i18next";
 import { Linking, Pressable, Text, View } from "react-native";
 
+/**
+ * This component renders a button that opens a feedback form in the user's default browser when pressed.
+ * @returns JSX.Element
+ */
+
 export default function FeedbackForm() {
   const themedStyles = useThemedStyles();
 

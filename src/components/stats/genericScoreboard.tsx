@@ -17,16 +17,10 @@ type ScoreboardProps = {
 };
 
 /**
- * Generic scoreboard that ranks entities by score and renders a simple bar chart.
- *
- * @param props.entities Names to display (same order as scores).
- * @param props.scores Points per entity.
- * @param props.scoreboardType i18n key for the title.
- * @param props.isLoading Show placeholders while data loads.
- * @param props.points Points to show in the header chip (defaults to 250).
- * @param props.pointsLabel i18n key for the chip label.
- * @param props.highlightedEntity Entity name to visually emphasize.
- * @param props.titleOverride Override the default title.
+ * Scoreboard component that displays a ranked list of entities and their corresponding scores, along with the user's own points. 
+ * It supports loading states with placeholders, highlights a specific entity, and provides a visually appealing bar representation of scores relative to the highest score.
+ * @param props - An object containing the properties to control the scoreboard's behavior and appearance, including the list of entities, their scores, loading state, user's points, and optional labels and highlights.
+ * @returns JSX.Element
  */
 
 export default function Scoreboard(props: ScoreboardProps) {

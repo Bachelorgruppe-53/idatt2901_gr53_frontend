@@ -16,6 +16,9 @@ import { BaseStyles } from "../constants/Styles";
 import { useThemedStyles } from "../hooks/useStyleSheet";
 import { useThemeColor } from "../hooks/useThemeColor";
 
+/**
+ * JoinClassModal component that allows users to enter a 6-character class code to join a class.
+ */
 interface JoinClassModalProps {
   onClose: () => void;
   onJoined?: () => void;
@@ -23,6 +26,12 @@ interface JoinClassModalProps {
 
 const CODE_LENGTH = 6;
 
+/**
+ * Utility function to extract a user-friendly error message from various backend error response formats. 
+ * It checks for common fields and structures to find a meaningful message to display to the user.
+ * @param data The error response data from the backend, which can be of any type. The function will attempt to parse this data to find a user-friendly error message.
+ * @returns A string containing the extracted error message if found, or null if no suitable message could be extracted from the data.
+ */
 const getJoinErrorMessage = (data: unknown): string | null => {
   if (typeof data === "string") {
     const trimmed = data.trim();
@@ -54,6 +63,12 @@ const getJoinErrorMessage = (data: unknown): string | null => {
   return null;
 };
 
+/**
+ * JoinClassModal component that provides a user interface for entering a class code to join a class. 
+ * It manages the input of the class code, handles validation, communicates with the backend API to join the class, and displays error messages based on the response from the backend.
+ * @param param0 An object containing the onClose callback to close the modal and an optional onJoined callback that is called after successfully joining a class.
+ * @returns A JSX element representing the modal dialog for joining a class. The modal includes input fields for the class code, error message display, and buttons to submit the code or close the modal.
+ */
 export const JoinClassModal = ({ onClose, onJoined }: JoinClassModalProps) => {
   const [codeDigits, setCodeDigits] = useState<string[]>(
     Array(CODE_LENGTH).fill(" "),

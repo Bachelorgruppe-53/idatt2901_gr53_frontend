@@ -40,6 +40,12 @@ interface QuizModalProps {
   onClose: () => void;
 }
 
+/**
+ * QuizModal component that serves as a full-screen wrapper for the Quiz engine, providing state management for countdown timers, theming, localization, and flow control for quiz sessions.
+ * It displays quiz questions, tracks remaining time, and handles user interactions while ensuring accessibility and a seamless user experience.
+ * @param param0 - An object containing the properties to control the quiz modal's behavior, including visibility, title, questions, time limits, and callback functions for user interactions.
+ * @returns JSX.Element
+ */
 export default function QuizModal({
   visible,
   title,

@@ -10,6 +10,11 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * This component renders the stats screen, which includes a segmented control for switching between different scoreboards (class, school, city).
+ * @returns JSX.Element
+ */
+
 export default function StatsScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const theme = useThemeColor();

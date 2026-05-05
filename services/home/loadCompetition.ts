@@ -4,6 +4,7 @@ import { getLanguageCode } from "@/services/language/languageCode";
 
 const COMPETITION_DEBUG = __DEV__;
 
+// Type definition for the competition information returned by the backend API.
 export type CompetitionInfo = {
   id: number;
   title: string;
@@ -13,6 +14,14 @@ export type CompetitionInfo = {
   area: string;
 };
 
+/**
+ * Loads the current competition information from the backend API for the specified language.
+ * It constructs the request URL using the base API URL and the language code, and includes the user ID in the headers.
+ * The function handles various response scenarios, including non-OK responses and exceptions, and returns null if the competition information cannot be loaded.
+ *
+ * @param language - The language code to fetch the competition information for. If not provided, the default language will be used.
+ * @returns A Promise that resolves to a CompetitionInfo object if successful, or null if there was an error or if the response was not in the expected format.
+ */
 export const loadCompetition = async (
   language?: string,
 ): Promise<CompetitionInfo | null> => {

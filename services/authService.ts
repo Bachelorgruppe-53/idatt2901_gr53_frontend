@@ -10,8 +10,20 @@ import axios, { isAxiosError } from "axios";
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+/**
+ * Validates whether a given string is a valid UUID (Universally Unique Identifier).
+ *
+ * @param value The string to validate as a UUID.
+ * @returns True if the value is a valid UUID, false otherwise.
+ */
 const isValidUserUuid = (value: string): boolean => UUID_REGEX.test(value);
 
+/**
+ * Reads and validates a user ID from an unknown value. It checks if the value is a string, trims it, and verifies that it is a valid UUID.
+ *
+ * @param value The value to read and validate as a user ID.
+ * @returns The valid user ID as a string, or null if the value is not a valid user ID.
+ */
 const readUserId = (value: unknown): string | null => {
   if (typeof value !== "string") {
     return null;
@@ -21,6 +33,11 @@ const readUserId = (value: unknown): string | null => {
   return trimmedValue.length > 0 ? trimmedValue : null;
 };
 
+/**
+ * Reads a user ID from an unknown value and validates that it is a valid UUID. If the value is not a valid UUID, it returns null.
+ * @param value The value to read and validate as a user ID.
+ * @returns The valid user ID as a string, or null if the value is not a valid user ID or not a valid UUID.
+ */
 const readUserUuid = (value: unknown): string | null => {
   const userId = readUserId(value);
   if (!userId || !isValidUserUuid(userId)) {
@@ -30,6 +47,13 @@ const readUserUuid = (value: unknown): string | null => {
   return userId;
 };
 
+/**
+ * Extracts a user ID from a response object, checking multiple possible locations and formats where the user ID might be present. 
+ * It looks for common fields such as userId, user_id, id, and sub, both at the top level and within a nested user object. 
+ * The function validates that any found user ID is a valid UUID before returning it.
+ * @param data The response data from which to extract the user ID, which can be of any type.
+ * @returns The extracted user ID as a string if found and valid, or null if no valid user ID could be extracted from the response.
+ */
 const extractUserIdFromResponse = (data: unknown): string | null => {
   if (!data || typeof data !== "object") {
     return null;
@@ -60,6 +84,11 @@ const extractUserIdFromResponse = (data: unknown): string | null => {
   );
 };
 
+/**
+ * Extracts a nickname from a response object, checking multiple possible locations and formats where the nickname might be present.
+ * @param data The response data from which to extract the nickname, which can be of any type.
+ * @returns The extracted nickname as a string if found and valid, or null if no valid nickname could be extracted from the response.
+ */
 const extractNicknameFromResponse = (data: unknown): string | null => {
   if (typeof data === "string") {
     const trimmedNickname = data.trim();

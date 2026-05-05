@@ -7,6 +7,7 @@ import { StyleSheet, View } from "react-native";
  *
  * @returns JSX.Element
  */
+
 export default function EntityPlaceholder() {
   const theme = useThemeColor();
   return (

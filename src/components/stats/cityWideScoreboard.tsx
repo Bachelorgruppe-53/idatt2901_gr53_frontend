@@ -20,6 +20,13 @@ import { Text, View } from "react-native";
 
 const DEFAULT_COUNTY_NAME = "Trøndelag";
 
+/**
+ * Utility function to extract a user-friendly error message from the backend response.
+ * It checks if the response data is a string or an object containing an "error" property and returns the appropriate message.
+ * If no valid message is found, it returns an empty string.
+ * @param data The response data from the backend, which can be of any type. The function will attempt to extract a meaningful error message from this data.
+ * @returns A user-friendly error message or an empty string.
+ */
 const getBackendErrorMessage = (data: unknown): string => {
   if (typeof data === "string") return data;
   if (data && typeof data === "object" && "error" in data) {
@@ -29,6 +36,12 @@ const getBackendErrorMessage = (data: unknown): string => {
   return "";
 };
 
+/**
+ * CityScoreboard component that displays a scoreboard of classes in a county, showing their points and ranking.
+ * It fetches data from the backend API, handles loading and error states, and updates the scoreboard at regular intervals.
+ * The component also highlights the user's own class points for easy comparison.
+ * @returns JSX.Element
+ */
 export default function CityScoreboard() {
   const [entities, setEntities] = useState<string[]>([]);
   const [scores, setScores] = useState<number[]>([]);
@@ -38,6 +51,7 @@ export default function CityScoreboard() {
   const themedStyles = useThemedStyles();
   const inFlightRef = useRef(false);
 
+  // Function to fetch county classes and user summary from the backend API, handling authentication and error states.
   const getCountyClasses = useCallback(
     async (userId: string): Promise<GetCountyClassesResponse> => {
       const headers: UserIdHeader = { "X-User-ID": userId };
@@ -53,6 +67,7 @@ export default function CityScoreboard() {
     [],
   );
 
+  // Function to fetch user summary from the backend API, which includes information about the user's class and points.
   const getSummary = useCallback(
     async (userId: string): Promise<UserSummary> => {
       const headers: UserIdHeader = { "X-User-ID": userId };
@@ -68,6 +83,7 @@ export default function CityScoreboard() {
     [],
   );
 
+  // Function to load county classes and user summary, update the scoreboard data, and handle loading and error states.
   const loadCountyClasses = useCallback(async () => {
     if (inFlightRef.current) return;
     inFlightRef.current = true;
@@ -109,6 +125,7 @@ export default function CityScoreboard() {
     }
   }, [entities.length, getCountyClasses, getSummary]);
 
+  // useFocusEffect is used to load county classes when the component is focused and set up an interval to refresh the data every 10 seconds. The interval is cleared when the component is unfocused.
   useFocusEffect(
     useCallback(() => {
       void loadCountyClasses();

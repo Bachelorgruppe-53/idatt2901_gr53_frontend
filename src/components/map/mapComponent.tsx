@@ -46,6 +46,13 @@ interface MapProps {
   onScanPress?: () => void;
 }
 
+/**
+ * MapComponent is the main component responsible for rendering the map view, handling user interactions such as area selection 
+ * and QR code scanning, and managing the state related to map areas, locations, loading status, and user location. 
+ * 
+ * @param param0 The props for the MapComponent, including optional style, initial location for centering the map, and a callback for when the scan button is pressed.
+ * @returns JSX.Element
+ */
 export const MapComponent = ({
   style,
   initialLocation,

@@ -22,6 +22,11 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * ThemeProvider component that manages the application's theme state, allowing users to select between system, light, and dark modes.
+ * @param param0 An object containing the children components that will have access to the theme context.
+ * @returns A ThemeContext.Provider component.
+ */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
   const [themeMode, setThemeModeState] = useState<ThemeMode>("system");

@@ -4,6 +4,9 @@ import { getLanguageCode } from "@/services/language/languageCode";
 import { COLOR_BY_CODE } from "@/src/constants/ColorMap";
 import { Colors } from "@/src/constants/Colors";
 
+/**
+ * This file defines the types and functions related to fetching and managing map data, including points of interest (POIs) and areas.
+ */
 export interface MapLocation {
   id: string;
   latitude: number;
@@ -36,9 +39,11 @@ interface StringRequest {
 const allLocationsCache = new Map<string, MapLocation[]>();
 const allLocationsPromiseCache = new Map<string, Promise<MapLocation[]>>();
 
+/// Maps a POI color code to a brand color. If the color code is not defined in the COLOR_BY_CODE mapping, it defaults to a dark blue color.
 const mapPoiColorToBrandColor = (colorCode: number): string =>
   COLOR_BY_CODE[colorCode] ?? Colors.brand.darkBlue;
 
+// Transforms a MapDto object into a MapLocation object, mapping the relevant fields and converting the color code to a brand color.
 const mapDtoToMapLocation = (poi: MapDto, index: number): MapLocation => ({
   id: String(index),
   latitude: poi.lat,
@@ -49,6 +54,14 @@ const mapDtoToMapLocation = (poi: MapDto, index: number): MapLocation => ({
   color: mapPoiColorToBrandColor(poi.color),
 });
 
+/**
+ * Fetches points of interest (POIs) from the backend API, handling user authentication and retrying the request if an invalid user ID is detected.
+ * If the initial request fails due to an invalid user ID, it attempts to register the device to obtain a new user ID and retries the request.
+ * 
+ * @param url The URL to fetch the POIs from, which is constructed based on the base API URL, area name, and language code.
+ * @param userId The user ID to include in the request headers for authentication.
+ * @returns A Promise that resolves to the Response object from the fetch request.
+ */
 const fetchPoiWithUserId = async (url: string, userId: string) => {
   return fetch(url, {
     method: "GET",
@@ -60,6 +73,7 @@ const fetchPoiWithUserId = async (url: string, userId: string) => {
   });
 };
 
+// Similar to fetchPoiWithUserId but includes the area name in the request body for fetching POIs by area.
 const fetchPoiByAreaWithUserId = async (
   url: string,
   userId: string,
@@ -78,6 +92,13 @@ const fetchPoiByAreaWithUserId = async (
   });
 };
 
+/**
+ * Builds the URL for fetching POIs based on the base API URL, area name, and language code.
+ * @param baseUrl The base URL of the API, which is typically obtained from the configuration.
+ * @param areaName The name of the area to fetch POIs for. If null, it indicates that all POIs should be fetched.
+ * @param languageCode The language code to include in the URL for localization purposes.
+ * @returns The constructed URL for fetching POIs from the backend API.
+ */
 const buildPoiUrl = (
   baseUrl: string,
   areaName: string | null,
@@ -87,6 +108,11 @@ const buildPoiUrl = (
   return `${baseUrl}${path}/${encodeURIComponent(languageCode)}`;
 };
 
+/**
+ * Parses the response from the POI fetch request and extracts an array of MapDto objects.
+ * @param response The Response object returned from the fetch request to the POI endpoint.
+ * @returns A Promise that resolves to an array of MapDto objects extracted from the response. If the response does not contain a valid array, it returns an empty array.
+ */
 const parsePoiArray = async (response: Response): Promise<MapDto[]> => {
   const data = await response.json();
   const poiArray = Array.isArray(data) ? data : data.body || data.data || [];
@@ -95,6 +121,13 @@ const parsePoiArray = async (response: Response): Promise<MapDto[]> => {
   return poiArray as MapDto[];
 };
 
+/**
+ * Fetches POI data from the backend API with retry logic for handling invalid user IDs. 
+ * If the initial request fails due to an invalid user ID, it attempts to register the device to obtain a new user ID and retries the request.
+ * @param url The URL to fetch the POIs from, which is constructed based on the base API URL, area name, and language code.
+ * @param areaName The name of the area to fetch POIs for. If null, it indicates that all POIs should be fetched.
+ * @returns A Promise that resolves to the Response object from the fetch request. If the request fails after retrying, it throws an error with the relevant status and message.
+ */
 const fetchWithRetryOnInvalidUser = async (
   url: string,
   areaName: string | null,
@@ -131,6 +164,11 @@ const fetchWithRetryOnInvalidUser = async (
   return response;
 };
 
+/**
+ * Fetches all POI locations from the backend API, utilizing caching to optimize performance.
+ * @param selectedLanguage The language code to fetch the POI data for, which is used to determine the appropriate cache key and API endpoint. If not provided, the default language will be used.
+ * @returns A Promise that resolves to an array of MapLocation objects representing the fetched POI locations.
+ */
 const getAllLocations = async (
   selectedLanguage?: string,
 ): Promise<MapLocation[]> => {
@@ -166,6 +204,13 @@ const getAllLocations = async (
   }
 };
 
+/**
+ * Fetches POI locations from the backend API based on the specified area name and selected language, handling user authentication and retrying the request if an invalid user ID is detected.
+ * If the area name is null, it fetches all locations. Otherwise, it fetches locations specific to the given area.
+ * @param areaName The name of the area to fetch POIs for. If null, it indicates that all POIs should be fetched.
+ * @param selectedLanguage The language code to fetch the POI data for, which is used to determine the appropriate API endpoint and localization of the data. If not provided, the default language will be used.
+ * @returns A Promise that resolves to an array of MapLocation objects representing the fetched POI locations for the specified area and language. If the fetch operation fails, it returns an empty array and logs the error to the console.
+ */
 export const fetchLocations = async (
   areaName: string | null = null,
   selectedLanguage?: string,
@@ -188,6 +233,11 @@ export const fetchLocations = async (
   }
 };
 
+/**
+ * Fetches a list of unique area names from the fetched POI locations, utilizing the selected language for localization.
+ * @param selectedLanguage The language code to fetch the area names for, which is used to determine the appropriate API endpoint and localization of the data. If not provided, the default language will be used.
+ * @returns A Promise that resolves to an array of MapArea objects representing the unique area names.
+ */
 export const fetchAreas = async (
   selectedLanguage?: string,
 ): Promise<MapArea[]> => {
@@ -213,4 +263,5 @@ export const fetchAreas = async (
   }
 };
 
+// Exports an empty array of MapLocation objects, which can be used as a default value or placeholder when there are no locations to display.
 export const locations: MapLocation[] = [];

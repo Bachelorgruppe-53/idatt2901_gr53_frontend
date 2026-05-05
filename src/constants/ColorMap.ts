@@ -1,5 +1,9 @@
 import { Colors } from "@/src/constants/Colors";
 
+/**
+ * A mapping of numeric color codes to their corresponding color values defined in the Colors constant.
+ */
+
 export const COLOR_BY_CODE: Record<number, string> = {
   1: Colors.brand.sage,
   2: Colors.brand.lightGreen,

@@ -11,8 +11,7 @@ import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
- * This page allows the user to change settings such as theme mode and language.
- *
+ * This component renders the main settings screen for the app.
  * @returns JSX.Element
  */
 

@@ -1,6 +1,13 @@
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 
+/**
+ * This component defines the layout for the settings section of the app. 
+ * It uses a stack navigator to manage navigation between different settings screens, such as language selection, theme change, feedback form, privacy policy, and notification settings. 
+ * Each screen is configured with appropriate header options for a consistent user experience.
+ * @returns JSX.Element
+ */
+
 export default function SettingsLayout() {
   const { t } = useTranslation("settings");
   return (

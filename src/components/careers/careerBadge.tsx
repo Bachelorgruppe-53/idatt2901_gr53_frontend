@@ -26,6 +26,11 @@ const BADGE_SIZE = 56;
 
 const MUI_ICON_SUFFIX_REGEX = /(Outlined|Rounded|Sharp|TwoTone)$/;
 
+/**
+ * Converts a given raw icon name to kebab-case format, removing common MUI icon suffixes and trimming whitespace.
+ * @param rawName The original icon name which may be in various formats (e.g., camelCase, PascalCase, kebab-case, snake_case) and may include MUI suffixes.
+ * @returns The transformed icon name in kebab-case format, with MUI suffixes removed. If the resulting name is empty, it defaults to "work".
+ */
 const toKebabCase = (rawName: string): string => {
   const cleaned = rawName.replace(MUI_ICON_SUFFIX_REGEX, "").trim();
   if (cleaned.length === 0) return "work";
@@ -36,6 +41,12 @@ const toKebabCase = (rawName: string): string => {
     .toLowerCase();
 };
 
+/**
+ * Generates candidate icon names based on the provided iconName by applying transformations such as converting to kebab-case and snake_case, and filtering out empty values and duplicates. 
+ * This helps in resolving the correct Material Icon name even if the input iconName is not in the expected format.
+ * @param iconName The original icon name to generate candidates from, which can be in various formats (e.g., camelCase, PascalCase, kebab-case, snake_case).
+ * @returns An array of candidate icon names derived from the original iconName, which can be used to attempt to resolve a valid Material Icon name.
+ */
 const candidateIconNames = (iconName: string): string[] => {
   const kebab = toKebabCase(iconName);
   const snake = kebab.replace(/-/g, "_");
@@ -45,6 +56,11 @@ const candidateIconNames = (iconName: string): string[] => {
   );
 };
 
+/**
+ * Resolves the appropriate Material Icon name based on the provided iconName by checking if it exists in the MaterialIcons glyph map.
+ * @param iconName The original icon name to resolve, which can be in various formats (e.g., camelCase, PascalCase, kebab-case, snake_case).
+ * @returns The resolved Material Icon name.
+ */
 const resolveMaterialIconName = (
   iconName: string | null,
 ): keyof typeof MaterialIcons.glyphMap => {
@@ -72,6 +88,11 @@ const resolveMaterialIconName = (
   return "question-mark";
 };
 
+/**
+ * Determines the badge color based on the provided color code. If the color code is null or does not correspond to a defined color, it defaults to a gray color.
+ * @param colorCode The color code associated with the career, which is used to look up the corresponding color in the COLOR_BY_CODE mapping. If null or invalid, a default gray color is returned.
+ * @returns The determined badge color.
+ */
 const getBadgeColor = (colorCode: number | null): string => {
   if (!colorCode) {
     return Colors.brand.gray;
@@ -80,6 +101,12 @@ const getBadgeColor = (colorCode: number | null): string => {
   return COLOR_BY_CODE[colorCode] ?? Colors.brand.gray;
 };
 
+/**
+ * CareerBadge component that displays a badge for a career/POI. 
+ * It includes an icon and the career name, and is pressable to trigger a callback with the career ID and name.
+ * @param param0 The props for the CareerBadge component, including career_id, careerName, iconName, colorCode, and onPress callback function.
+ * @returns JSX.Element
+ */
 export default function CareerBadge({
   career_id,
   careerName,

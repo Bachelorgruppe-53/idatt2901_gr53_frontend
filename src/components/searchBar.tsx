@@ -11,6 +11,12 @@ type SearchBarProps = {
   accessibilityHint?: string;
 };
 
+/**
+ * SearchBar component that provides a styled input field with a search icon for filtering results.
+ * It supports accessibility features and adapts its styling based on the current theme.
+ * @param param0 An object containing the props for the SearchBar component.
+ * @returns A JSX element
+ */
 export default function SearchBar({
   value,
   onChangeText,
