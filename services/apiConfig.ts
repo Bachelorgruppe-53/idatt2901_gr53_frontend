@@ -8,7 +8,7 @@ const trimTrailingSlash = (value: string): string => value.replace(/\/$/, "");
 
 /**
  * Determines the base URL for the backend API based on the environment and configuration.
- * @returns The base URL for the backend API as a string. The function checks for a configured API URL, uses Expo's hostUri in development, and falls back to defaults based on the platform and environment.
+ * @returns The base URL for the backend API as a string. The function checks for a configured API URL, uses the Android emulator bridge in development on Android, uses Expo's hostUri in development on iOS, and falls back to localhost otherwise.
  */
 const getHostFromExpoConfig = (): string | null => {
   const hostUri = Constants.expoConfig?.hostUri;
@@ -21,8 +21,8 @@ const getHostFromExpoConfig = (): string | null => {
 };
 
 /**
- * Retrieves the configured API URL from the environment variable EXPO_PUBLIC_API_URL. 
- * If the variable is not set or is empty, it returns null. 
+ * Retrieves the configured API URL from the environment variable EXPO_PUBLIC_API_URL.
+ * If the variable is not set or is empty, it returns null.
  * If it is set, it trims any trailing slash from the URL before returning it.
  * @returns The configured API URL as a string, or null if it is not set or empty.
  */
@@ -37,13 +37,13 @@ const getConfiguredApiUrl = (): string | null => {
 
 /**
  * Determines the base URL for the backend API based on the environment and configuration.
- * It checks for a configured API URL, uses Expo's hostUri in development, and falls back to defaults based on the platform and environment.
+ * It checks for a configured API URL, uses the Android emulator bridge in development on Android, uses Expo's hostUri in development on iOS, and falls back to defaults based on the platform and environment.
  * @returns The base URL for the backend API as a string.
- * 
+ *
  * The priority for determining the API base URL is as follows:
  * 1. If EXPO_PUBLIC_API_URL environment variable is set, it will be used after trimming any trailing slash.
-r * 2. If not in development mode, returns http://localhost:8080 (DEFAULT_BACKEND_HOST:PORT).
- * 3. On Android in development mode, defaults to http://10.0.2.2:8080 (emulator host bridge) — checked first since the Mac's IP is not reachable from the emulator.
+ * 2. If not in development mode, returns http://localhost:8080 (DEFAULT_BACKEND_HOST:PORT).
+ * 3. On Android in development mode, always returns http://10.0.2.2:8080 (emulator host bridge).
  * 4. In development mode on iOS, if Expo hostUri is available, uses that: http://{hostUri}:8080.
  * 5. Otherwise, returns http://localhost:8080 (DEFAULT_BACKEND_HOST:PORT).
  */
@@ -57,8 +57,7 @@ export const getApiBaseUrl = (): string => {
     return `http://${DEFAULT_BACKEND_HOST}:${DEFAULT_BACKEND_PORT}`;
   }
 
-  // Android emulator routes host machine traffic through 10.0.2.2.
-  // Check this before hostUri since the Mac's IP won't be reachable from the emulator.
+  // Android development runs use the emulator bridge.
   if (Platform.OS === "android") {
     return `http://10.0.2.2:${DEFAULT_BACKEND_PORT}`;
   }

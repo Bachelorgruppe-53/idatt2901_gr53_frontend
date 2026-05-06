@@ -39,7 +39,7 @@ interface StringRequest {
 const allLocationsCache = new Map<string, MapLocation[]>();
 const allLocationsPromiseCache = new Map<string, Promise<MapLocation[]>>();
 
-/// Maps a POI color code to a brand color. If the color code is not defined in the COLOR_BY_CODE mapping, it defaults to a dark blue color.
+// Maps a POI color code to a brand color. If the color code is not defined in the COLOR_BY_CODE mapping, it defaults to a dark blue color.
 const mapPoiColorToBrandColor = (colorCode: number): string =>
   COLOR_BY_CODE[colorCode] ?? Colors.brand.darkBlue;
 
