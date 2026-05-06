@@ -219,6 +219,10 @@ npm install --legacy-peer-deps
 - Expo Router docs: https://docs.expo.dev/router/introduction/
 - React Native docs: https://reactnative.dev/docs/getting-started
 - EAS docs: https://docs.expo.dev/eas/
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+---
 
 ## Team
 
@@ -227,3 +231,12 @@ Developed as part of a Bachelor's thesis in Computer Science at NTNU.
 - **Anne Cecilie Nilsen** - Frontend (Mobile application Lead)
 - **Brahim Helland** - Frontend (Admin Webpages Lead)
 - **Ingrid Midtmoen Døvre** - Backend & Database Lead
+
+
+---
+
+Copyright © 2026 Bachelorgruppe 53.
+
+All rights reserved.
+
+No permission is granted to copy, modify, or redistribute this software without explicit written permission.
