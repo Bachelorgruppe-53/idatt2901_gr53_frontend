@@ -6,21 +6,21 @@ The app helps users explore careers through QR scanning, map-based discovery, qu
 
 ## Screenshots
 
-#### Hovedskjermer & Navigasjon
+#### Main screens and navigation
 <p align="left">
   <img src="assets/images/readme/home_ios.png" width="220" alt="Home" />
   <img src="assets/images/readme/stats_ios.png" width="220" alt="Stats" />
   <img src="assets/images/readme/settings.png" width="220" alt="Settings" />
 </p>
 
-#### Kart og Lokasjon
+#### Maps and location
 <p align="left">
   <img src="assets/images/readme/maps1_ios.png" width="220" alt="Map 1" />
   <img src="assets/images/readme/maps_ios.png" width="220" alt="Map iOS" />
   <img src="assets/images/readme/maps_android.png" width="220" alt="Map Android" />
 </p>
 
-#### Karriere & Quiz
+#### Career and quiz
 <p align="left">
   <img src="assets/images/readme/about.png" width="220" alt="About" />
   <img src="assets/images/readme/quiz.png" width="220" alt="Quiz" />
@@ -104,17 +104,7 @@ or
 npx expo run:android
 ```
 
-4. Start Metro.
-
-```bash
-npx expo start --dev-client
-```
-
-5. Open the app from Metro.
-   - Press `i` for iOS
-   - Press `a` for Android
-
-### Daily development
+### Rerunning the application
 
 Once the dev client is installed, start the app with:
 
@@ -205,7 +195,7 @@ npm install --legacy-peer-deps
 ## Troubleshooting
 
 - Cannot reach backend:
-  - Verify `EXPO_PUBLIC_API_URL` and backend port
+  - Verify backend port and url
   - Confirm the device or emulator can access the backend host
 - Expo Go errors or missing native features:
   - Use a development build when native dependencies are required
