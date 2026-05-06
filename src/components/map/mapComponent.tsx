@@ -16,18 +16,33 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   ActivityIndicator,
+  Alert,
   Linking,
-  PermissionsAndroid,
   Platform,
   Pressable,
   StyleSheet,
   View,
   ViewStyle,
 } from "react-native";
-import Geolocation from "react-native-geolocation-service";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+
+type ExpoLocationModule = typeof import("expo-location");
+
+let cachedLocationModule: ExpoLocationModule | null = null;
+
+const getLocationModule = (): ExpoLocationModule | null => {
+  if (cachedLocationModule) {
+    return cachedLocationModule;
+  }
+
+  try {
+    cachedLocationModule = require("expo-location") as ExpoLocationModule;
+    return cachedLocationModule;
+  } catch {
+    return null;
+  }
+};
 
 /**
  * This component displays a map with markers and allows users to scan QR codes to unlock careers.
@@ -47,9 +62,9 @@ interface MapProps {
 }
 
 /**
- * MapComponent is the main component responsible for rendering the map view, handling user interactions such as area selection 
- * and QR code scanning, and managing the state related to map areas, locations, loading status, and user location. 
- * 
+ * MapComponent is the main component responsible for rendering the map view, handling user interactions such as area selection
+ * and QR code scanning, and managing the state related to map areas, locations, loading status, and user location.
+ *
  * @param param0 The props for the MapComponent, including optional style, initial location for centering the map, and a callback for when the scan button is pressed.
  * @returns JSX.Element
  */
@@ -106,8 +121,13 @@ export const MapComponent = ({
     longitude: number;
   } | null>(null);
   const mapRef = useRef<MapView>(null);
-  const watchIdRef = useRef<number | null>(null);
   const cameraStateRef = useRef<any>(null);
+  const fallbackRegion = {
+    latitude: initialLocation?.latitude ?? 63.4212,
+    longitude: initialLocation?.longitude ?? 10.3951,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  };
 
   const areaOptions: MapArea[] = [
     { id: "all", label: t("allAreas"), value: null },
@@ -244,59 +264,53 @@ export const MapComponent = ({
   }, [isScanning, isMapReady]);
 
   const requestLocationPermission = useCallback(async () => {
-    if (Platform.OS === "ios") {
-      const status = await Geolocation.requestAuthorization("whenInUse");
-      return status === "granted";
+    const location = getLocationModule();
+    if (!location) {
+      return false;
     }
 
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        title: t("locationPermissionTitle"),
-        message: t("locationPermissionMessage"),
-        buttonNeutral: t("locationPermissionAskLater"),
-        buttonNegative: t("locationPermissionCancel"),
-        buttonPositive: t("locationPermissionAccept"),
-      },
-    );
+    const permission = await location.requestForegroundPermissionsAsync();
 
-    return granted === PermissionsAndroid.RESULTS.GRANTED;
+    if (permission.status === "granted") {
+      return true;
+    }
+
+    Alert.alert(t("locationPermissionTitle"), t("locationPermissionMessage"));
+
+    return false;
   }, [t]);
 
   useEffect(() => {
-    const startLocationTracking = async () => {
-      const hasPermission = await requestLocationPermission();
-      if (!hasPermission) return;
+    let isActive = true;
 
-      watchIdRef.current = Geolocation.watchPosition(
-        (position) => {
-          const nextLocation = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          };
+    const loadCurrentLocation = async () => {
+      try {
+        const location = getLocationModule();
+        if (!location) return;
 
-          setUserLocation(nextLocation);
-        },
-        (error) => {
-          console.log("Geolocation error", error.code, error.message);
-        },
-        {
-          enableHighAccuracy: true,
-          distanceFilter: 10,
-          interval: 5000,
-          fastestInterval: 2000,
-          showLocationDialog: true,
-        },
-      );
+        const hasPermission = await requestLocationPermission();
+        if (!hasPermission || !isActive) return;
+
+        const position = await location.getCurrentPositionAsync({
+          accuracy: location.Accuracy.Highest,
+          mayShowUserSettingsDialog: true,
+        });
+
+        if (!isActive) return;
+
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      } catch (error) {
+        console.warn("Failed to load current location", error);
+      }
     };
 
-    void startLocationTracking();
+    void loadCurrentLocation();
 
     return () => {
-      if (watchIdRef.current !== null) {
-        Geolocation.clearWatch(watchIdRef.current);
-      }
-      Geolocation.stopObserving();
+      isActive = false;
     };
   }, [requestLocationPermission]);
 
@@ -355,7 +369,7 @@ export const MapComponent = ({
   }
 
   return (
-    <View style={themedStyles.container}>
+    <View style={[themedStyles.container, style]}>
       <AreaSelector
         areas={areaOptions}
         selectedArea={selectedArea}
@@ -366,10 +380,12 @@ export const MapComponent = ({
       <MapView
         ref={mapRef}
         onMapReady={() => setIsMapReady(true)}
+        initialRegion={fallbackRegion}
         provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
+        mapType="standard"
         zoomControlEnabled={Platform.OS === "android"}
         showsCompass={true}
-        showsUserLocation={true}
+        showsUserLocation={Boolean(userLocation)}
         style={styles.map}
         userInterfaceStyle={isDarkMode ? "dark" : "light"}
       >

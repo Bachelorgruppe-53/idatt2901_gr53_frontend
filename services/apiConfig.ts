@@ -14,7 +14,6 @@ const getHostFromExpoConfig = (): string | null => {
   const hostUri = Constants.expoConfig?.hostUri;
   if (!hostUri) {
     return null;
-    2;
   }
 
   const host = hostUri.split(":")[0];
@@ -43,10 +42,10 @@ const getConfiguredApiUrl = (): string | null => {
  * 
  * The priority for determining the API base URL is as follows:
  * 1. If EXPO_PUBLIC_API_URL environment variable is set, it will be used after trimming any trailing slash.
- * 2. If not in development mode, returns http://10.22.24.64:8080 (DEFAULT_BACKEND_HOST:PORT).
- * 3. In development mode, if Expo hostUri is available, uses that: http://{hostUri}:8080.
- * 4. On Android in development mode, defaults to http://10.0.2.2:8080 (emulator host bridge).
- * 5. Otherwise, returns http://10.22.24.64:8080 (DEFAULT_BACKEND_HOST:PORT).
+r * 2. If not in development mode, returns http://localhost:8080 (DEFAULT_BACKEND_HOST:PORT).
+ * 3. On Android in development mode, defaults to http://10.0.2.2:8080 (emulator host bridge) — checked first since the Mac's IP is not reachable from the emulator.
+ * 4. In development mode on iOS, if Expo hostUri is available, uses that: http://{hostUri}:8080.
+ * 5. Otherwise, returns http://localhost:8080 (DEFAULT_BACKEND_HOST:PORT).
  */
 export const getApiBaseUrl = (): string => {
   const configuredApiUrl = getConfiguredApiUrl();
@@ -59,6 +58,7 @@ export const getApiBaseUrl = (): string => {
   }
 
   // Android emulator routes host machine traffic through 10.0.2.2.
+  // Check this before hostUri since the Mac's IP won't be reachable from the emulator.
   if (Platform.OS === "android") {
     return `http://10.0.2.2:${DEFAULT_BACKEND_PORT}`;
   }
@@ -68,7 +68,6 @@ export const getApiBaseUrl = (): string => {
   if (expoHost) {
     return `http://${expoHost}:${DEFAULT_BACKEND_PORT}`;
   }
-
 
   return `http://${DEFAULT_BACKEND_HOST}:${DEFAULT_BACKEND_PORT}`;
 };
