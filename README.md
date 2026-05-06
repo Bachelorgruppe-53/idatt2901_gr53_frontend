@@ -1,26 +1,22 @@
 # SJUK Frontend
 
-Frontend for SJUK (St. Olavs Jakt etter Utdanning- og Karrieremuligheter), built with Expo, React Native, and Expo Router.
+Mobile frontend for SJUK (St. Olavs Jakt etter Utdanning- og Karrieremuligheter), built with Expo, React Native, and Expo Router.
 
-The app helps users discover careers through:
+The app helps users explore careers through QR scanning, map-based discovery, quizzes, class competitions, achievements, and unlocked career content.
 
-- QR code scanning
-- map-based exploration
-- quizzes and points
-- class competitions and scoreboards
-- unlocked careers and achievements
+## Screenshots
 
-## Tech stack
+Add 3-5 screenshots here once you have them. Good choices are:
 
-- Expo SDK 55
-- React Native 0.83
-- React 19
-- Expo Router (file-based routing)
-- i18next + react-i18next (multilingual UI)
-- Axios (API client)
-- Jest + @testing-library/react-native (testing)
+- Home screen
+- Map screen
+- QR scanner
+- Stats / leaderboard screen
+- Settings or achievements screen
 
-## Main features
+Suggested location for image files: [assets/](assets)
+
+## Features
 
 - Home flow with user summary, competition info, and class join modal
 - QR scanner flow for career discovery
@@ -29,181 +25,193 @@ The app helps users discover careers through:
 - Achievements and unlocked careers
 - Settings for language, theme, notifications, privacy, feedback, and class leave
 
+## Tech stack
+
+- Expo SDK 55
+- React Native 0.83.6
+- React 19
+- Expo Router (file-based routing)
+- i18next + react-i18next (multilingual UI)
+- Axios (API client)
+- Jest + @testing-library/react-native (testing)
+
 ## Project structure
 
-Key folders:
-
 - [app/](app/): Expo Router routes
-  - [app/(tabs)/index.tsx](app/(tabs)/index.tsx): home screen
-  - [app/(tabs)/map.tsx](app/(tabs)/map.tsx): map screen
-  - [app/(tabs)/stats/](app/(tabs)/stats/): scoreboards
-  - [app/(tabs)/achievements.tsx](app/(tabs)/achievements.tsx): careers and badges
-  - [app/(tabs)/settings/](app/(tabs)/settings/): settings subpages
+  - [app/(tabs)/index.tsx](<app/(tabs)/index.tsx>): home screen
+  - [app/(tabs)/map.tsx](<app/(tabs)/map.tsx>): map screen
+  - [app/(tabs)/stats/](<app/(tabs)/stats/>): scoreboards
+  - [app/(tabs)/achievements.tsx](<app/(tabs)/achievements.tsx>): careers and badges
+  - [app/(tabs)/settings/](<app/(tabs)/settings/>): settings subpages
 - [src/components/](src/components/): reusable UI and feature components
-- [src/hooks/](src/hooks/): custom hooks (home, QR scanner, theming, quiz, etc.)
-- [src/context/](src/context/): global context providers (theme)
+- [src/hooks/](src/hooks/): custom hooks for home, QR scanner, theming, quiz, and more
+- [src/context/](src/context/): global context providers
 - [src/i18n/](src/i18n/): localization config and translation files
 - [services/](services/): API and storage layer
-- [\__tests__](__tests__/): unit and integration tests
-- [\__mocks__](__mocks__/): test mocks for Expo/native dependencies
+- [**tests**/](__tests__/): unit and integration tests
+- [**mocks**/](__mocks__/): test mocks for Expo and native dependencies
 
-## Prerequisites
+## Getting started
 
-- Node.js 20.19.4 or newer (includes npm)
-- Xcode (for iOS simulator/builds)
-- Android Studio (for Android emulator/builds)
+### Prerequisites
 
-Then follow these steps:
+- Node.js 20.19.4 or newer
+- Xcode for iOS simulator and builds
+- Android Studio for Android emulator and builds
+- A running backend server for API requests
 
-1. Install dependencies:
+### First-time setup
+
+1. Start the backend server.
+
+   The frontend expects the API to be available before you launch the app. Backend repository: https://github.com/Bachelorgruppe-53/idatt2901_gr_53_backend
+
+2. Install dependencies.
 
 ```bash
 npm install
 ```
 
-2. Start the development server (local):
+3. Build and install a development client.
+
+   This app uses native modules such as camera, maps, secure storage, and the dev menu, so Expo Go is not enough for full functionality.
+
+   Make sure your simulator or emulator is already running:
+   - iOS: open the Simulator from Xcode > Open Developer Tool > Simulator
+   - Android: start an emulator from Android Studio’s Virtual Device Manager
+
+   Then install the dev client:
 
 ```bash
-npx expo start
+npx expo run:ios
 ```
 
-Useful start options:
+or
 
-- `npx expo start --clear` to clear the Metro cache
-- Press `i` in the Expo CLI to open the iOS simulator (Xcode is needed)
-- Press `a` in the Expo CLI to open the Android emulator (Android emulator needed)
+```bash
+npx expo run:android
+```
+
+4. Start Metro.
+
+```bash
+npx expo start --dev-client
+```
+
+5. Open the app from Metro.
+   - Press `i` for iOS
+   - Press `a` for Android
+
+### Daily development
+
+Once the dev client is installed, start the app with:
+
+```bash
+npx expo start --clear
+```
+
+Use `--clear` if you hit stale imports or module issues. If you install new native packages or change config plugins, rebuild the dev client with `npx expo run:ios` or `npx expo run:android`.
 
 ## Available scripts
 
-- npm run lint: run Expo ESLint checks
-- npm test: run Jest tests
-- npm run test:watch: run Jest in watch mode
+- `npm run lint`: run Expo ESLint checks
+- `npm test`: run Jest tests
+- `npm run test:watch`: run Jest in watch mode
 
-Run coverage:
+Run coverage with:
 
 ```bash
 npm test -- --coverage --watch=false
 ```
 
-### Development build (dev-client)
---------------------------------
-Some native libraries used by this project (camera, maps, secure storage, dev-menu etc.) are not available in the stock Expo Go app. Build and install a development client (dev-build) on the simulator/device when you need full native functionality:
+## App architecture
 
-```bash
-# iOS simulator: build & install dev client, then start Metro for dev-client
-npx expo run:ios
-npx expo start --dev-client
+- [app/\_layout.tsx](app/_layout.tsx) sets up root providers and stack navigation
+- [app/(tabs)/\_layout.tsx](<app/(tabs)/_layout.tsx>) defines native tab navigation
+- Theme is managed globally in [src/context/ThemeContext.tsx](src/context/ThemeContext.tsx)
+- Localization is initialized in [src/i18n/config.ts](src/i18n/config.ts)
 
-# Android emulator
-npx expo run:android
-```
-
-The project includes `expo-dev-client` in `package.json`; use the commands above when you see errors like "No development build for this project is installed." Restart the Metro server after installing the dev-client.
-
-## Routing and app bootstrap
-
-- app/\_layout.tsx sets up root providers and stack navigation
-- app/(tabs)/\_layout.tsx defines native tab navigation
-- Theme provider is mounted globally via src/context/ThemeContext.tsx
-- Localization is initialized in src/i18n/config.ts
-
-## Localization
+### Localization
 
 Supported language tags:
 
-- en-US
-- no-NB
-- no-NN
+- `en-US`
+- `no-NB`
+- `no-NN`
 
 Translation namespaces include common, auth, navbar, settings, home, aboutCareer, stats, class, quiz, map, and qrScanner.
 
-## Theming
+### Theming
 
-Theme mode options:
+Theme modes:
 
-- system
-- light
-- dark
+- `system`
+- `light`
+- `dark`
 
-Theme preferences are persisted via secure storage.
+Theme preferences are persisted in secure storage.
 
-## Backend integration
+### Backend integration
 
 API base URL is resolved by:
 
-1. EXPO_PUBLIC_API_URL (if provided)
+1. `EXPO_PUBLIC_API_URL` if it is set
 2. Expo dev host IP in development
-3. Android emulator fallback 10.0.2.2 (development)
+3. Android emulator fallback `10.0.2.2`
 4. default host fallback
 
-See services/apiConfig.ts and services/authService.ts for details.
+See [services/apiConfig.ts](services/apiConfig.ts) and [services/authService.ts](services/authService.ts) for details.
 
 ## EAS build and release
 
-Build profiles are defined in eas.json:
+Build profiles are defined in [eas.json](eas.json):
 
-- development
-- development-simulator
-- preview
-- production
+- `development`
+- `development-simulator`
+- `preview`
+- `production`
 
 Typical commands:
 
-- npx eas-cli@latest build --platform ios -s
-- npx eas-cli@latest build --platform android -s
+```bash
+npx eas-cli@latest build --platform ios -s
+npx eas-cli@latest build --platform android -s
+```
 
-## Testing strategy
+## Testing
 
-The test suite in [__tests__](__tests__/)
-covers:
+The test suite in [**tests**/](__tests__/) covers hooks, service modules, context logic, and component behavior.
 
-- hooks
-- service modules
-- context logic
-- component behavior
+The project uses manual Jest mocks for native Expo packages in [**mocks**/](__mocks__/) to keep tests fast and avoid native module errors in Node/Jest.
 
-Notes:
-
-- The project uses manual Jest mocks for native Expo packages (see the `__mocks__` folder). This keeps tests fast and prevents native module errors in Node/Jest.
-- If you encounter peer-dependency or install errors, try:
+If you hit dependency issues during install, try:
 
 ```bash
 npm install --legacy-peer-deps
 ```
 
-Use these tests as the first safety net before merging frontend changes.
-
 ## Troubleshooting
 
-- App cannot reach backend:
+- Cannot reach backend:
   - Verify `EXPO_PUBLIC_API_URL` and backend port
-  - Confirm device/emulator can access your backend host
-- Native module issues when running in Expo Go (Expo Go may not be compatible with Expo SDK 55):
-  - Use a development build when required by native dependencies (see "Development build (dev-client)" above)
-  - If you get a "No development build installed" error, uninstall the previous build and reinstall the dev client on the simulator:
-
-```bash
-# Uninstall app from the currently booted simulator
-xcrun simctl uninstall booted com.brahimage.appBacheloroppgave
-
-# Then build+install a dev client
-npx expo run:ios
-npx expo run:android
-
-```
-
-- Stale metro cache:
+  - Confirm the device or emulator can access the backend host
+- Expo Go errors or missing native features:
+  - Use a development build when native dependencies are required
+  - Reinstall the dev client if you see a “No development build installed” error
+- Stale Metro cache:
   - Run `npx expo start --clear`
 
-## Documentation references
+## Documentation
 
 - Expo docs: https://docs.expo.dev
 - Expo Router docs: https://docs.expo.dev/router/introduction/
 - React Native docs: https://reactnative.dev/docs/getting-started
 - EAS docs: https://docs.expo.dev/eas/
 
-## Authors / Team
-Developed as part of a Bachelor's thesis in Computer Science at NTNU:
+## Team
+
+Developed as part of a Bachelor's thesis in Computer Science at NTNU.
+
 - **Anne Cecilie Nilsen** - Frontend (Mobile application Lead)
 - **Brahim Helland** - Frontend (Admin Webpages Lead)
 - **Ingrid Midtmoen Døvre** - Backend & Database Lead
