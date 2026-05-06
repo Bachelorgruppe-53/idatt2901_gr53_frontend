@@ -67,5 +67,7 @@ Join our community of developers creating universal apps.
 ---
 
 Copyright © 2026 Bachelorgruppe 53.
+
 All rights reserved.
+
 No permission is granted to copy, modify, or redistribute this software without explicit written permission.
