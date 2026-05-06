@@ -6,15 +6,27 @@ The app helps users explore careers through QR scanning, map-based discovery, qu
 
 ## Screenshots
 
-Add 3-5 screenshots here once you have them. Good choices are:
+#### Hovedskjermer & Navigasjon
+<p align="left">
+  <img src="assets/images/readme/home_ios.png" width="220" alt="Home" />
+  <img src="assets/images/readme/stats_ios.png" width="220" alt="Stats" />
+  <img src="assets/images/readme/settings.png" width="220" alt="Settings" />
+</p>
 
-- Home screen
-- Map screen
-- QR scanner
-- Stats / leaderboard screen
-- Settings or achievements screen
+#### Kart og Lokasjon
+<p align="left">
+  <img src="assets/images/readme/maps1_ios.png" width="220" alt="Map 1" />
+  <img src="assets/images/readme/maps_ios.png" width="220" alt="Map iOS" />
+  <img src="assets/images/readme/maps_android.png" width="220" alt="Map Android" />
+</p>
 
-Suggested location for image files: [assets/](assets)
+#### Karriere & Quiz
+<p align="left">
+  <img src="assets/images/readme/about.png" width="220" alt="About" />
+  <img src="assets/images/readme/quiz.png" width="220" alt="Quiz" />
+  <img src="assets/images/readme/claim.png" width="220" alt="Claim" />
+  <img src="assets/images/readme/careers_android.png" width="220" alt="Careers" />
+</p>
 
 ## Features
 
