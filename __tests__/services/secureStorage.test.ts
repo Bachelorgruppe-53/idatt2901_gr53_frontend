@@ -34,11 +34,21 @@ const mockedDeleteItemAsync =
   >;
 
 describe("secureStorage", () => {
+  let consoleErrorSpy: jest.SpyInstance;
+  let consoleLogSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockedSetItemAsync.mockResolvedValue(undefined);
     mockedGetItemAsync.mockResolvedValue(null);
     mockedDeleteItemAsync.mockResolvedValue(undefined);
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+    consoleLogSpy = jest.spyOn(console, "log").mockImplementation();
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
+    consoleLogSpy.mockRestore();
   });
 
   it("saves and retrieves user id", async () => {

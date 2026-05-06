@@ -58,7 +58,18 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 36
+            "compileSdkVersion": 36,
+            "buildToolsVersion": "36.0.0",
+            "targetSdkVersion": 36,
+            "minSdkVersion": 24,
+            "kotlinVersion": "2.1.20",
+            "extraMavenRepos": [],
+            "gradleProperties": [
+              "android.enableDexingArtifactTransform=false",
+              "android.useAndroidX=true",
+              "android.enableJetifier=true",
+              "org.gradle.jvmargs=-Xmx2048m"
+            ]
           }
         }
       ],

@@ -21,8 +21,14 @@ export type QRScanPayload = {
   careerId: number;
 };
 
+// Throttle duration to prevent multiple scans in quick succession (in milliseconds)
 const QR_SCAN_THROTTLE_MS = 1000;
 
+/**
+ * Type guard to check if a given value conforms to the QRScanPayload structure.
+ * @param value The value to check, which can be of any type. The function will verify if this value is an object with the expected properties and types to be considered a valid QRScanPayload.
+ * @returns A boolean indicating whether the provided value is a valid QRScanPayload. It returns true if the value has a type of "career" and a careerId that is a positive integer, and false otherwise.
+ */
 const isQRScanPayload = (value: unknown): value is QRScanPayload => {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -38,6 +44,12 @@ const isQRScanPayload = (value: unknown): value is QRScanPayload => {
   );
 };
 
+/**
+ * Utility function to parse the data from a scanned QR code and determine if it matches the expected QRScanPayload format.
+ * It attempts to parse the data as JSON and then uses the isQRScanPayload type guard to validate the structure of the parsed data.
+ * @param data The raw string data obtained from scanning a QR code.
+ * @returns A QRScanPayload object if the data is valid, or null if the data is not as expected.
+ */
 const parseQRScanPayload = (data: string): QRScanPayload | null => {
   try {
     const parsed = JSON.parse(data) as unknown;
@@ -47,6 +59,9 @@ const parseQRScanPayload = (data: string): QRScanPayload | null => {
   }
 };
 
+/**
+ * QRScanner component that provides a camera view for scanning QR codes, with an overlay to guide the user and a close button.
+ */
 export function QRScanner({ onScan, onInvalidScan, onClose }: QRScannerProps) {
   const themedStyles = useThemedStyles();
   const lastScanAtRef = useRef(0);

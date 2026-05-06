@@ -3,6 +3,11 @@ import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
 
+/**
+ * This component defines the layout for the main tab navigation of the app.
+ * @returns JSX.Element
+ */
+
 export default function TabLayout() {
   const { t } = useTranslation("navbar");
   const theme = useThemeColor();

@@ -77,6 +77,16 @@ describe("getApiBaseUrl", () => {
     expect(getApiBaseUrl()).toBe("http://192.168.1.20:8080");
   });
 
+  it("uses Android emulator bridge on Android in development even when hostUri is available", () => {
+    const getApiBaseUrl = loadGetApiBaseUrl({
+      hostUri: "192.168.1.20:8081",
+      dev: true,
+      platformOs: "android",
+    });
+
+    expect(getApiBaseUrl()).toBe("http://10.0.2.2:8080");
+  });
+
   it("uses Android emulator fallback in development when hostUri is missing", () => {
     const getApiBaseUrl = loadGetApiBaseUrl({
       hostUri: undefined,
@@ -94,6 +104,6 @@ describe("getApiBaseUrl", () => {
       platformOs: "ios",
     });
 
-    expect(getApiBaseUrl()).toBe("http://10.22.24.64:8080");
+    expect(getApiBaseUrl()).toBe("http://localhost:8080");
   });
 });

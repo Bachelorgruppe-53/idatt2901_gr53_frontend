@@ -11,6 +11,8 @@ const mockedUseCameraPermissions = useCameraPermissions as jest.MockedFunction<
 >;
 
 describe("useQRScanner", () => {
+  const getPermission = jest.fn();
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -20,6 +22,7 @@ describe("useQRScanner", () => {
     mockedUseCameraPermissions.mockReturnValue([
       undefined as any,
       requestPermission,
+      getPermission,
     ]);
 
     const { result } = renderHook(() => useQRScanner());
@@ -39,6 +42,7 @@ describe("useQRScanner", () => {
     mockedUseCameraPermissions.mockReturnValue([
       { granted: false } as any,
       requestPermission,
+      getPermission,
     ]);
 
     const { result } = renderHook(() => useQRScanner());
@@ -59,6 +63,7 @@ describe("useQRScanner", () => {
     mockedUseCameraPermissions.mockReturnValue([
       { granted: false } as any,
       requestPermission,
+      getPermission,
     ]);
 
     const { result } = renderHook(() => useQRScanner());
@@ -78,6 +83,7 @@ describe("useQRScanner", () => {
     mockedUseCameraPermissions.mockReturnValue([
       { granted: true } as any,
       requestPermission,
+      getPermission,
     ]);
 
     const { result } = renderHook(() => useQRScanner());
@@ -96,6 +102,7 @@ describe("useQRScanner", () => {
     mockedUseCameraPermissions.mockReturnValue([
       { granted: true } as any,
       requestPermission,
+      getPermission,
     ]);
 
     const { result } = renderHook(() => useQRScanner());

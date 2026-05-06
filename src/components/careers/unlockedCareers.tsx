@@ -5,7 +5,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList, Modal, Text, View } from "react-native";
-import SearchBar from "../../../components/searchBar";
+import SearchBar from "../searchBar";
 import { Colors } from "../../constants/Colors";
 import { BaseStyles } from "../../constants/Styles";
 import { useThemedStyles } from "../../hooks/useStyleSheet";
@@ -13,7 +13,9 @@ import AboutCareer from "./aboutCareer";
 import CareerBadge from "./careerBadge";
 
 /**
- * This component displays a list of unlocked/caimed careers.
+ * Component that displays a list of unlocked careers/POIs for the user. 
+ * It supports pagination, searching, and real-time updates when new careers are claimed.
+ * @returns JSX.Element
  */
 export default function Careers() {
   const { i18n, t } = useTranslation("aboutCareer");

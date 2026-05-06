@@ -8,6 +8,11 @@ import { useTranslation } from "react-i18next";
 import { Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+/**
+ * This component renders a screen for changing the app's theme.
+ * @returns JSX.Element
+ */
+
 export default function ChangeThemeScreen() {
   const theme = useThemeColor();
   const themedStyles = useThemedStyles();

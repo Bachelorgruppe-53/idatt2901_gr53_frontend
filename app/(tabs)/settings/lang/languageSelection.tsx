@@ -16,7 +16,12 @@ import {
 import CountryFlag from "react-native-country-flag";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// Custom flag component that supports both ISO codes and custom SVG
+/**
+ * This component renders a screen that allows the user to select their preferred language for the app.
+ * @param param0 - The component does not take any props.
+ * @returns JSX.Element
+ */
+
 const FlagDisplay = ({
   isoCode,
   customFlag,

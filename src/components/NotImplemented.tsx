@@ -8,6 +8,11 @@ interface NotImplementedProps {
   title?: string;
 }
 
+/**
+ * NotImplemented component that displays a placeholder message and icon for features that are not yet implemented.
+ * @param param0 An object containing an optional title to display above the placeholder message. If no title is provided, it defaults to "Coming Soon".
+ * @returns A JSX element representing the not implemented placeholder, which includes an icon, a title, and a message indicating that the feature is not yet available.
+ */
 export function NotImplemented({ title = "Coming Soon" }: NotImplementedProps) {
   const themedStyles = useThemedStyles();
   const { t } = useTranslation("settings");

@@ -1,6 +1,16 @@
 import { Platform, StyleSheet } from "react-native";
 import { Colors } from "./Colors";
 
+/**
+ * This file defines the base styles and themed styles for the application. 
+ * It includes a set of reusable style properties for layout, spacing, typography, buttons, inputs, and more. 
+ * 
+ * The styles are designed to be flexible and adaptable to different themes (light and dark) by using the createThemedStyles function, 
+ * which generates styles based on the provided color scheme. 
+ * 
+ * The BaseStyles object contains common styles that can be used across the app, while createThemedStyles allows for dynamic styling based on the current theme.
+ */
+
 export const Spacing = {
   xs: 4,
   sm: 8,

@@ -30,6 +30,7 @@ type FetchResponseShape = {
 
 describe("loadHomeSummary", () => {
   const fetchMock = jest.fn();
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     mockedGetApiBaseUrl.mockReturnValue("http://localhost:8080/");
@@ -41,6 +42,11 @@ describe("loadHomeSummary", () => {
     );
     fetchMock.mockReset();
     global.fetch = fetchMock as unknown as typeof fetch;
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   it("loads summary and class points successfully", async () => {

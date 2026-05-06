@@ -4,6 +4,11 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { Alert } from "react-native";
 
+/**
+ * Custom hook to handle the logic for leaving a class, including showing a confirmation alert and making an API request to leave the class.
+ * @param onLeft Optional callback function that will be called after successfully leaving the class, allowing the parent component to perform any necessary updates (e.g., navigating away from the class screen).
+ * @returns An object containing the leaveClass function that can be called to initiate the leave class process.
+ */
 export const useLeaveClass = (onLeft?: () => void) => {
   const { t } = useTranslation("settings");
 

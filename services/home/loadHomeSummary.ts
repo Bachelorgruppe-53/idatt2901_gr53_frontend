@@ -7,20 +7,20 @@ import {
 } from "@/services/types/class";
 import type { UserSummary } from "@/services/types/summary";
 
-/**
- * Loads the home summary data for the user, including their points, class points, and nickname.
- * Handles cases where the user is not associated with a class or when the user ID is invalid. Also includes error handling for unexpected server responses.
- *
- * @returns A promise that resolves to an object containing the user's summary, points, class points, and nickname.
- * @throws An error if the server response is not successful or if the response format is invalid.
- */
-
+// Type definition for the result returned by the loadHomeSummary function, which includes the user's summary, points, class points, and nickname.
 export type HomeSummaryResult = {
   summary: UserSummary | null;
   points: number;
   classPoints: number | null;
   nickname: string;
 };
+
+/**
+ * Parses an error response from the backend to extract a meaningful error message. It attempts to parse the response as JSON and look for common error fields, falling back to the raw response if parsing fails.
+ *
+ * @param raw - The raw error response from the backend, which may be a JSON string or a plain text message.
+ * @returns A string containing the extracted error message, or the original raw response if it cannot be parsed.
+ */
 
 const parseBackendError = (raw: string): string => {
   try {
@@ -31,6 +31,14 @@ const parseBackendError = (raw: string): string => {
   }
 };
 
+/**
+ * Loads the user's home summary information from the backend API, including their points, class points, and nickname. 
+ * It handles various response scenarios, including errors and cases where the user is not related to a class. 
+ * If the user's UUID is invalid, it attempts to re-register the device and retry the request.
+ * 
+ * @returns A promise that resolves to an object containing the user's summary, points, class points, and nickname.
+ * @throws An error if the server response is not successful or if the response format is invalid.
+ */
 export const loadHomeSummary = async (): Promise<HomeSummaryResult> => {
   const baseUrl = getApiBaseUrl().replace(/\/$/, "");
 

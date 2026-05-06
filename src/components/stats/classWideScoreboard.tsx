@@ -24,6 +24,7 @@ import { Text, View } from "react-native";
  *
  * @returns JSX.Element
  */
+
 const getBackendErrorMessage = (data: unknown): string => {
   if (typeof data === "string") return data;
   if (data && typeof data === "object" && "error" in data) {

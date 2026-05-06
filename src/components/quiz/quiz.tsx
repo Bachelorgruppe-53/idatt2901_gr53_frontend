@@ -35,6 +35,12 @@ export type QuizProps = {
   isLoading?: boolean;
 };
 
+/**
+ * Quiz component that renders a series of questions with multiple-choice options, tracks user progress, and handles user interactions. 
+ * It supports loading states and accessibility features for screen readers.
+ * @param param0 - An object containing the quiz questions, answer callback, completion callback, and loading state.
+ * @returns JSX.Element
+ */
 export default function Quiz({
   questions = [],
   onAnswer,

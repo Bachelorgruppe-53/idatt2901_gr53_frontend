@@ -28,6 +28,14 @@ interface AreaSelectorProps {
   onAreaReselect?: (value: string | null) => void;
 }
 
+/**
+ * AreaSelector component that renders a dropdown menu for selecting an area. 
+ * It displays the currently selected area and allows the user to choose from a list of areas. 
+ * When an area is selected, it triggers the onAreaChange callback with the new value. 
+ * If the user selects the already selected area, it can optionally trigger the onAreaReselect callback.
+ * @param param0 The props for the AreaSelector component, including the list of areas, the currently selected area, and the callbacks for area change and reselection.
+ * @returns JSX.Element
+ */
 export const AreaSelector = ({
   areas,
   selectedArea,
